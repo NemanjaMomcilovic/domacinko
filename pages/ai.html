@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domaćinko — Pitaj Domaćinka</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content main-content--chat">
+      <div class="chat-area">
+        <div class="chat-messages" id="chat-messages"></div>
+      </div>
+      <div class="chat-input-bar">
+        <input type="text" class="form-input" id="chat-input" placeholder="Pitaj Domaćinka..." autocomplete="off">
+        <button class="btn btn--primary" id="chat-send">Pošalji</button>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/ai.js"></script>
+</body>
+</html>

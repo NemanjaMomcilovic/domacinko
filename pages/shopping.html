@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domaćinko — Kupovina</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content">
+      <p class="text-muted text-center mb-md" id="list-count" style="font-size:var(--font-size-sm)"></p>
+
+      <div id="shopping-list"></div>
+
+      <form id="add-item-form" class="mt-md">
+        <div style="display:flex;gap:var(--space-sm)">
+          <input type="text" class="form-input" id="item-name" placeholder="Dodaj proizvod..." required style="flex:1">
+          <button type="submit" class="btn btn--primary">Dodaj</button>
+        </div>
+      </form>
+
+      <button class="btn btn--outline btn--block mt-md" id="clear-list">Obriši listu</button>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/shopping.js"></script>
+</body>
+</html>

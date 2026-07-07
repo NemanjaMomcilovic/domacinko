@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domaćinko — Dodaj trošak</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content main-content--no-nav">
+      <form id="expense-form">
+        <div class="form-group">
+          <label class="form-label" for="expense-name">Naziv</label>
+          <input type="text" class="form-input" id="expense-name" placeholder="npr. Kafa, Struja..." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-amount">Iznos</label>
+          <input type="number" class="form-input" id="expense-amount" placeholder="0" min="1" step="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-category">Kategorija</label>
+          <select class="form-select" id="expense-category"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-date">Datum</label>
+          <input type="date" class="form-input" id="expense-date" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-note">Napomena (opciono)</label>
+          <textarea class="form-textarea" id="expense-note" placeholder="Dodatne informacije..."></textarea>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">Sačuvaj trošak</button>
+      </form>
+
+      <div class="section mt-md">
+        <div class="section__header">
+          <h2 class="section__title">Ovaj mesec</h2>
+          <span class="badge badge--success" id="monthly-total">0 RSD</span>
+        </div>
+        <div class="card card--flat" id="expenses-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/add-expense.js"></script>
+</body>
+</html>

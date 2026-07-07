@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domaćinko — Početna</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <main class="main-content">
+      <div class="greeting">
+        <h1 class="greeting__text" id="greeting">Dobro jutro!</h1>
+        <p class="greeting__sub" id="household-status">Domaćinstvo</p>
+      </div>
+
+      <div class="card text-center">
+        <p class="card__title">Finansijsko zdravlje</p>
+        <div id="health-score"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card__label">Potrošeno</div>
+          <div class="stat-card__value" id="monthly-spent">0 RSD</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Budžet</div>
+          <div class="stat-card__value" id="monthly-budget">0 RSD</div>
+        </div>
+        <div class="stat-card stat-card--highlight" style="grid-column: span 2">
+          <div class="stat-card__label">Preostalo</div>
+          <div class="stat-card__value stat-card__value--positive" id="remaining">0 RSD</div>
+        </div>
+      </div>
+
+      <div class="advice-banner mb-md">
+        <div class="advice-banner__label">Savet dana 💚</div>
+        <p class="advice-banner__text" id="daily-advice">Učitavanje...</p>
+      </div>
+
+      <p class="text-muted text-center hidden" id="shopping-hint" style="font-size:var(--font-size-sm);margin-bottom:var(--space-md)"></p>
+
+      <div class="section">
+        <div class="section__header">
+          <h2 class="section__title">Današnji zadaci</h2>
+        </div>
+        <div class="card card--flat" id="tasks-list"></div>
+      </div>
+
+      <div class="section">
+        <div class="section__header">
+          <h2 class="section__title">Poslednji troškovi</h2>
+          <a href="add-expense.html" class="section__link">Svi →</a>
+        </div>
+        <div class="card card--flat" id="latest-expenses"></div>
+      </div>
+
+      <div class="section">
+        <h2 class="section__title mb-md">Brze akcije</h2>
+        <div class="quick-actions">
+          <a href="add-expense.html" class="quick-action">
+            <span class="quick-action__icon">💸</span>
+            Dodaj trošak
+          </a>
+          <a href="scan-receipt.html" class="quick-action">
+            <span class="quick-action__icon">📷</span>
+            Skeniraj račun
+          </a>
+          <a href="household.html" class="quick-action">
+            <span class="quick-action__icon">🏡</span>
+            Domaćinstvo
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/home.js"></script>
+</body>
+</html>

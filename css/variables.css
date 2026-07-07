@@ -1,0 +1,60 @@
+:root {
+  /* 10KEY branding */
+  --color-gold: #c9a227;
+  --color-gold-light: #e8d48b;
+
+  /* Domaćinko primary */
+  --color-primary: #2d8f5c;
+  --color-primary-dark: #1f6b44;
+  --color-primary-light: #e8f5ee;
+  --color-primary-soft: #b8e0c8;
+
+  /* Neutrals */
+  --color-bg: #ffffff;
+  --color-surface: #f8faf9;
+  --color-border: #e8ecea;
+  --color-text: #1a2e24;
+  --color-text-secondary: #5a6e64;
+  --color-text-muted: #8a9a92;
+
+  /* Semantic */
+  --color-success: #2d8f5c;
+  --color-warning: #e6a817;
+  --color-danger: #d64545;
+  --color-info: #3b82c4;
+
+  /* Typography */
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Layout */
+  --max-width: 480px;
+  --nav-height: 64px;
+  --header-height: 56px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(26, 46, 36, 0.06);
+  --shadow-md: 0 4px 12px rgba(26, 46, 36, 0.08);
+  --shadow-lg: 0 8px 24px rgba(26, 46, 36, 0.1);
+
+  /* Transitions */
+  --transition: 0.2s ease;
+}

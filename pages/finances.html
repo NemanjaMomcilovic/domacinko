@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domaćinko — Finansije</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card__label">Budžet</div>
+          <div class="stat-card__value" id="fin-budget">0 RSD</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">Potrošeno</div>
+          <div class="stat-card__value" id="fin-spent">0 RSD</div>
+        </div>
+      </div>
+
+      <div class="card text-center">
+        <p class="card__title">Preostali budžet</p>
+        <p class="card__value text-success" id="fin-remaining">0 RSD</p>
+      </div>
+
+      <div class="card text-center">
+        <p class="card__title">Finansijsko zdravlje</p>
+        <div id="fin-health-score"></div>
+        <p class="card__subtitle mt-sm" id="score-label"></p>
+      </div>
+
+      <div class="section">
+        <h2 class="section__title mb-md">Troškovi po kategorijama</h2>
+        <div class="card card--flat" id="category-breakdown"></div>
+      </div>
+
+      <div class="section">
+        <h2 class="section__title mb-md">Grafikon</h2>
+        <div class="chart-placeholder">
+          <span style="font-size:2rem">📊</span>
+          <p>Grafikoni dolaze uskoro</p>
+        </div>
+      </div>
+
+      <a href="add-expense.html" class="btn btn--primary btn--block">Dodaj trošak</a>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/finances.js"></script>
+</body>
+</html>
