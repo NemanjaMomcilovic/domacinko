@@ -36,8 +36,8 @@ async function showAppNotification(title, body, tag) {
 
   const options = {
     body,
-    icon: `${getAssetBase()}/assets/icons/icon-192.svg`,
-    badge: `${getAssetBase()}/assets/icons/icon-192.svg`,
+    icon: `${getAssetBase()}/assets/icons/icon-192.png`,
+    badge: `${getAssetBase()}/assets/icons/icon-192.png`,
     tag: tag || 'domacinko',
     data: { url: `${getAssetBase()}/pages/home.html` }
   };

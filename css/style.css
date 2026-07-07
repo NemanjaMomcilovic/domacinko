@@ -278,6 +278,13 @@ body {
   padding: var(--space-xl) 0;
 }
 
+.app-logo__img {
+  width: min(280px, 75%);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .app-logo__name {
   font-size: var(--font-size-3xl);
   font-weight: 800;
@@ -287,13 +294,22 @@ body {
 .app-logo__tagline {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
-  margin-top: var(--space-xs);
+  margin-top: var(--space-sm);
 }
 
 .app-logo__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   font-size: var(--font-size-xs);
   margin-top: var(--space-md);
   color: var(--color-text-muted);
+}
+
+.app-logo__10key {
+  height: 22px;
+  width: auto;
 }
 
 /* Utility */
@@ -462,6 +478,17 @@ body {
   color: var(--color-primary);
 }
 
+.landing__logo-img {
+  height: 36px;
+  width: auto;
+}
+
+.landing__hero-logo {
+  width: min(320px, 80%);
+  height: auto;
+  margin-bottom: var(--space-md);
+}
+
 .landing__hero {
   text-align: center;
   padding: var(--space-xl) var(--space-lg);
@@ -496,8 +523,17 @@ body {
 }
 
 .landing__powered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+}
+
+.landing__powered-logo {
+  height: 28px;
+  width: auto;
 }
 
 .landing__features {
@@ -574,6 +610,25 @@ body {
   border-top: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+}
+
+.landing__footer-logo {
+  height: 40px;
+  width: auto;
+  margin-bottom: var(--space-sm);
+}
+
+.landing__footer-powered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.landing__footer-10key {
+  height: 24px;
+  width: auto;
 }
 
 .landing__footer-link {

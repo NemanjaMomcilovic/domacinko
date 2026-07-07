@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v4.1';
+const CACHE_NAME = 'domacinko-v4.1.1';
 
 const ASSETS = [
   './',
@@ -43,7 +43,11 @@ const ASSETS = [
   './pages/maintenance.html',
   './pages/inventory.html',
   './assets/icons/icon-192.svg',
-  './assets/icons/icon-512.svg'
+  './assets/icons/icon-512.svg',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/logos/10key.png',
+  './assets/logos/domacinko.png'
 ];
 
 self.addEventListener('install', event => {

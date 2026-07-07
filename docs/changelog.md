@@ -1,5 +1,18 @@
 # Domaćinko — Changelog
 
+## [4.1.1] — 2026-07-07
+
+### Dodato
+- **10KEY i Domaćinko logotipi** (`assets/logos/10key.png`, `assets/logos/domacinko.png`) — kopirani iz originalnog projekta
+- Splash ekran sa 10KEY logom i loader animacijom (tamna pozadina, zlatni brending)
+- Presents ekran sa Domaćinko logom i animacijom
+- Logotipi u landing hero/footer i podešavanjima (Powered by 10KEY)
+- PWA ikone generisane iz Domaćinko loga (`assets/icons/icon-192.png`, `icon-512.png`)
+
+### Poboljšano
+- `manifest.json` — Domaćinko logo kao primarna PWA ikona
+- Service worker keš ažuriran na v4.1.1 sa logo assetima
+
 ## [4.1.0] — 2026-07-07
 
 ### Dodato
