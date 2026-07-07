@@ -20,7 +20,9 @@
 
     <div class="auth-config-warning hidden" id="config-warning">
       <p><strong>Supabase nije podešen.</strong> Aplikacija radi u gost režimu (samo na ovom uređaju).</p>
-      <a href="../docs/supabase-setup.md" class="auth-config-warning__link">📖 Uputstvo za podešavanje</a>
+      <p style="margin-top:var(--space-xs);font-size:var(--font-size-xs)">Unesite ključeve u <strong>Podešavanja → Poveži nalog</strong> ili koristite <code>config.js</code>.</p>
+      <a href="settings.html" class="auth-config-warning__link" style="margin-right:var(--space-sm)">⚙️ Podešavanje ključeva</a>
+      <a href="https://github.com/NemanjaMomcilovic/domacinko/blob/main/docs/supabase-setup.md" target="_blank" rel="noopener" class="auth-config-warning__link">📖 Uputstvo za podešavanje</a>
     </div>
 
     <main class="auth-page__main">
@@ -33,39 +35,55 @@
       <form class="auth-form" id="login-form" data-panel="login">
         <div class="form-group">
           <label class="form-label" for="login-email">Email</label>
-          <input type="email" class="form-input" id="login-email" placeholder="vas@email.com" required autocomplete="email">
+          <input type="email" class="form-input auth-input" id="login-email" placeholder="vas@email.com" required autocomplete="email">
         </div>
         <div class="form-group">
           <label class="form-label" for="login-password">Lozinka</label>
-          <input type="password" class="form-input" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+          <input type="password" class="form-input auth-input" id="login-password" placeholder="••••••••" required autocomplete="current-password">
         </div>
-        <button type="submit" class="btn btn--primary btn--block" id="login-btn">Prijavi se</button>
+        <p class="auth-forgot">
+          <button type="button" class="auth-forgot__link" id="forgot-toggle">Zaboravili ste lozinku?</button>
+        </p>
+        <button type="submit" class="btn btn--primary btn--block auth-btn" id="login-btn">Prijavi se</button>
+      </form>
+
+      <!-- Reset lozinke -->
+      <form class="auth-form hidden" id="forgot-form" data-panel="forgot">
+        <p class="text-muted mb-md" style="font-size:var(--font-size-sm)">
+          Unesite email sa kojim ste se registrovali. Poslaćemo vam link za reset lozinke.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="forgot-email">Email</label>
+          <input type="email" class="form-input auth-input" id="forgot-email" placeholder="vas@email.com" required autocomplete="email">
+        </div>
+        <button type="submit" class="btn btn--primary btn--block auth-btn" id="forgot-btn">Pošalji link za reset</button>
+        <button type="button" class="btn btn--ghost btn--block mt-sm auth-btn" id="forgot-back">← Nazad na prijavu</button>
       </form>
 
       <!-- Registracija -->
       <form class="auth-form hidden" id="register-form" data-panel="register">
         <div class="form-group">
           <label class="form-label" for="register-email">Email</label>
-          <input type="email" class="form-input" id="register-email" placeholder="vas@email.com" required autocomplete="email">
+          <input type="email" class="form-input auth-input" id="register-email" placeholder="vas@email.com" required autocomplete="email">
         </div>
         <div class="form-group">
           <label class="form-label" for="register-password">Lozinka</label>
-          <input type="password" class="form-input" id="register-password" placeholder="Min. 6 karaktera" required minlength="6" autocomplete="new-password">
+          <input type="password" class="form-input auth-input" id="register-password" placeholder="Min. 6 karaktera" required minlength="6" autocomplete="new-password">
         </div>
         <div class="form-group">
           <label class="form-label" for="register-password-confirm">Potvrdi lozinku</label>
-          <input type="password" class="form-input" id="register-password-confirm" placeholder="Ponovi lozinku" required minlength="6" autocomplete="new-password">
+          <input type="password" class="form-input auth-input" id="register-password-confirm" placeholder="Ponovi lozinku" required minlength="6" autocomplete="new-password">
         </div>
-        <button type="submit" class="btn btn--primary btn--block" id="register-btn">Kreiraj nalog</button>
+        <button type="submit" class="btn btn--primary btn--block auth-btn" id="register-btn">Kreiraj nalog</button>
       </form>
 
       <div class="auth-divider"><span>ili</span></div>
 
       <div class="auth-social">
-        <button type="button" class="btn btn--social btn--block" id="google-btn" disabled>
+        <button type="button" class="btn btn--social btn--block auth-btn" id="google-btn" disabled>
           <span class="btn--social__icon">G</span> Nastavi sa Google
         </button>
-        <button type="button" class="btn btn--social btn--social--facebook btn--block" id="facebook-btn" disabled>
+        <button type="button" class="btn btn--social btn--social--facebook btn--block auth-btn" id="facebook-btn" disabled>
           <span class="btn--social__icon">f</span> Nastavi sa Facebook
         </button>
       </div>
@@ -74,7 +92,7 @@
     </main>
 
     <footer class="auth-page__footer">
-      <button type="button" class="btn btn--ghost btn--block" id="guest-btn">
+      <button type="button" class="btn btn--ghost btn--block auth-btn" id="guest-btn">
         Nastavi kao gost
         <span class="auth-guest-hint">Ograničeno — podaci samo na ovom uređaju</span>
       </button>

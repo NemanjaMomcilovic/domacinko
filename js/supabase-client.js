@@ -2,15 +2,50 @@
  * Domaćinko — Supabase klijent
  */
 
+const SUPABASE_CONFIG_KEY = 'domacinko_supabase_config';
+
 let _supabaseClient = null;
 
 function getDomacinkoConfig() {
   if (window.DOMACINKO_CONFIG) return window.DOMACINKO_CONFIG;
   try {
-    const stored = localStorage.getItem('domacinko_supabase_config');
+    const stored = localStorage.getItem(SUPABASE_CONFIG_KEY);
     if (stored) return JSON.parse(stored);
   } catch { /* ignore */ }
   return {};
+}
+
+function getSupabaseConfigSource() {
+  if (window.DOMACINKO_CONFIG?.SUPABASE_URL && window.DOMACINKO_CONFIG?.SUPABASE_ANON_KEY) {
+    return 'config.js';
+  }
+  try {
+    const stored = localStorage.getItem(SUPABASE_CONFIG_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed.SUPABASE_URL && parsed.SUPABASE_ANON_KEY) return 'localStorage';
+    }
+  } catch { /* ignore */ }
+  return 'none';
+}
+
+function saveSupabaseConfig(url, anonKey) {
+  const payload = {
+    SUPABASE_URL: (url || '').trim(),
+    SUPABASE_ANON_KEY: (anonKey || '').trim()
+  };
+  localStorage.setItem(SUPABASE_CONFIG_KEY, JSON.stringify(payload));
+  resetSupabaseClient();
+  return payload;
+}
+
+function clearSupabaseConfig() {
+  localStorage.removeItem(SUPABASE_CONFIG_KEY);
+  resetSupabaseClient();
+}
+
+function resetSupabaseClient() {
+  _supabaseClient = null;
 }
 
 function isSupabaseConfigured() {

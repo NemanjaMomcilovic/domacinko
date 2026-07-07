@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = JSON.parse(prefill);
       document.getElementById('kb-title').value = data.title || '';
       document.getElementById('kb-solution').value = data.solution || '';
+      if (data.category) {
+        document.getElementById('kb-category').value = data.category;
+      }
       sessionStorage.removeItem('knowledge_prefill');
     } catch { /* ignore */ }
   }

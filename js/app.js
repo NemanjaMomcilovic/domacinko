@@ -39,12 +39,22 @@ async function initAuthGuard() {
   const onboardingUrl = inPages ? 'onboarding.html' : 'pages/onboarding.html';
 
   if (!isGuestMode() && !isLoggedIn()) {
-    window.location.href = authUrl;
-    return;
+    const allowSettings = file === 'settings.html'
+      && typeof isSupabaseConfigured === 'function'
+      && !isSupabaseConfigured();
+    if (!allowSettings) {
+      window.location.href = authUrl;
+      return;
+    }
   }
 
   if (needsOnboarding() && file !== 'onboarding.html') {
-    window.location.href = onboardingUrl;
+    const allowSettings = file === 'settings.html'
+      && typeof isSupabaseConfigured === 'function'
+      && !isSupabaseConfigured();
+    if (!allowSettings) {
+      window.location.href = onboardingUrl;
+    }
   }
 }
 

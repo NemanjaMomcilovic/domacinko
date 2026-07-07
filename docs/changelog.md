@@ -1,5 +1,25 @@
 # Domaćinko — Changelog
 
+## [6.1.0] — 2026-07-07
+
+### Dodato
+- **Supabase bez config.js** — sekcija „Poveži nalog" u Podešavanjima, čuvanje u localStorage
+- **Zaboravljena lozinka** — reset putem emaila na stranici prijave
+- **Sačuvaj rešenje** — AI Majstor → Baza znanja (kao vizuelni asistent)
+- **Rođendan članova porodice** — polje u Domaćinstvu, prognoza troškova
+- **PWA install hint** — baner na početnoj pri prvoj poseti
+- **Pristup Podešavanjima pre prijave** — za unos Supabase ključeva na telefonu
+
+### Poboljšano
+- Jutarnji brifing koristi ime iz profila kada ste prijavljeni
+- Veći touch targeti na auth stranici (48px)
+- `docs/supabase-setup.md` — Facebook vodič, login na telefonu
+- Prioritet konfiguracije: config.js → localStorage → forma
+
+### Tehnički
+- `saveSupabaseConfig`, `resetSupabaseClient`, `getSupabaseConfigSource`
+- Service Worker v6.1.0
+
 ## [6.0.0] — 2026-07-07
 
 ### Dodato — Faza A (jezgro)

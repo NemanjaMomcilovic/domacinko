@@ -51,6 +51,42 @@ function saveCategoryBudgetsFromForm() {
   saveCategoryBudgets(budgets);
 }
 
+function renderSupabaseConfigSection() {
+  const statusEl = document.getElementById('supabase-config-status');
+  const urlEl = document.getElementById('supabase-url');
+  const keyEl = document.getElementById('supabase-anon-key');
+  if (!statusEl || !urlEl || !keyEl) return;
+
+  const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
+  const cfg = typeof getDomacinkoConfig === 'function' ? getDomacinkoConfig() : {};
+
+  if (source === 'config.js') {
+    statusEl.innerHTML = '✓ Aktivno iz <strong>config.js</strong> — polja ispod su samo za pregled.';
+    urlEl.value = cfg.SUPABASE_URL || '';
+    keyEl.value = cfg.SUPABASE_ANON_KEY ? '••••••••••••' : '';
+    urlEl.readOnly = true;
+    keyEl.readOnly = true;
+    document.getElementById('save-supabase-config')?.classList.add('hidden');
+    document.getElementById('clear-supabase-config')?.classList.add('hidden');
+  } else {
+    document.getElementById('save-supabase-config')?.classList.remove('hidden');
+    document.getElementById('clear-supabase-config')?.classList.remove('hidden');
+    if (source === 'localStorage') {
+      statusEl.innerHTML = '✓ Aktivno iz <strong>ovog uređaja</strong> (localStorage). Prijava i sinhronizacija su omogućeni.';
+      urlEl.value = cfg.SUPABASE_URL || '';
+      keyEl.value = cfg.SUPABASE_ANON_KEY || '';
+      urlEl.readOnly = false;
+      keyEl.readOnly = false;
+    } else {
+      statusEl.textContent = '⚠️ Supabase nije podešen — unesite ključeve za prijavu i sinhronizaciju.';
+      urlEl.value = '';
+      keyEl.value = '';
+      urlEl.readOnly = false;
+      keyEl.readOnly = false;
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth?.();
   initNavigation('settings', { title: 'Podešavanja' });
@@ -69,6 +105,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('api-key').value = settings.apiKey || '';
 
   renderAccountSection();
+  renderSupabaseConfigSection();
+
+  document.getElementById('save-supabase-config')?.addEventListener('click', () => {
+    const url = document.getElementById('supabase-url').value.trim();
+    const key = document.getElementById('supabase-anon-key').value.trim();
+    if (!url || !key || url.includes('your-project') || key.includes('your-anon')) {
+      showToast('Unesite ispravan Supabase URL i anon ključ.');
+      return;
+    }
+    if (typeof saveSupabaseConfig === 'function') {
+      saveSupabaseConfig(url, key);
+      showToast('Supabase ključevi sačuvani! Možete se prijaviti.');
+      renderSupabaseConfigSection();
+      renderAccountSection();
+    }
+  });
+
+  document.getElementById('clear-supabase-config')?.addEventListener('click', () => {
+    if (!confirm('Obrisati sačuvane Supabase ključeve sa ovog uređaja?')) return;
+    if (typeof clearSupabaseConfig === 'function') {
+      clearSupabaseConfig();
+      showToast('Ključevi obrisani.');
+      renderSupabaseConfigSection();
+      renderAccountSection();
+    }
+  });
 
   const themeToggle = document.getElementById('dark-theme-toggle');
   if (settings.darkTheme) themeToggle.classList.add('toggle--on');
@@ -243,7 +305,7 @@ function renderAccountSection() {
   emailEl.textContent = '';
   modeEl.textContent = isSupabaseConfigured?.()
     ? 'Prijavite se za sinhronizaciju između uređaja'
-    : 'Supabase nije podešen — koristite gost režim';
+    : 'Unesite Supabase ključeve u Podešavanjima ili koristite gost režim';
   logoutBtn.classList.add('hidden');
   loginLink.classList.remove('hidden');
 }

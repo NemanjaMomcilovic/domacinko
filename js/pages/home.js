@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth?.();
 
   initNavigation('home');
+  initPwaInstallBanner();
 
   if (typeof renderMorningBriefing === 'function') {
     renderMorningBriefing('morning-briefing');
@@ -141,3 +142,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).join('');
   }
 });
+
+function initPwaInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  if (!banner) return;
+
+  const dismissed = localStorage.getItem('domacinko_pwa_dismissed') === 'true';
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+
+  if (dismissed || isStandalone) return;
+
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.classList.remove('hidden');
+  });
+
+  setTimeout(() => {
+    if (!dismissed && !isStandalone) {
+      banner.classList.remove('hidden');
+    }
+  }, 2000);
+
+  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      banner.classList.add('hidden');
+      return;
+    }
+    showToast('Koristite meni pregledača → „Dodaj na početni ekran".');
+  });
+
+  document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
+    localStorage.setItem('domacinko_pwa_dismissed', 'true');
+    banner.classList.add('hidden');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    banner.classList.add('hidden');
+    showToast('Domaćinko je instaliran! 🎉');
+  });
+}

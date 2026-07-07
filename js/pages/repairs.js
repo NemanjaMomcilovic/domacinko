@@ -183,9 +183,13 @@ Uvek naglasi bezbednost. Ako je opasno, preporuči majstora.`;
   return null;
 }
 
-function renderRepairResult(advice, source) {
+function renderRepairResult(advice, source, meta = {}) {
   const stepsHtml = advice.steps.map((s, i) => `<li>${s}</li>`).join('');
   const toolsHtml = advice.tools.map(t => `<span class="chip">${t}</span>`).join('');
+  const saveBtn = meta.category && meta.problem ? `
+      <button type="button" class="btn btn--secondary btn--block mt-md" id="save-repair-solution">
+        📚 Sačuvaj rešenje u bazu znanja
+      </button>` : '';
 
   return `
     <div class="repair-result card animate-fade-in">
@@ -202,8 +206,43 @@ function renderRepairResult(advice, source) {
       <p class="repair-result__text">${advice.diyVsPro}</p>
       <h4 class="repair-result__heading">Procena troška</h4>
       <p class="repair-result__text">${advice.costEstimate}</p>
+      ${saveBtn}
     </div>
   `;
+}
+
+function saveRepairToKnowledge(category, problem, advice) {
+  const catLabel = getRepairCategoryLabel(category);
+  const steps = (advice.steps || []).map((s, i) => `${i + 1}. ${s}`).join('\n');
+  const solution = [
+    advice.summary || '',
+    '',
+    'Koraci:',
+    steps,
+    '',
+    `Težina: ${advice.difficulty}`,
+    `Alati: ${(advice.tools || []).join(', ')}`,
+    advice.diyVsPro || '',
+    advice.costEstimate || ''
+  ].filter(Boolean).join('\n');
+
+  const categoryMap = {
+    elektrika: 'elektrika',
+    vodovod: 'vodovod',
+    gips: 'ostalo',
+    keramika: 'ostalo',
+    moleraj: 'ostalo',
+    basta: 'ostalo',
+    namestaj: 'ostalo',
+    alati: 'aparati'
+  };
+
+  sessionStorage.setItem('knowledge_prefill', JSON.stringify({
+    title: `${catLabel}: ${problem}`,
+    solution,
+    category: categoryMap[category] || 'ostalo'
+  }));
+  window.location.href = 'knowledge.html';
 }
 
 function renderRepairHistory() {
@@ -286,7 +325,13 @@ function initRepairsUI(options = {}) {
     });
 
     if (resultContainer) {
-      resultContainer.innerHTML = renderRepairResult(advice, advice.source);
+      resultContainer.innerHTML = renderRepairResult(advice, advice.source, {
+        category: selectedCategory,
+        problem
+      });
+      document.getElementById('save-repair-solution')?.addEventListener('click', () => {
+        saveRepairToKnowledge(selectedCategory, problem, advice);
+      });
     }
 
     renderRepairHistory();

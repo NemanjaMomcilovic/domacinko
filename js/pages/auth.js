@@ -28,7 +28,19 @@ function switchTab(tab) {
   document.querySelectorAll('.auth-form').forEach(form => {
     form.classList.toggle('hidden', form.dataset.panel !== tab);
   });
+  const isForgot = tab === 'forgot';
+  document.querySelector('.auth-tabs')?.classList.toggle('hidden', isForgot);
+  document.querySelector('.auth-divider')?.classList.toggle('hidden', isForgot);
+  document.querySelector('.auth-social')?.classList.toggle('hidden', isForgot);
   document.getElementById('auth-message')?.classList.add('hidden');
+}
+
+function showForgotPassword() {
+  const loginEmail = document.getElementById('login-email')?.value.trim();
+  if (loginEmail) {
+    document.getElementById('forgot-email').value = loginEmail;
+  }
+  switchTab('forgot');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -56,10 +68,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
+  document.getElementById('forgot-toggle')?.addEventListener('click', showForgotPassword);
+  document.getElementById('forgot-back')?.addEventListener('click', () => switchTab('login'));
+
   document.getElementById('login-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!configured) {
-      showAuthMessage('Supabase nije podešen. Koristite gost režim ili podesite config.js.', true);
+      showAuthMessage('Supabase nije podešen. Unesite ključeve u Podešavanjima ili koristite gost režim.', true);
       return;
     }
     const btn = document.getElementById('login-btn');
@@ -81,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('register-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!configured) {
-      showAuthMessage('Supabase nije podešen. Koristite gost režim ili podesite config.js.', true);
+      showAuthMessage('Supabase nije podešen. Unesite ključeve u Podešavanjima ili koristite gost režim.', true);
       return;
     }
     const password = document.getElementById('register-password').value;
@@ -105,6 +120,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch (err) {
       showAuthMessage(err.message || 'Registracija nije uspela.', true);
+    } finally {
+      setLoading(btn, false);
+    }
+  });
+
+  document.getElementById('forgot-form')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!configured) {
+      showAuthMessage('Supabase nije podešen. Unesite ključeve u Podešavanjima.', true);
+      return;
+    }
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) {
+      showAuthMessage('Unesite email adresu.', true);
+      return;
+    }
+    const btn = document.getElementById('forgot-btn');
+    setLoading(btn, true);
+    try {
+      await resetPassword(email);
+      showAuthMessage('Poslali smo vam email sa linkom za reset lozinke. Proverite inbox i spam folder.');
+    } catch (err) {
+      const msg = err.message?.includes('rate')
+        ? 'Previše zahteva. Sačekajte par minuta i pokušajte ponovo.'
+        : (err.message || 'Slanje linka nije uspelo. Proverite email adresu.');
+      showAuthMessage(msg, true);
     } finally {
       setLoading(btn, false);
     }

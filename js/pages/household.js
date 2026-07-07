@@ -5,7 +5,8 @@ const HOUSEHOLD_SECTIONS = [
     icon: '👨‍👩‍👧',
     fields: [
       { id: 'name', placeholder: 'Ime člana', type: 'text', required: true },
-      { id: 'type', type: 'select', options: ['Odrasla osoba', 'Dete', 'Penzioner', 'Drugo'], default: 'Odrasla osoba' }
+      { id: 'type', type: 'select', options: ['Odrasla osoba', 'Dete', 'Penzioner', 'Drugo'], default: 'Odrasla osoba' },
+      { id: 'birthday', placeholder: 'Rođendan', type: 'date' }
     ]
   },
   {
@@ -58,7 +59,10 @@ const HOUSEHOLD_SECTIONS = [
 
 function formatHouseholdSubtitle(item, sectionKey) {
   const parts = [];
-  if (sectionKey === 'familyMembers' && item.type) parts.push(item.type);
+  if (sectionKey === 'familyMembers') {
+    if (item.type) parts.push(item.type);
+    if (item.birthday) parts.push(`Rođendan: ${formatDate(item.birthday)}`);
+  }
   if (sectionKey === 'cars' && item.registrationDate) {
     parts.push(`Registracija: ${formatDate(item.registrationDate)}`);
   }

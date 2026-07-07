@@ -39,6 +39,33 @@
           </div>
         </div>
 
+        <div class="settings-group" id="supabase-config-group">
+          <h3 class="settings-group__title">Poveži nalog (Supabase)</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status">
+              Učitavanje...
+            </p>
+            <div class="form-group">
+              <label class="form-label" for="supabase-url">Supabase URL</label>
+              <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="supabase-anon-key">Anon ključ (public)</label>
+              <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
+            </div>
+            <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">
+              Ključevi se čuvaju samo na ovom uređaju. Za razvoj možete koristiti i <code>config.js</code> — on ima prioritet.
+            </p>
+            <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
+              <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj ključeve</button>
+              <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
+            </div>
+            <a href="https://github.com/NemanjaMomcilovic/domacinko/blob/main/docs/supabase-setup.md" target="_blank" rel="noopener" class="btn btn--secondary btn--block mt-sm">
+              📖 Uputstvo za podešavanje Supabase
+            </a>
+          </div>
+        </div>
+
         <div class="settings-group">
           <h3 class="settings-group__title">Profil</h3>
           <div class="card card--flat" style="padding:0;overflow:hidden">
@@ -330,7 +357,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 6.0.0</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 6.1.0</p>
         </div>
       </div>
     </main>

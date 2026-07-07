@@ -4,7 +4,13 @@
 
 function generateMorningBriefing() {
   const settings = getSettings();
-  const name = settings.firstName || settings.userName?.split(' ')[0] || 'prijatelju';
+  let name = settings.firstName || settings.userName?.split(' ')[0] || 'prijatelju';
+  if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof getAuthDisplayName === 'function') {
+    const display = getAuthDisplayName();
+    if (display && display !== 'Korisnik') {
+      name = display.split(' ')[0];
+    }
+  }
   const bullets = [];
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Dobro jutro' : hour < 18 ? 'Dobar dan' : 'Dobro veče';

@@ -4,6 +4,18 @@ Ovaj vodič objašnjava kako da podesite Supabase backend za autentifikaciju i s
 
 ---
 
+## Brzi pregled — tri načina konfiguracije
+
+| Način | Kada koristiti | Prioritet |
+|-------|----------------|-----------|
+| **`config.js`** | Lokalni razvoj na računaru | 1 (najviši) |
+| **Podešavanja → Poveži nalog** | GitHub Pages, telefon, tablet | 2 |
+| **Gost režim** | Bez naloga, samo na jednom uređaju | — |
+
+Ključevi se **nikada ne šalju na GitHub** — `config.js` je u `.gitignore`, a localStorage ostaje na vašem uređaju.
+
+---
+
 ## 1. Kreirajte Supabase projekat
 
 1. Idite na [supabase.com](https://supabase.com) i napravite besplatan nalog.
@@ -35,7 +47,20 @@ window.DOMACINKO_CONFIG = {
 };
 ```
 
-> **Napomena:** `config.js` je u `.gitignore` i neće biti na GitHub-u. Za GitHub Pages deploy, možete ručno dodati `config.js` na server ili koristiti GitHub Actions secret.
+> **Napomena:** `config.js` je u `.gitignore` i neće biti na GitHub-u.
+
+### Način B — Podešavanja u aplikaciji (preporučeno za telefon)
+
+Idealno za **GitHub Pages** i mobilne uređaje gde ne možete dodati `config.js`:
+
+1. Otvorite Domaćinko u pregledaču
+2. Idite na **Podešavanja** (⚙️ Više) — dostupno i pre prijave ako Supabase nije podešen
+3. Sekcija **„Poveži nalog (Supabase)"**
+4. Nalepite **Project URL** i **anon public** ključ
+5. Kliknite **Sačuvaj ključeve**
+6. Vratite se na **Prijava** i registrujte se ili se prijavite
+
+Ključevi se čuvaju u `localStorage` (`domacinko_supabase_config`) samo na tom uređaju.
 
 ---
 
@@ -174,14 +199,57 @@ Podrazumevano je uključeno u Supabase.
 5. Kopirajte **Client ID** i **Client Secret** u Supabase Google provider
 6. Uključite Google provider u Supabase
 
-### Facebook OAuth
+### Facebook OAuth (kompletno uputstvo)
 
-1. Idite na [Meta for Developers](https://developers.facebook.com/)
-2. Kreirajte aplikaciju → dodajte **Facebook Login**
-3. U **Valid OAuth Redirect URIs** dodajte isti Supabase callback URL:
-   `https://VAS-PROJECT-ID.supabase.co/auth/v1/callback`
-4. Kopirajte **App ID** i **App Secret** u Supabase Facebook provider
-5. Uključite Facebook provider u Supabase
+Facebook prijava zahteva Meta Developer nalog i podešavanje u dva mesta: Meta i Supabase.
+
+#### Korak 1 — Meta for Developers
+
+1. Idite na [developers.facebook.com](https://developers.facebook.com/) i prijavite se
+2. **My Apps** → **Create App**
+3. Tip aplikacije: **Consumer** ili **None** (zavisi od verzije Meta konzole)
+4. Unesite ime aplikacije (npr. `Domaćinko`) i kontakt email
+5. Na dashboardu aplikacije kliknite **Add Product** → **Facebook Login** → **Set Up**
+6. Izaberite platformu **Web**
+7. U **Site URL** unesite URL vaše aplikacije:
+   - Lokalno: `http://localhost:8080`
+   - GitHub Pages: `https://VASE-KORISNICKO-IME.github.io`
+
+#### Korak 2 — Valid OAuth Redirect URI
+
+1. U Meta konzoli: **Facebook Login** → **Settings**
+2. U polje **Valid OAuth Redirect URIs** dodajte **Supabase callback URL**:
+   ```
+   https://VAS-PROJECT-ID.supabase.co/auth/v1/callback
+   ```
+   (Kopirajte tačan URL iz Supabase: **Authentication** → **Providers** → **Facebook**)
+3. Sačuvajte promene
+
+#### Korak 3 — Supabase Facebook provider
+
+1. U Supabase: **Authentication** → **Providers** → **Facebook**
+2. Uključite provider (**Enable Sign in with Facebook**)
+3. Unesite **Facebook App ID** i **App Secret** iz Meta konzole:
+   - Meta: **App Settings** → **Basic** → App ID i App Secret
+4. Sačuvajte
+
+#### Korak 4 — App Mode (važno!)
+
+- Dok testirate, Meta aplikacija može biti u **Development** modu — samo **test korisnici** mogu da se prijave
+- Da bi svi korisnici mogli: prebacite aplikaciju u **Live** mod u Meta konzoli
+- Za Live mod često treba **Privacy Policy URL** i **App Icon**
+
+#### Korak 5 — Testiranje
+
+1. Otvorite `pages/auth.html`
+2. Kliknite **Nastavi sa Facebook**
+3. Dozvolite pristup u Facebook prozoru
+4. Trebalo bi da budete preusmereni nazad u Domaćinko, prijavljeni
+
+**Česte greške:**
+- `URL Blocked` — redirect URI nije dodat u Meta konzoli
+- `App Not Setup` — Facebook Login produkt nije dodat
+- Samo vi možete da se prijavite — aplikacija je u Development modu
 
 ---
 
@@ -205,7 +273,35 @@ https://VASE-KORISNICKO-IME.github.io/domacinko/
 
 ---
 
-## 6. Testiranje lokalno
+## 6. Login na telefonu (GitHub Pages)
+
+Kada koristite Domaćinko sa telefona preko GitHub Pages-a, **ne možete** dodati `config.js` u repozitorijum (bezbednosni rizik). Umesto toga:
+
+### Opcija A — Ključevi u Podešavanjima (preporučeno)
+
+1. Otvorite aplikaciju u Chrome/Safari na telefonu
+2. **Podešavanja** → **Poveži nalog (Supabase)**
+3. Nalepite URL i anon ključ iz Supabase dashboarda
+4. **Sačuvaj ključeve**
+5. **Prijava** → email ili Google/Facebook
+
+### Opcija B — `config.js` lokalno
+
+Samo za razvoj na računaru (`python -m http.server`). Ne commitujte `config.js`!
+
+### Instalacija na početni ekran (PWA)
+
+1. U Chrome: meni ⋮ → **Dodaj na početni ekran**
+2. U Safari: Share → **Add to Home Screen**
+3. Domaćinko će raditi kao aplikacija sa podsetnicima
+
+### Reset lozinke
+
+Na stranici prijave kliknite **Zaboravili ste lozinku?** — stiže email sa linkom za novu lozinku.
+
+---
+
+## 7. Testiranje lokalno
 
 ```powershell
 cd C:\Users\pc\10KEY\domacinko
@@ -220,13 +316,13 @@ Otvorite: http://localhost:8080/pages/auth.html
 
 ---
 
-## 7. Gost režim (bez Supabase)
+## 8. Gost režim (bez Supabase)
 
-Ako `config.js` nije podešen, aplikacija prikazuje upozorenje i nudi **Nastavi kao gost**. Podaci ostaju samo u localStorage na tom uređaju.
+Ako Supabase nije podešen (nema `config.js` ni ključeva u podešavanjima), aplikacija prikazuje upozorenje i nudi **Nastavi kao gost**. Podaci ostaju samo u localStorage na tom uređaju.
 
 ---
 
-## 8. Sinhronizacija podataka
+## 9. Sinhronizacija podataka
 
 | Podatak | Gde se čuva |
 |---------|-------------|
@@ -238,16 +334,18 @@ Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
 
 ---
 
-## 9. Rešavanje problema
+## 10. Rešavanje problema
 
 | Problem | Rešenje |
 |---------|---------|
-| „Supabase nije podešen" | Proverite `config.js` i osvežite stranicu |
+| „Supabase nije podešen" | Unesite ključeve u Podešavanjima ili proverite `config.js` |
 | Google/Facebook ne radi | Proverite Redirect URLs u Supabase i provider dashboardu |
+| Facebook — samo ja mogu da se prijavim | Meta app je u Development modu — dodajte test korisnike ili prebacite u Live |
 | „Profil nije učitan" | Pokrenite SQL šemu iz koraka 3 |
 | Podaci se ne sinhronizuju | Proverite RLS politike i da ste prijavljeni (ne gost) |
 | Email potvrda | Proverite inbox ili isključite confirm u Supabase za dev |
+| Reset lozinke ne stiže | Proverite spam; u Supabase: Authentication → Email Templates |
 
 ---
 
-**Domaćinko v5.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)
+**Domaćinko v6.1.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)

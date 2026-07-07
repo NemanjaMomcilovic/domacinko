@@ -78,7 +78,17 @@
 - [x] Mreža majstora (placeholder)
 - [x] `docs/vision.md` — puna vizija na srpskom
 
-## Faza 7 — Buduće ideje
+## Faza 7 — Auth i mobilni (v6.1.0) ✅
+
+- [x] Supabase konfiguracija bez `config.js` (localStorage u Podešavanjima)
+- [x] GitHub Pages spremnost — ključevi na uređaju, ne u repou
+- [x] Reset lozinke (email)
+- [x] PWA install hint na početnoj
+- [x] AI Majstor → Baza znanja link
+- [x] Rođendani u prognozi troškova
+- [x] Facebook OAuth vodič (dokumentacija — setup sutra)
+
+## Faza 8 — Buduće ideje
 
 - [ ] AI Učitelj v2 — kvizovi i sertifikati
 - [ ] Skeniranje dokumenata (OCR)

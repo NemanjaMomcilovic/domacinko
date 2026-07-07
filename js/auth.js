@@ -264,6 +264,16 @@ async function signInWithOAuth(provider) {
   return data;
 }
 
+async function resetPassword(email) {
+  const client = getSupabaseClient();
+  if (!client) throw new Error('Supabase nije podešen. Unesite ključeve u Podešavanjima.');
+
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: getOAuthRedirectUrl()
+  });
+  if (error) throw error;
+}
+
 async function signOut() {
   const client = getSupabaseClient();
   if (client) {

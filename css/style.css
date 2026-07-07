@@ -533,6 +533,7 @@ body {
 
 .auth-tabs__btn {
   flex: 1;
+  min-height: 48px;
   padding: var(--space-sm) var(--space-md);
   border: none;
   background: transparent;
@@ -636,6 +637,72 @@ body {
   font-weight: 400;
   color: var(--color-text-muted);
   margin-top: 2px;
+}
+
+.auth-input,
+.auth-page .form-input {
+  min-height: 48px;
+  font-size: 16px;
+}
+
+.auth-btn {
+  min-height: 48px;
+}
+
+.auth-forgot {
+  text-align: right;
+  margin: calc(-1 * var(--space-xs)) 0 var(--space-md);
+}
+
+.auth-forgot__link {
+  background: none;
+  border: none;
+  padding: var(--space-sm) 0;
+  min-height: 44px;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pwa-install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  background: linear-gradient(135deg, rgba(45, 143, 92, 0.12), rgba(45, 143, 92, 0.06));
+  border: 1px solid rgba(45, 143, 92, 0.25);
+  border-radius: var(--radius-lg);
+}
+
+.pwa-install-banner__content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-banner__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.pwa-install-banner__text {
+  margin: 2px 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.pwa-install-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
 }
 
 .settings-account__name {
