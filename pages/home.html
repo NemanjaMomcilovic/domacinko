@@ -16,16 +16,20 @@
 <body>
   <div class="app-container">
     <main class="main-content">
-      <div class="greeting">
-        <h1 class="greeting__text" id="greeting">Dobro jutro!</h1>
-        <p class="greeting__sub" id="household-status">Domaćinstvo</p>
+      <div class="greeting greeting--with-avatar">
+        <div class="greeting__content">
+          <h1 class="greeting__text" id="greeting">Dobro jutro!</h1>
+          <p class="greeting__sub" id="household-status">Domaćinko prati tvoje domaćinstvo.</p>
+        </div>
+        <div class="user-avatar" id="user-avatar" aria-hidden="true">🏡</div>
       </div>
 
       <div id="month-comparison"></div>
 
-      <div class="card text-center">
+      <div class="card card--gradient-green text-center">
         <p class="card__title">Finansijsko zdravlje</p>
         <div id="health-score"></div>
+        <div class="health-feedback" id="health-feedback"></div>
       </div>
 
       <div class="stats-grid">
@@ -43,13 +47,10 @@
         </div>
       </div>
 
-      <div class="card" id="savings-card">
-        <p class="card__title">Cilj štednje</p>
-        <div id="savings-progress"></div>
-      </div>
+      <div class="card card--gradient-purple" id="savings-card"></div>
 
-      <div class="advice-banner mb-md">
-        <div class="advice-banner__label">Savet dana 💚</div>
+      <div class="card card--gradient-yellow advice-card">
+        <div class="advice-banner__label">💡 Domaćinko kaže</div>
         <p class="advice-banner__text" id="daily-advice">Učitavanje...</p>
       </div>
 

@@ -22,8 +22,15 @@ function renderSavings() {
   const savings = getSavingsProgress();
   document.getElementById('fin-savings-progress').innerHTML = renderProgressBar(
     savings.pct,
-    `${formatCurrency(savings.saved)} od ${formatCurrency(savings.goal)}`
+    savings.goalName !== 'Cilj štednje'
+      ? `${formatCurrency(savings.saved)} / ${formatCurrency(savings.goal)}`
+      : `${formatCurrency(savings.saved)} od ${formatCurrency(savings.goal)}`
   );
+  const remainingEl = document.getElementById('fin-savings-remaining');
+  if (remainingEl && savings.goal > 0) {
+    remainingEl.textContent = `Još ${formatCurrency(savings.remaining)} do ${savings.goalName}`;
+    remainingEl.classList.remove('hidden');
+  }
 }
 
 function renderCategoryBreakdown(byCategory) {
@@ -241,12 +248,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('fin-remaining').textContent = formatCurrency(remaining);
   document.getElementById('fin-remaining').className = remaining >= 0 ? 'card__value text-success' : 'card__value text-danger';
 
-  renderScoreRing(score, 'fin-health-score');
+  renderHealthScore(score, 'fin-health-score');
+  renderHealthFeedback('fin-health-feedback');
 
   const scoreLabel = document.getElementById('score-label');
-  if (score >= 80) scoreLabel.textContent = 'Odlično! Finansije su pod kontrolom.';
-  else if (score >= 60) scoreLabel.textContent = 'Dobro, ali pazite na troškove.';
-  else if (score >= 40) scoreLabel.textContent = 'Pažnja — blizu ste limita.';
+  if (score >= 71) scoreLabel.textContent = 'Odlično! Finansije su pod kontrolom.';
+  else if (score >= 41) scoreLabel.textContent = 'Dobro, ali pazite na troškove.';
   else scoreLabel.textContent = 'Potrebna je pažnja na budžet.';
 
   populateCategorySelect('filter-category', true);

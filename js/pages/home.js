@@ -19,11 +19,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const name = settings.userName || 'prijatelju';
   document.getElementById('greeting').textContent = `${getGreeting()}, ${name}!`;
 
+  const avatarEl = document.getElementById('user-avatar');
+  const avatarContent = getUserAvatarContent(settings);
+  avatarEl.textContent = avatarContent;
+  if (avatarContent.length === 1) avatarEl.classList.add('user-avatar--initial');
+
   const household = getHousehold();
   const members = household.familyMembers?.length || 0;
   const statusText = members > 0
     ? `Domaćinstvo: ${members} članova`
-    : 'Podesite domaćinstvo u podešavanjima';
+    : 'Domaćinko prati tvoje domaćinstvo.';
   document.getElementById('household-status').textContent = statusText;
 
   const comparison = getMonthComparison();
@@ -32,7 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     compEl.innerHTML = `<div class="comparison-banner ${comparison.less ? 'comparison-banner--good' : 'comparison-banner--warn'}">${comparison.text} 💚</div>`;
   }
 
-  renderScoreRing(score, 'health-score');
+  renderHealthScore(score, 'health-score');
+  renderHealthFeedback('health-feedback');
 
   document.getElementById('monthly-spent').textContent = formatCurrency(spent);
   document.getElementById('monthly-budget').textContent = formatCurrency(budget);
@@ -41,13 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ? 'stat-card__value stat-card__value--positive'
     : 'stat-card__value stat-card__value--negative';
 
-  const savings = getSavingsProgress();
-  document.getElementById('savings-progress').innerHTML = renderProgressBar(
-    savings.pct,
-    `${formatCurrency(savings.saved)} od ${formatCurrency(savings.goal)}`
-  );
+  renderSavingsGoalCard('savings-card');
 
-  document.getElementById('daily-advice').textContent = getDailyAdvice();
+  document.getElementById('daily-advice').textContent = getDomacinkoAdvice();
 
   const reminders = getRecurringReminders();
   if (reminders.length > 0) {

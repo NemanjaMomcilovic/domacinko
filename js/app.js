@@ -43,28 +43,73 @@ function registerServiceWorker() {
 }
 
 function renderScoreRing(score, containerId) {
+  renderHealthScore(score, containerId);
+}
+
+function renderHealthScore(score, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  const radius = 42;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
+  const activeSegments = Math.ceil(score / 10);
+  const segments = Array.from({ length: 10 }, (_, i) =>
+    `<div class="health-bar__segment${i < activeSegments ? ' health-bar__segment--active' : ''}"></div>`
+  ).join('');
 
-  let color = 'var(--color-primary)';
-  if (score < 40) color = 'var(--color-danger)';
-  else if (score < 70) color = 'var(--color-warning)';
+  const statusLabel = getHealthStatusLabel(score);
+  const title = getHealthTitle(score);
 
   container.innerHTML = `
-    <div class="score-ring">
-      <svg class="score-ring__svg" width="100" height="100" viewBox="0 0 100 100">
-        <circle class="score-ring__bg" cx="50" cy="50" r="${radius}" />
-        <circle class="score-ring__fill" cx="50" cy="50" r="${radius}"
-          stroke="${color}"
-          stroke-dasharray="${circumference}"
-          stroke-dashoffset="${offset}" />
-      </svg>
-      <span class="score-ring__value">${score}</span>
+    <div class="health-score">
+      <p class="health-score__status-label">🏡 Stanje domaćinstva: <strong>${statusLabel}</strong></p>
+      <div class="health-score__value">${score} <span>/ 100</span></div>
+      <div class="health-score__title">${title}</div>
+      <div class="health-bar">${segments}</div>
     </div>
+  `;
+}
+
+function renderHealthFeedback(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const bullets = getFinancialHealthFeedback();
+  if (bullets.length === 0) {
+    container.innerHTML = '';
+    container.classList.add('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  container.innerHTML = bullets.map(b => {
+    const icon = b.type === 'good' ? '✔' : b.type === 'warn' ? '⚠' : '💡';
+    const cls = b.type === 'good' ? 'health-feedback__item--good'
+      : b.type === 'warn' ? 'health-feedback__item--warn' : 'health-feedback__item--tip';
+    return `<p class="health-feedback__item ${cls}">${icon} ${b.text}</p>`;
+  }).join('');
+}
+
+function getUserAvatarContent(settings) {
+  const name = (settings?.userName || '').trim();
+  if (name) return name.charAt(0).toUpperCase();
+  return '🏡';
+}
+
+function renderSavingsGoalCard(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const savings = getSavingsProgress();
+  if (savings.goal <= 0) {
+    container.classList.add('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  container.innerHTML = `
+    <p class="card__title">🎯 Cilj: ${savings.goalName}</p>
+    ${renderProgressBar(savings.pct, `${formatCurrency(savings.saved)} / ${formatCurrency(savings.goal)}`)}
+    <p class="savings-goal__line">Ušteđeno: <strong>${formatCurrency(savings.saved)}</strong></p>
+    <p class="savings-goal__line">Još: <strong>${formatCurrency(savings.remaining)}</strong> do ${savings.goalName}</p>
   `;
 }
 

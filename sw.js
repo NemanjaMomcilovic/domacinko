@@ -1,8 +1,10 @@
-const CACHE_NAME = 'domacinko-v4';
+const CACHE_NAME = 'domacinko-v4.1';
 
 const ASSETS = [
   './',
   './index.html',
+  './splash.html',
+  './presents.html',
   './landing.html',
   './manifest.json',
   './css/variables.css',

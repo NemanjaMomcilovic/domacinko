@@ -36,9 +36,10 @@
         <p class="card__value text-success" id="fin-remaining">0 RSD</p>
       </div>
 
-      <div class="card">
+      <div class="card card--gradient-purple">
         <p class="card__title">Cilj štednje</p>
         <div id="fin-savings-progress"></div>
+        <p class="savings-goal__line hidden" id="fin-savings-remaining"></p>
       </div>
 
       <div class="section" id="category-budgets-section">
@@ -47,10 +48,11 @@
         <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Podesite limite u Podešavanjima → Budžet po kategorijama.</p>
       </div>
 
-      <div class="card text-center">
+      <div class="card card--gradient-green text-center">
         <p class="card__title">Finansijsko zdravlje</p>
         <div id="fin-health-score"></div>
         <p class="card__subtitle mt-sm" id="score-label"></p>
+        <div class="health-feedback" id="fin-health-feedback"></div>
       </div>
 
       <div class="section">

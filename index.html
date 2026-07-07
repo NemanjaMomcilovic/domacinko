@@ -18,6 +18,10 @@
   <script src="js/storage.js"></script>
   <script>
     (function () {
+      if (!localStorage.getItem('splashSeen')) {
+        window.location.replace('splash.html');
+        return;
+      }
       if (!localStorage.getItem('onboardingComplete')) {
         window.location.replace('pages/onboarding.html');
       } else {

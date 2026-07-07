@@ -20,6 +20,7 @@ const CATEGORIES = [
 ];
 
 const ONBOARDING_KEY = 'onboardingComplete';
+const SPLASH_KEY = 'splashSeen';
 const NOTIFICATION_STATE_KEY = 'domacinko_notifications';
 
 const MEAL_DAYS = [
@@ -104,6 +105,7 @@ const DEFAULT_DATA = {
     currency: 'RSD',
     monthlyBudget: 80000,
     savingsGoal: 10000,
+    savingsGoalName: '',
     categoryBudgets: {},
     darkTheme: false,
     apiKey: '',
@@ -269,7 +271,14 @@ function getSavingsProgress() {
   const saved = Math.max(0, budget - spent);
   const pct = Math.min(100, Math.round((saved / goal) * 100));
 
-  return { goal, saved, pct };
+  const remaining = Math.max(0, goal - saved);
+  return {
+    goal,
+    saved,
+    pct,
+    remaining,
+    goalName: settings.savingsGoalName || 'Cilj štednje'
+  };
 }
 
 function getRecurringExpenses() {
@@ -519,9 +528,17 @@ function resetOnboarding() {
   localStorage.removeItem(ONBOARDING_KEY);
 }
 
+function isSplashSeen() {
+  return localStorage.getItem(SPLASH_KEY) === 'true';
+}
+
+function setSplashSeen() {
+  localStorage.setItem(SPLASH_KEY, 'true');
+}
+
 function exportAllData() {
   return JSON.stringify({
-    version: '4.0.0',
+    version: '4.1.0',
     exportedAt: new Date().toISOString(),
     onboardingComplete: isOnboardingComplete(),
     data: getData()
@@ -668,6 +685,119 @@ function formatCurrency(amount) {
     maximumFractionDigits: 0
   }).format(amount);
   return `${formatted} ${settings.currency}`;
+}
+
+function getHealthTitle(score) {
+  if (score >= 86) return '🏆 Domaćin godine';
+  if (score >= 71) return 'Odličan domaćin';
+  if (score >= 41) return 'Dobar domaćin';
+  return 'Početnik';
+}
+
+function getHealthStatusLabel(score) {
+  if (score >= 71) return 'Odlično';
+  if (score >= 41) return 'Dobro';
+  return 'Pažnja';
+}
+
+function getFinancialHealthFeedback() {
+  const settings = getSettings();
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget || 0;
+  const remaining = budget - spent;
+  const prevSpent = getPreviousMonthSpent();
+  const bullets = [];
+
+  if (prevSpent > 0) {
+    if (spent < prevSpent) {
+      const pct = Math.round((1 - spent / prevSpent) * 100);
+      if (pct > 0) bullets.push({ type: 'good', text: `Trošiš ${pct}% manje nego prošlog meseca.` });
+    } else if (spent > prevSpent * 1.05) {
+      const pct = Math.round((spent / prevSpent - 1) * 100);
+      bullets.push({ type: 'warn', text: `Potrošio si ${pct}% više nego prošlog meseca.` });
+    }
+  }
+
+  if (budget > 0) {
+    if (remaining >= 0 && spent > 0) {
+      bullets.push({ type: 'good', text: 'Ostao si u okviru budžeta.' });
+    } else if (remaining < 0) {
+      bullets.push({ type: 'warn', text: `Prešao si budžet za ${formatCurrency(Math.abs(remaining))}.` });
+    }
+  }
+
+  const recurring = getRecurringExpenses();
+  const reminders = getRecurringReminders();
+  if (recurring.length > 0) {
+    if (reminders.length === 0) {
+      bullets.push({ type: 'good', text: 'Nijedan račun nije zakasnio.' });
+    } else {
+      bullets.push({ type: 'warn', text: `${reminders.length} račun(a) čeka plaćanje ovog meseca.` });
+    }
+  }
+
+  getCategoryBudgetWarnings().forEach(w => {
+    if (w.warning === 'exceeded') {
+      bullets.push({ type: 'warn', text: `Prekoračen budžet za ${w.label.toLowerCase()} — ${formatCurrency(w.spent)}.` });
+    } else if (w.warning === 'near') {
+      bullets.push({ type: 'warn', text: `${w.label}: potrošeno ${w.pct}% budžeta.` });
+    }
+  });
+
+  const savings = getSavingsProgress();
+  if (savings.goal > 0) {
+    if (savings.pct >= 75) {
+      bullets.push({ type: 'good', text: `Cilj štednje „${savings.goalName}” — ${savings.pct}% ostvareno.` });
+    } else if (savings.pct < 25 && savings.saved > 0) {
+      bullets.push({ type: 'warn', text: `Još ${formatCurrency(savings.remaining)} do cilja „${savings.goalName}”.` });
+    }
+  }
+
+  const byCat = getSpendingByCategory(now.getFullYear(), now.getMonth());
+  const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevByCat = getSpendingByCategory(prevMonth.getFullYear(), prevMonth.getMonth());
+  Object.entries(byCat).forEach(([catId, amount]) => {
+    if (amount <= 0) return;
+    const prevAmount = prevByCat[catId] || 0;
+    if (prevAmount > 0 && amount > prevAmount * 1.15) {
+      const pct = Math.round((amount / prevAmount - 1) * 100);
+      bullets.push({ type: 'warn', text: `${getCategoryLabel(catId)} je skuplje za ${pct}% nego prošlog meseca.` });
+    }
+  });
+
+  if (bullets.length === 0 && spent === 0) {
+    bullets.push({ type: 'tip', text: 'Dodaj prvi trošak da mogu da analiziram tvoju potrošnju.' });
+  }
+
+  return bullets.slice(0, 6);
+}
+
+function getDomacinkoAdvice() {
+  const settings = getSettings();
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget || 0;
+  const remaining = budget - spent;
+  const usagePct = getBudgetUsagePct();
+
+  if (spent === 0) {
+    return 'Dodaj prvi trošak da mogu da analiziram tvoju potrošnju.';
+  }
+
+  if (usagePct >= 78 && remaining > 0) {
+    return `Potrošio si ${usagePct}% budžeta — pažljivo do kraja meseca.`;
+  }
+
+  if (remaining < 0) {
+    return `Pažnja! Prešao si budžet za ${formatCurrency(Math.abs(remaining))}.`;
+  }
+
+  if (remaining >= 0 && usagePct < 70) {
+    return `Dobro ideš. Ostalo ti je još ${formatCurrency(remaining)} do kraja budžeta.`;
+  }
+
+  return getDailyAdvice();
 }
 
 function getDailyAdvice() {

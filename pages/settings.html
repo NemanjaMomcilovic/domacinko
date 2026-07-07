@@ -51,7 +51,11 @@
               <input type="number" class="form-input" id="monthly-budget" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
             </div>
             <div class="settings-item">
-              <label class="settings-item__label" for="savings-goal">Cilj štednje</label>
+              <label class="settings-item__label" for="savings-goal-name">Naziv cilja</label>
+              <input type="text" class="form-input" id="savings-goal-name" placeholder="npr. Audi RS5, Odmor" style="width:140px;text-align:right;border:none;padding:0">
+            </div>
+            <div class="settings-item">
+              <label class="settings-item__label" for="savings-goal">Iznos cilja</label>
               <input type="number" class="form-input" id="savings-goal" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
             </div>
           </div>
@@ -124,6 +128,52 @@
 
         <button type="submit" class="btn btn--primary btn--block mb-md">Sačuvaj podešavanja</button>
       </form>
+
+      <div class="settings-group">
+        <h3 class="settings-group__title">Svi moduli</h3>
+        <div class="module-hub">
+          <a href="ai.html" class="module-card">
+            <span class="module-card__icon">🤖</span>
+            <span class="module-card__title">AI Savetnik</span>
+            <span class="module-card__desc">Pitaj Domaćinka o budžetu i domu</span>
+          </a>
+          <a href="ai.html#majstor" class="module-card">
+            <span class="module-card__icon">🔧</span>
+            <span class="module-card__title">AI Majstor</span>
+            <span class="module-card__desc">Popravke korak po korak</span>
+          </a>
+          <a href="maintenance.html" class="module-card">
+            <span class="module-card__icon">🏠</span>
+            <span class="module-card__title">Održavanje</span>
+            <span class="module-card__desc">Servisi, sezonski poslovi</span>
+          </a>
+          <a href="inventory.html" class="module-card">
+            <span class="module-card__icon">📦</span>
+            <span class="module-card__title">Inventar</span>
+            <span class="module-card__desc">Garancije i računi</span>
+          </a>
+          <a href="meal-plan.html" class="module-card">
+            <span class="module-card__icon">🍽️</span>
+            <span class="module-card__title">Plan obroka</span>
+            <span class="module-card__desc">Nedeljni meni i kupovina</span>
+          </a>
+          <a href="shopping.html" class="module-card">
+            <span class="module-card__icon">🛒</span>
+            <span class="module-card__title">Kupovina</span>
+            <span class="module-card__desc">Lista za market</span>
+          </a>
+          <a href="scan-receipt.html" class="module-card">
+            <span class="module-card__icon">📸</span>
+            <span class="module-card__title">Slikaj račun</span>
+            <span class="module-card__desc">OCR skeniranje troškova</span>
+          </a>
+          <a href="household.html" class="module-card">
+            <span class="module-card__icon">🏡</span>
+            <span class="module-card__title">Domaćinstvo</span>
+            <span class="module-card__desc">Porodica, računi, auti</span>
+          </a>
+        </div>
+      </div>
 
       <div class="settings-group">
         <h3 class="settings-group__title">Aplikacija</h3>
@@ -199,7 +249,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 4.0.0</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 4.1.0</p>
         </div>
       </div>
     </main>

@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('currency').value = settings.currency || 'RSD';
   document.getElementById('monthly-budget').value = settings.monthlyBudget || 80000;
   document.getElementById('savings-goal').value = settings.savingsGoal || 10000;
+  document.getElementById('savings-goal-name').value = settings.savingsGoalName || '';
   document.getElementById('api-key').value = settings.apiKey || '';
 
   const themeToggle = document.getElementById('dark-theme-toggle');
@@ -119,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currency: document.getElementById('currency').value,
       monthlyBudget: parseFloat(document.getElementById('monthly-budget').value) || 80000,
       savingsGoal: parseFloat(document.getElementById('savings-goal').value) || 10000,
+      savingsGoalName: document.getElementById('savings-goal-name').value.trim(),
       apiKey: document.getElementById('api-key').value.trim()
     });
     saveCategoryBudgetsFromForm();

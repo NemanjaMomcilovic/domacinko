@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>10KEY</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .splash-screen {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      margin: 0 auto;
+      background:
+        radial-gradient(circle at center, rgba(214, 168, 79, 0.16), transparent 42%),
+        linear-gradient(#090909, #000);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 28px;
+    }
+    .splash-logo {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #c9a227;
+      text-shadow: 0 0 40px rgba(201, 162, 39, 0.35);
+      animation: fadeIn 1.2s ease;
+    }
+    .splash-tagline {
+      margin-top: 12px;
+      color: #666;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      animation: fadeIn 1.4s ease;
+    }
+    .splash-loader {
+      width: 220px;
+      height: 7px;
+      background: #1d1d1d;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 70px;
+    }
+    .splash-loader__bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #a87522, #ffd978);
+      animation: load 2.5s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes load {
+      to { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-screen">
+    <div class="splash-logo">10KEY</div>
+    <p class="splash-tagline">Platforma za pametan dom</p>
+    <div class="splash-loader"><div class="splash-loader__bar"></div></div>
+  </div>
+  <script>
+    setTimeout(function () {
+      window.location.replace('presents.html');
+    }, 2700);
+  </script>
+</body>
+</html>

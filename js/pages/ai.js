@@ -104,6 +104,30 @@ function getSmartResponse(message) {
     return `Najviše trošite na ${getCategoryLabel(catId).toLowerCase()} — ${formatCurrency(amount)} (${pct}% budžeta). 💚`;
   }
 
+  if (lower.includes('koliko') && (lower.includes('potro') || lower.includes('tros'))) {
+    return `Do sada imaš evidentirano ukupno ${formatCurrency(ctx.spent)} troškova ovog meseca.`;
+  }
+
+  if (lower.includes('ušted') || lower.includes('usted')) {
+    return 'Prvo pogledaj hranu, gorivo, kafiće i impulzivne kupovine. Tu ljudi najčešće izgube najviše novca.';
+  }
+
+  if (lower.includes('struj')) {
+    return 'Za manji račun za struju: koristi LED sijalice, isključi uređaje iz utičnice, bojler pali planski i proveri stare uređaje.';
+  }
+
+  if (lower.includes('voda') || lower.includes('vodu')) {
+    return 'Za manji račun za vodu: popravi slavine koje kaplju, skrati tuširanje i koristi mašinu za veš kad je puna.';
+  }
+
+  if (lower.includes('auto') || lower.includes('gorivo')) {
+    return 'Kod auta najviše pomažu redovan servis, pravilan pritisak u gumama i mirnija vožnja. To može smanjiti potrošnju goriva.';
+  }
+
+  if (lower.includes('račun') || lower.includes('racun')) {
+    return 'Račune možeš skenirati kamerom u sekciji Slikaj račun, ili ručno uneti trošak.';
+  }
+
   if (lower.includes('koliko') && (lower.includes('ostalo') || lower.includes('preostalo') || lower.includes('ima'))) {
     if (ctx.remaining >= 0) {
       return `Od budžeta od ${formatCurrency(ctx.budget)} ostalo vam je još ${formatCurrency(ctx.remaining)}. Nastavite ovako! 💚`;
@@ -113,7 +137,9 @@ function getSmartResponse(message) {
 
   if (lower.includes('šta da kupim') || lower.includes('sta da kupim') || lower.includes('lista') || lower.includes('kupovin')) {
     const shopping = getShoppingList().filter(i => !i.bought);
-    if (shopping.length === 0) return 'Lista za kupovinu je prazna! Dodajte stavke u Kupovini. 💚';
+    if (shopping.length === 0) {
+      return 'Pre kupovine napravi spisak i nemoj ići gladan u market. Lista za kupovinu je trenutno prazna.';
+    }
     return `Na listi: ${shopping.slice(0, 8).map(i => i.name).join(', ')}. Srećna kupovina! 🛒`;
   }
 

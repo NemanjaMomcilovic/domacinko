@@ -1,5 +1,24 @@
 # Domaćinko — Changelog
 
+## [4.1.0] — 2026-07-07
+
+### Dodato
+- **Gamifikacija finansijskog zdravlja**: titule (Početnik → Domaćin godine), ocena X/100, 10-segmentni progress bar
+- **Stanje domaćinstva**: labela Odlično / Dobro / Pažnja na početnoj i finansijama
+- **Naziv cilja štednje** (`savingsGoalName`) u podešavanjima — prikaz „Ušteđeno X / Još Y do [naziv]"
+- **Finansijski feedback** sa ✔ i ⚠ tačkama na osnovu stvarnih podataka
+- **Avatar** pored pozdrava (inicijal ili 🏡)
+- **Gradient kartice** na dashboardu (zelena, žuta, ljubičasta)
+- **„Domaćinko kaže"** — budžet-svesni saveti (npr. „Potrošio si 78% budžeta")
+- **Splash uvod** (10KEY → Domaćinko predstavlja) samo pri prvoj poseti (`splashSeen`)
+- **Proširena domaćinstvo forma**: dan plaćanja i iznos računa, mesečni iznos pretplata, datum registracije auta, tip člana
+- **Svi moduli** hub kartice u podešavanjima
+- **AI offline odgovori** za struju, vodu, auto, kupovinu, račune i uštedu
+
+### Poboljšano
+- Početna i finansije koriste isti health score prikaz iz starog Domaćinka
+- `index.html` rutiranje: splash → onboarding → početna
+
 ## [4.0.0] — 2026-07-07
 
 ### Dodato
