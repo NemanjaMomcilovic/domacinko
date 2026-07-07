@@ -49,7 +49,7 @@ function showProjectDetail(id) {
       <div class="card card--flat" style="padding:var(--space-md)">
         <p><strong>Budžet:</strong> ${formatCurrency(project.budget)}</p>
         ${project.dimensions ? `<p><strong>Dimenzije:</strong> ${project.dimensions}</p>` : ''}
-        ${project.photo ? `<img src="${project.photo}" alt="${project.name}" loading="lazy" style="max-width:100%;border-radius:8px;margin-top:8px">` : ''}
+        ${(project.photos?.[0] || project.photo) ? `<img src="${project.photos?.[0] || project.photo}" alt="${project.name}" loading="lazy" style="max-width:100%;border-radius:8px;margin-top:8px">` : ''}
         <h3 class="mt-md mb-sm">Lista materijala (AI)</h3>
         <ul class="project-materials">
           ${materials.map(m => `<li>${m.name} — ${m.qty}${m.note ? ` (${m.note})` : ''}</li>`).join('')}
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
       name,
       budget: document.getElementById('proj-budget').value,
       dimensions: document.getElementById('proj-dims').value.trim(),
-      photo: pendingProjectPhoto,
+      photos: pendingProjectPhoto ? [pendingProjectPhoto] : [],
       materials: generateProjectMaterials(name, document.getElementById('proj-dims').value.trim())
     });
     document.getElementById('proj-name').value = '';
