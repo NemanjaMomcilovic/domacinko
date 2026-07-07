@@ -67,6 +67,36 @@ function handleReceiptPhoto(input) {
   reader.readAsDataURL(file);
 }
 
+function renderMagazineList(query) {
+  const container = document.getElementById('magazine-list');
+  if (!container) return;
+  const items = query ? searchMagazine(query) : getHomeMagazine();
+  if (items.length === 0) {
+    container.innerHTML = renderEmptyState('🏪', 'Magacin je prazan', 'Dodajte sijalice, boju, šrafove...');
+    return;
+  }
+  container.innerHTML = items.map(item => {
+    const cat = MAGAZINE_CATEGORIES.find(c => c.id === item.category);
+    return `
+      <div class="list-item">
+        <div class="list-item__icon">${cat?.icon || '📦'}</div>
+        <div class="list-item__content">
+          <div class="list-item__title">${item.name}</div>
+          <div class="list-item__subtitle">${cat?.label || 'Ostalo'} · ${item.quantity} ${item.unit}</div>
+        </div>
+        <button class="btn btn--ghost btn--sm del-mag" data-id="${item.id}">✕</button>
+      </div>
+    `;
+  }).join('');
+  container.querySelectorAll('.del-mag').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteMagazineItem(btn.dataset.id);
+      renderMagazineList(document.getElementById('magazine-search')?.value);
+      showToast('Uklonjeno iz magacina.');
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (!document.getElementById('inventory-list')) return;
 
@@ -78,6 +108,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   renderInventoryList();
+
+  const magCat = document.getElementById('mag-category');
+  if (magCat) {
+    magCat.innerHTML = MAGAZINE_CATEGORIES.map(c => `<option value="${c.id}">${c.icon} ${c.label}</option>`).join('');
+    renderMagazineList();
+    document.getElementById('magazine-search')?.addEventListener('input', e => renderMagazineList(e.target.value));
+    document.getElementById('add-magazine')?.addEventListener('click', () => {
+      const name = document.getElementById('mag-name').value.trim();
+      if (!name) { showToast('Unesite naziv.'); return; }
+      const cat = MAGAZINE_CATEGORIES.find(c => c.id === magCat.value);
+      addMagazineItem({
+        name,
+        category: magCat.value,
+        quantity: document.getElementById('mag-qty').value,
+        unit: cat?.unit || 'kom'
+      });
+      document.getElementById('mag-name').value = '';
+      renderMagazineList();
+      showToast('Dodato u magacin!');
+    });
+  }
 
   document.getElementById('inv-receipt')?.addEventListener('change', e => handleReceiptPhoto(e.target));
 

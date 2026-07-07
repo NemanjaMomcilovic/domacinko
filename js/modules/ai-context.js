@@ -169,7 +169,17 @@ function getModuleContext(moduleId) {
     inventory: getInventoryContext,
     household: getHouseholdContext,
     'ai-advisor': getAdvisorContext,
-    'ai-teacher': getTeacherContext
+    'ai-teacher': getTeacherContext,
+    'house-profile': getHouseProfileContext,
+    knowledge: getKnowledgeContext,
+    'tools-inventory': getToolsContext,
+    diary: getDiaryContext,
+    seasonal: getSeasonalContext,
+    projects: getProjectsContext,
+    safety: getSafetyContext,
+    garden: getGardenContext,
+    forecast: getForecastContext,
+    'home-magazine': getMagazineContext
   };
   const builder = builders[moduleId];
   return builder ? builder() : getAdvisorContext();
@@ -182,6 +192,73 @@ function buildFullAIContext() {
     shopping: getShoppingContext(),
     maintenance: getMaintenanceContext(),
     inventory: getInventoryContext(),
-    repairs: getRepairsContext()
+    repairs: getRepairsContext(),
+    houseProfile: typeof getHouseProfileContext === 'function' ? getHouseProfileContext() : null,
+    briefing: typeof generateMorningBriefing === 'function' ? generateMorningBriefing() : null,
+    knowledge: typeof getKnowledgeContext === 'function' ? getKnowledgeContext() : null,
+    tools: typeof getToolsContext === 'function' ? getToolsContext() : null,
+    garden: typeof getGardenContext === 'function' ? getGardenContext() : null,
+    safety: typeof getSafetyContext === 'function' ? getSafetyContext() : null,
+    forecast: typeof getForecastContext === 'function' ? getForecastContext() : null
   };
+}
+
+function getHouseProfileContext() {
+  const profile = getHouseProfile();
+  return {
+    squareMeters: profile.squareMeters,
+    heatingType: profile.heatingType,
+    homeType: profile.homeType,
+    appliances: (profile.appliances || []).map(a => a.name)
+  };
+}
+
+function getKnowledgeContext() {
+  const items = getKnowledgeBase();
+  return { count: items.length, recent: items.slice(0, 5).map(k => k.title) };
+}
+
+function getToolsContext() {
+  const tools = getTools();
+  return { count: tools.length, tools: tools.map(t => t.name) };
+}
+
+function getDiaryContext() {
+  const entries = getDiary();
+  return { count: entries.length, recent: entries.slice(0, 3).map(e => e.title) };
+}
+
+function getSeasonalContext() {
+  const month = new Date().getMonth() + 1;
+  const tasks = getSeasonalTasks(month);
+  const progress = getSeasonalProgress(month);
+  const done = tasks.filter(t => progress[t.id]).length;
+  return { month, total: tasks.length, done };
+}
+
+function getProjectsContext() {
+  const projects = getProjects();
+  return { count: projects.length, active: projects.filter(p => p.status !== 'završeno').length };
+}
+
+function getSafetyContext() {
+  const reminders = getSafetyReminders();
+  return { reminderCount: reminders.length, reminders: reminders.map(r => r.label) };
+}
+
+function getGardenContext() {
+  const reminders = getGardenReminders();
+  return { plantCount: (getGarden().plants || []).length, wateringDue: reminders.length };
+}
+
+function getForecastContext() {
+  const now = new Date();
+  const costs = getUpcomingCosts(now.getMonth(), now.getFullYear());
+  const total = costs.reduce((s, c) => s + (c.amount || 0), 0);
+  return { upcomingCount: costs.length, estimatedTotal: total };
+}
+
+function getMagazineContext() {
+  const items = getHomeMagazine();
+  return { count: items.length, items: items.slice(0, 10).map(i => `${i.name} (${i.quantity})`) };
 }

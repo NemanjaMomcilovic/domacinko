@@ -177,3 +177,114 @@ Korisnik koji:
 5. Preporuči Domaćinko porodici i prijateljima
 
 **Domaćinko — vaš AI pomoćnik za dom. Powered by 10KEY.** 💚
+
+---
+
+## Domaćinko v6 — Puna vizija (jul 2026)
+
+### Faza A — Jezgro domaćinstva
+
+#### 🏠 Profil kuće (`pages/house-profile.html`)
+- Kvadratura (m²), tip (stan/kuća), grejanje (gas/struja/centralno)
+- Lista aparata sa datumom kupovine
+- Čuvanje u localStorage / Supabase `user_data`
+- Ulazi u AI kontekst za personalizovane savete o energiji i održavanju
+
+#### ☀️ Proaktivni jutarnji brifing (početna)
+- „Dobro jutro, [ime]" sa dinamičkim tačkama:
+  - Garancije koje ističu
+  - Upozorenja budžeta
+  - Održavanje na redu
+  - Podsetnici za kupovinu
+  - Sezonski saveti (jul: klima, bašta; nov: grejanje, metlice)
+- `generateMorningBriefing()` u `js/modules/briefing.js`
+
+#### 💪 Finansijski trener (finansije + početna)
+- „Ovog meseca si dao X na [kategoriju]"
+- Godišnja projekcija: „Da si uštedeo 20%, imao bi Y godišnje"
+- Prijateljski, ohrabrujući ton — nikada osuđujući
+
+#### 🏪 Kućni magacin (inventar)
+- Sitnice: sijalice, boja (litri), šrafovi, produžni kablovi — količine
+- Brza pretraga: „imam li sijalice?"
+- Kategorije sa jedinicama mere
+
+### Faza B — AI napredno
+
+#### 📷 Vizuelni asistent (`pages/visual-assist.html`)
+- Upload / slikanje: ventil, osigurač, fleka, biljka, frižider, veš mašina
+- Rule-based odgovori po ključnim rečima
+- OpenAI Vision API kada je API ključ podešen
+- Struktura spremna za proširenje
+
+#### 📅 Prognoza troškova (`pages/forecast.html`)
+- Sledeći mesec: registracija, osiguranje, računi, rođendani, servis auta
+- Kalendar predstojećih troškova iz domaćinstva i ponavljajućih rashoda
+
+#### 📚 Baza znanja (`pages/knowledge.html`)
+- Sačuvana rešenja: naslov, koraci, kategorija
+- Pretraga: „kako resetovati bojler"
+- Link iz Vizuelnog asistenta i AI Majstora — „Sačuvaj rešenje"
+
+#### 🔧 Inventar alata (`pages/tools.html`)
+- Lista alata koje korisnik poseduje
+- Provera: „Nedostaje ti moment ključ" / „Možeš sa onim što imaš"
+
+### Faza C — Moduli domaćinstva
+
+#### 📔 Dnevnik kuće (`pages/diary.html`)
+- Unosi: promenjena slavina, servis bojlera, farbanje sobe — datum, napomene
+
+#### 📅 Sezonski plan (`pages/seasonal.html`)
+- Mesečna checklista (jul: klima, bašta; nov: grejanje, metlice)
+- Praćenje završenih zadataka po mesecu
+
+#### 🛠️ Projekti (`pages/projects.html`)
+- Naziv, budžet, dimenzije
+- AI-generisana lista materijala (rule-based)
+- Redosled radova (radni nalog)
+
+#### 🚨 Bezbednost (`pages/safety.html`)
+- Istek aparata za gašenje, CO detektora
+- Prva pomoć — datum provere
+- Lekovi — rok trajanja
+
+#### 🌿 Bašta (`pages/garden.html`)
+- Biljke sa intervalom zalivanja
+- Podsetnici za zalivanje, đubrenje, orezivanje
+- Dnevni saveti (rule-based, bez spoljnog API-ja za vreme)
+
+#### 🎤 Glasovni režim (`js/voice.js`)
+- Web Speech API na srpskom
+- Komande: „Domaćinko, koliko sam potrošio?", „dodaj mleko", „podseti me za klimu"
+- Plutajuće dugme mikrofona na početnoj
+
+### Pametna kupovina (proširenje)
+
+- Prepoznavanje obrazaca iz troškova: „Kupuješ mleko svake N nedelje"
+- Lista praćenja cena (placeholder) — ručno dodavanje proizvoda i ciljne cene
+
+### 👷 Mreža majstora (placeholder)
+
+- `pages/craftsmen.html` — kategorije (električar, vodoinstalater...) sa orientacionim cenama
+- Edukativno — bez pravog direktorijuma majstora (dolazi u budućnosti)
+- Kada AI Majstor preporuči stručnjaka — link ka odgovarajućoj kategoriji
+
+### Tehnička integracija (v6)
+
+- Svi moduli u `js/modules/registry.js`
+- Kontekst builderi u `js/modules/ai-context.js`
+- Hub „Svi moduli" u Podešavanjima
+- Jutarnji brifing istaknut na početnoj
+- Mobile-first, zelena tema, skip-friendly onboarding (v5 auth očuvan)
+- Service Worker v6.0.0
+
+### Šta dolazi posle v6
+
+- Pravi direktorijum majstora sa ocenama i kontaktima
+- Automatska upozorenja o cenama (web scraping / API)
+- Prava vremenska prognoza za baštu
+- Deljenje domaćinstva između članova porodice
+- AI Učitelj v2 — kvizovi i sertifikati
+- Native mobilne aplikacije
+

@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initNavigation('home');
 
+  if (typeof renderMorningBriefing === 'function') {
+    renderMorningBriefing('morning-briefing');
+  }
+
   const settings = getSettings();
   const now = new Date();
   const spent = getTotalSpent(now.getFullYear(), now.getMonth());

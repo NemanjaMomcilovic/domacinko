@@ -148,7 +148,27 @@ const DEFAULT_DATA = {
   inventory: [],
   maintenance: [],
   repairHistory: [],
-  teacherProgress: { completed: [], notes: {} }
+  teacherProgress: { completed: [], notes: {} },
+  houseProfile: {
+    squareMeters: 0,
+    heatingType: 'gas',
+    homeType: 'apartment',
+    appliances: []
+  },
+  homeMagazine: [],
+  knowledgeBase: [],
+  tools: [],
+  diary: [],
+  seasonalProgress: {},
+  projects: [],
+  safety: {
+    fireExtinguisherExpiry: '',
+    coDetectorExpiry: '',
+    firstAidCheck: '',
+    medicines: []
+  },
+  garden: { plants: [], notes: '' },
+  watchList: []
 };
 
 function generateId() {
@@ -174,6 +194,16 @@ function getData() {
     if (!merged.repairHistory) merged.repairHistory = [];
     if (!merged.teacherProgress) merged.teacherProgress = { completed: [], notes: {} };
     if (!merged.settings.categoryBudgets) merged.settings.categoryBudgets = {};
+    if (!merged.houseProfile) merged.houseProfile = { ...DEFAULT_DATA.houseProfile };
+    if (!merged.homeMagazine) merged.homeMagazine = [];
+    if (!merged.knowledgeBase) merged.knowledgeBase = [];
+    if (!merged.tools) merged.tools = [];
+    if (!merged.diary) merged.diary = [];
+    if (!merged.seasonalProgress) merged.seasonalProgress = {};
+    if (!merged.projects) merged.projects = [];
+    if (!merged.safety) merged.safety = { ...DEFAULT_DATA.safety, medicines: [] };
+    if (!merged.garden) merged.garden = { plants: [], notes: '' };
+    if (!merged.watchList) merged.watchList = [];
     return merged;
   } catch {
     return structuredClone(DEFAULT_DATA);
@@ -624,7 +654,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '5.0.0',
+    version: '6.0.0',
     exportedAt: new Date().toISOString(),
     onboardingComplete: isOnboardingComplete(),
     data: getData()
@@ -1138,4 +1168,564 @@ function markTopicComplete(topicId) {
 
 function isTopicComplete(topicId) {
   return getTeacherProgress().completed.includes(topicId);
+}
+
+const MAGAZINE_CATEGORIES = [
+  { id: 'bulbs', label: 'Sijalice', icon: '💡', unit: 'kom' },
+  { id: 'paint', label: 'Boja', icon: '🎨', unit: 'l' },
+  { id: 'screws', label: 'Šrafovi', icon: '🔩', unit: 'kom' },
+  { id: 'cords', label: 'Produžni kablovi', icon: '🔌', unit: 'kom' },
+  { id: 'filters', label: 'Filteri', icon: '🧽', unit: 'kom' },
+  { id: 'other', label: 'Ostalo', icon: '📦', unit: 'kom' }
+];
+
+const SEASONAL_TASKS = {
+  1: [{ id: 'jan-heating', text: 'Provera grejanja i termostata' }, { id: 'jan-pipes', text: 'Zaštita cevi od smrzavanja' }],
+  2: [{ id: 'feb-filters', text: 'Zamena filtera vazduha' }],
+  3: [{ id: 'mar-garden', text: 'Priprema bašte za proleće' }, { id: 'mar-clean', text: 'Prolećno čišćenje' }],
+  4: [{ id: 'apr-ac', text: 'Provera klime pre leta' }],
+  5: [{ id: 'may-garden', text: 'Sadnja i đubrenje' }],
+  6: [{ id: 'jun-ac', text: 'Servis klime' }],
+  7: [{ id: 'jul-ac', text: 'Čišćenje klime' }, { id: 'jul-garden', text: 'Zalivanje i košenje bašte' }],
+  8: [{ id: 'aug-garden', text: 'Berba i zalivanje' }],
+  9: [{ id: 'sep-gutters', text: 'Čišćenje oluka' }],
+  10: [{ id: 'oct-heating', text: 'Priprema grejanja' }],
+  11: [{ id: 'nov-heating', text: 'Paljenje grejanja' }, { id: 'nov-brooms', text: 'Metlice i lopate spremne' }],
+  12: [{ id: 'dec-safety', text: 'Provera detektora dima i CO' }]
+};
+
+const TOOL_CATEGORIES = ['Ručni alat', 'Električni alat', 'Merenje', 'Vodoinstalaterski', 'Električarski', 'Baštenski', 'Ostalo'];
+
+function getHouseProfile() {
+  return getData().houseProfile || { ...DEFAULT_DATA.houseProfile };
+}
+
+function saveHouseProfile(profile) {
+  const data = getData();
+  data.houseProfile = { ...data.houseProfile, ...profile };
+  saveData(data);
+  return data.houseProfile;
+}
+
+function addHouseAppliance(appliance) {
+  const data = getData();
+  const item = { id: generateId(), name: appliance.name, purchaseDate: appliance.purchaseDate || '', type: appliance.type || '' };
+  data.houseProfile.appliances = data.houseProfile.appliances || [];
+  data.houseProfile.appliances.push(item);
+  saveData(data);
+  return item;
+}
+
+function deleteHouseAppliance(id) {
+  const data = getData();
+  data.houseProfile.appliances = (data.houseProfile.appliances || []).filter(a => a.id !== id);
+  saveData(data);
+}
+
+function getHomeMagazine() {
+  return getData().homeMagazine || [];
+}
+
+function addMagazineItem(item) {
+  const data = getData();
+  const newItem = {
+    id: generateId(),
+    name: item.name,
+    category: item.category || 'other',
+    quantity: parseFloat(item.quantity) || 1,
+    unit: item.unit || 'kom',
+    location: item.location || '',
+    note: item.note || ''
+  };
+  data.homeMagazine.unshift(newItem);
+  saveData(data);
+  return newItem;
+}
+
+function updateMagazineItem(id, updates) {
+  const data = getData();
+  const item = data.homeMagazine.find(i => i.id === id);
+  if (!item) return null;
+  Object.assign(item, updates);
+  saveData(data);
+  return item;
+}
+
+function deleteMagazineItem(id) {
+  const data = getData();
+  data.homeMagazine = data.homeMagazine.filter(i => i.id !== id);
+  saveData(data);
+}
+
+function searchMagazine(query) {
+  const q = (query || '').toLowerCase().trim();
+  if (!q) return getHomeMagazine();
+  return getHomeMagazine().filter(i =>
+    i.name.toLowerCase().includes(q) ||
+    (MAGAZINE_CATEGORIES.find(c => c.id === i.category)?.label || '').toLowerCase().includes(q)
+  );
+}
+
+function getKnowledgeBase() {
+  return getData().knowledgeBase || [];
+}
+
+function addKnowledgeEntry(entry) {
+  const data = getData();
+  const item = {
+    id: generateId(),
+    title: entry.title,
+    solution: entry.solution,
+    category: entry.category || 'ostalo',
+    tags: entry.tags || [],
+    date: new Date().toISOString()
+  };
+  data.knowledgeBase.unshift(item);
+  saveData(data);
+  return item;
+}
+
+function deleteKnowledgeEntry(id) {
+  const data = getData();
+  data.knowledgeBase = data.knowledgeBase.filter(k => k.id !== id);
+  saveData(data);
+}
+
+function searchKnowledge(query) {
+  const q = (query || '').toLowerCase().trim();
+  if (!q) return getKnowledgeBase();
+  return getKnowledgeBase().filter(k =>
+    k.title.toLowerCase().includes(q) ||
+    k.solution.toLowerCase().includes(q) ||
+    (k.tags || []).some(t => t.toLowerCase().includes(q))
+  );
+}
+
+function getTools() {
+  return getData().tools || [];
+}
+
+function addTool(tool) {
+  const data = getData();
+  const item = { id: generateId(), name: tool.name, category: tool.category || 'Ostalo', condition: tool.condition || 'dobro', note: tool.note || '' };
+  data.tools.push(item);
+  saveData(data);
+  return item;
+}
+
+function deleteTool(id) {
+  const data = getData();
+  data.tools = data.tools.filter(t => t.id !== id);
+  saveData(data);
+}
+
+function checkToolsAvailability(requiredTools) {
+  const owned = getTools().map(t => t.name.toLowerCase());
+  const missing = [];
+  const available = [];
+  (requiredTools || []).forEach(tool => {
+    const t = tool.toLowerCase();
+    const has = owned.some(o => o.includes(t) || t.includes(o));
+    if (has) available.push(tool);
+    else missing.push(tool);
+  });
+  return { available, missing, canDoIt: missing.length === 0 };
+}
+
+function getDiary() {
+  return getData().diary || [];
+}
+
+function addDiaryEntry(entry) {
+  const data = getData();
+  const item = {
+    id: generateId(),
+    title: entry.title,
+    date: entry.date || new Date().toISOString().split('T')[0],
+    notes: entry.notes || '',
+    photos: entry.photos || []
+  };
+  data.diary.unshift(item);
+  saveData(data);
+  return item;
+}
+
+function deleteDiaryEntry(id) {
+  const data = getData();
+  data.diary = data.diary.filter(d => d.id !== id);
+  saveData(data);
+}
+
+function getSeasonalTasks(month) {
+  const m = month || (new Date().getMonth() + 1);
+  return SEASONAL_TASKS[m] || [];
+}
+
+function getSeasonalProgress(month) {
+  const m = month || (new Date().getMonth() + 1);
+  return getData().seasonalProgress[m] || {};
+}
+
+function toggleSeasonalTask(month, taskId) {
+  const data = getData();
+  const m = month || (new Date().getMonth() + 1);
+  if (!data.seasonalProgress[m]) data.seasonalProgress[m] = {};
+  data.seasonalProgress[m][taskId] = !data.seasonalProgress[m][taskId];
+  saveData(data);
+  return data.seasonalProgress[m][taskId];
+}
+
+function getProjects() {
+  return getData().projects || [];
+}
+
+function addProject(project) {
+  const data = getData();
+  const item = {
+    id: generateId(),
+    name: project.name,
+    budget: parseFloat(project.budget) || 0,
+    dimensions: project.dimensions || '',
+    photos: project.photos || [],
+    materials: project.materials || [],
+    workOrder: project.workOrder || [],
+    status: project.status || 'planiranje',
+    createdAt: new Date().toISOString()
+  };
+  data.projects.unshift(item);
+  saveData(data);
+  return item;
+}
+
+function updateProject(id, updates) {
+  const data = getData();
+  const project = data.projects.find(p => p.id === id);
+  if (!project) return null;
+  Object.assign(project, updates);
+  saveData(data);
+  return project;
+}
+
+function deleteProject(id) {
+  const data = getData();
+  data.projects = data.projects.filter(p => p.id !== id);
+  saveData(data);
+}
+
+function generateProjectMaterials(projectName, dimensions) {
+  const name = (projectName || '').toLowerCase();
+  const dims = dimensions || '';
+  const materials = [];
+  if (name.includes('farbanje') || name.includes('bojenje') || name.includes('soba')) {
+    materials.push({ name: 'Boja za zidove', qty: '2-3 kesice', note: 'Za ~20m²' });
+    materials.push({ name: 'Valjak i posuda', qty: '1 set', note: '' });
+    materials.push({ name: 'Traka za maskiranje', qty: '2 rolne', note: '' });
+    materials.push({ name: 'Plastična folija', qty: '1 rolna', note: 'Zaštita poda' });
+  } else if (name.includes('polica') || name.includes('regal')) {
+    materials.push({ name: 'Drvene daske', qty: '3-5 kom', note: dims || 'Po meri' });
+    materials.push({ name: 'Šrafovi i tiplovi', qty: '1 pakovanje', note: '' });
+    materials.push({ name: 'Lak ili boja', qty: '0.5l', note: 'Opciono' });
+  } else if (name.includes('bašta') || name.includes('ograda')) {
+    materials.push({ name: 'Drveni stubovi', qty: '4-8 kom', note: '' });
+    materials.push({ name: 'Žica ili daske', qty: 'Po meri', note: dims });
+    materials.push({ name: 'Betonski lepak', qty: '2-3 vreće', note: '' });
+  } else {
+    materials.push({ name: 'Osnovni materijal', qty: 'Po projektu', note: 'Definišite u napomeni' });
+    materials.push({ name: 'Šrafovi i spojnice', qty: '1 set', note: '' });
+    materials.push({ name: 'Alat (merenje, nivo)', qty: '—', note: 'Proverite inventar alata' });
+  }
+  return materials;
+}
+
+function getSafety() {
+  return getData().safety || { ...DEFAULT_DATA.safety };
+}
+
+function saveSafety(safety) {
+  const data = getData();
+  data.safety = { ...data.safety, ...safety };
+  saveData(data);
+  return data.safety;
+}
+
+function addMedicine(med) {
+  const data = getData();
+  if (!data.safety.medicines) data.safety.medicines = [];
+  const item = { id: generateId(), name: med.name, expiry: med.expiry || '' };
+  data.safety.medicines.push(item);
+  saveData(data);
+  return item;
+}
+
+function deleteMedicine(id) {
+  const data = getData();
+  data.safety.medicines = (data.safety.medicines || []).filter(m => m.id !== id);
+  saveData(data);
+}
+
+function getSafetyReminders() {
+  const safety = getSafety();
+  const reminders = [];
+  const now = new Date();
+  const checkExpiry = (date, label) => {
+    if (!date) return;
+    const d = new Date(date);
+    const days = Math.ceil((d - now) / (1000 * 60 * 60 * 24));
+    if (days <= 30) reminders.push({ label, days, expired: days < 0 });
+  };
+  checkExpiry(safety.fireExtinguisherExpiry, 'Aparat za gašenje požara');
+  checkExpiry(safety.coDetectorExpiry, 'CO detektor');
+  checkExpiry(safety.firstAidCheck, 'Prva pomoć — provera');
+  (safety.medicines || []).forEach(m => {
+    if (m.expiry) {
+      const days = Math.ceil((new Date(m.expiry) - now) / (1000 * 60 * 60 * 24));
+      if (days <= 60) reminders.push({ label: `Lek: ${m.name}`, days, expired: days < 0 });
+    }
+  });
+  return reminders;
+}
+
+function getGarden() {
+  return getData().garden || { plants: [], notes: '' };
+}
+
+function saveGarden(garden) {
+  const data = getData();
+  data.garden = { ...data.garden, ...garden };
+  saveData(data);
+  return data.garden;
+}
+
+function addPlant(plant) {
+  const data = getData();
+  const item = {
+    id: generateId(),
+    name: plant.name,
+    wateringDays: parseInt(plant.wateringDays, 10) || 3,
+    lastWatered: plant.lastWatered || '',
+    lastFertilized: plant.lastFertilized || '',
+    lastPruned: plant.lastPruned || ''
+  };
+  data.garden.plants = data.garden.plants || [];
+  data.garden.plants.push(item);
+  saveData(data);
+  return item;
+}
+
+function updatePlant(id, updates) {
+  const data = getData();
+  const plant = (data.garden.plants || []).find(p => p.id === id);
+  if (!plant) return null;
+  Object.assign(plant, updates);
+  saveData(data);
+  return plant;
+}
+
+function deletePlant(id) {
+  const data = getData();
+  data.garden.plants = (data.garden.plants || []).filter(p => p.id !== id);
+  saveData(data);
+}
+
+function getGardenReminders() {
+  const plants = getGarden().plants || [];
+  const now = new Date();
+  const reminders = [];
+  plants.forEach(p => {
+    if (!p.lastWatered) {
+      reminders.push({ plant: p.name, action: 'zalivanje', overdue: true });
+      return;
+    }
+    const last = new Date(p.lastWatered);
+    const daysSince = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+    if (daysSince >= p.wateringDays) {
+      reminders.push({ plant: p.name, action: 'zalivanje', overdue: daysSince > p.wateringDays });
+    }
+  });
+  return reminders;
+}
+
+function getWatchList() {
+  return getData().watchList || [];
+}
+
+function addWatchItem(item) {
+  const data = getData();
+  const newItem = { id: generateId(), productName: item.productName, targetPrice: parseFloat(item.targetPrice) || 0, note: item.note || '' };
+  data.watchList.push(newItem);
+  saveData(data);
+  return newItem;
+}
+
+function deleteWatchItem(id) {
+  const data = getData();
+  data.watchList = data.watchList.filter(w => w.id !== id);
+  saveData(data);
+}
+
+function detectPurchasePatterns() {
+  const expenses = getExpenses().filter(e => e.category === 'food' || e.category === 'home');
+  const byName = {};
+  expenses.forEach(e => {
+    const key = e.name.toLowerCase().trim();
+    if (!byName[key]) byName[key] = [];
+    byName[key].push(new Date(e.date));
+  });
+
+  const patterns = [];
+  Object.entries(byName).forEach(([name, dates]) => {
+    if (dates.length < 3) return;
+    dates.sort((a, b) => a - b);
+    const gaps = [];
+    for (let i = 1; i < dates.length; i++) {
+      gaps.push(Math.round((dates[i] - dates[i - 1]) / (1000 * 60 * 60 * 24)));
+    }
+    const avgGap = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+    if (avgGap >= 3 && avgGap <= 21) {
+      const weeks = Math.round(avgGap / 7);
+      patterns.push({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        avgDays: avgGap,
+        frequency: weeks <= 1 ? 'svake nedelje' : `svake ${weeks} nedelje`,
+        count: dates.length
+      });
+    }
+  });
+  return patterns.sort((a, b) => b.count - a.count).slice(0, 10);
+}
+
+function getFinancialTrainerInsights() {
+  const now = new Date();
+  const byCategory = getSpendingByCategory(now.getFullYear(), now.getMonth());
+  const insights = [];
+
+  const top = Object.entries(byCategory)
+    .filter(([, amt]) => amt > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  top.forEach(([catId, amount]) => {
+    const annual = amount * 12;
+    const label = getCategoryLabel(catId).toLowerCase();
+    insights.push({
+      category: catId,
+      label: getCategoryLabel(catId),
+      amount,
+      annual,
+      message: `Ovog meseca si dao ${formatCurrency(amount)} na ${label}.`,
+      savings: `Da si uštedeo 20%, imao bi ${formatCurrency(annual * 0.2)} godišnje više u džepu! 💚`
+    });
+  });
+
+  if (insights.length === 0) {
+    insights.push({
+      category: null,
+      label: 'Početak',
+      amount: 0,
+      annual: 0,
+      message: 'Dodaj troškove da bih mogao da te podučavam o navikama!',
+      savings: 'Svaka mala ušteda se sabira — kreni sa jednom kategorijom.'
+    });
+  }
+
+  return insights;
+}
+
+function getUpcomingCosts(targetMonth, targetYear) {
+  const now = new Date();
+  const year = targetYear ?? now.getFullYear();
+  const month = targetMonth ?? now.getMonth();
+  const costs = [];
+  const household = getHousehold();
+
+  getRecurringExpenses().forEach(r => {
+    costs.push({
+      date: `${year}-${String(month + 1).padStart(2, '0')}-${String(r.dayOfMonth).padStart(2, '0')}`,
+      name: r.name,
+      amount: r.amount,
+      type: 'račun',
+      icon: '📄'
+    });
+  });
+
+  (household.bills || []).forEach(b => {
+    if (b.amount) {
+      costs.push({
+        date: `${year}-${String(month + 1).padStart(2, '0')}-${String(b.paymentDay || 15).padStart(2, '0')}`,
+        name: b.name,
+        amount: parseFloat(b.amount),
+        type: 'račun',
+        icon: '📄'
+      });
+    }
+  });
+
+  (household.subscriptions || []).forEach(s => {
+    if (s.amount) {
+      costs.push({
+        date: `${year}-${String(month + 1).padStart(2, '0')}-01`,
+        name: s.name,
+        amount: parseFloat(s.amount),
+        type: 'pretplata',
+        icon: '📱'
+      });
+    }
+  });
+
+  (household.cars || []).forEach(car => {
+    if (car.registrationDate) {
+      const reg = new Date(car.registrationDate);
+      if (reg.getMonth() === month) {
+        costs.push({
+          date: car.registrationDate,
+          name: `Registracija: ${car.name}`,
+          amount: 15000,
+          type: 'auto',
+          icon: '🚗',
+          estimated: true
+        });
+      }
+    }
+    costs.push({
+      date: `${year}-${String(month + 1).padStart(2, '0')}-15`,
+      name: `Servis: ${car.name}`,
+      amount: 25000,
+      type: 'auto',
+      icon: '🔧',
+      estimated: true
+    });
+  });
+
+  (household.importantDates || []).forEach(d => {
+    if (d.date) {
+      const dt = new Date(d.date);
+      if (dt.getMonth() === month && dt.getFullYear() === year) {
+        costs.push({
+          date: d.date,
+          name: d.name,
+          amount: parseFloat(d.amount) || 0,
+          type: 'datum',
+          icon: '🎂'
+        });
+      }
+    }
+  });
+
+  (household.familyMembers || []).forEach(m => {
+    if (m.birthday) {
+      const bd = new Date(m.birthday);
+      if (bd.getMonth() === month) {
+        costs.push({
+          date: `${year}-${String(month + 1).padStart(2, '0')}-${String(bd.getDate()).padStart(2, '0')}`,
+          name: `Rođendan: ${m.name}`,
+          amount: 5000,
+          type: 'rođendan',
+          icon: '🎂',
+          estimated: true
+        });
+      }
+    }
+  });
+
+  return costs.sort((a, b) => a.date.localeCompare(b.date));
 }

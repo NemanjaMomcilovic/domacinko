@@ -30,6 +30,27 @@
       </div>
 
       <div class="section">
+        <div class="section__header">
+          <h2 class="section__title">Kućni magacin</h2>
+        </div>
+        <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">Sijalice, boja, šrafovi — brza pretraga „imam li sijalice?"</p>
+        <div class="form-group">
+          <input type="search" class="form-input" id="magazine-search" placeholder="Pretraži magacin...">
+        </div>
+        <div class="card card--flat" id="magazine-list"></div>
+        <div class="card card--flat mt-sm" style="padding:var(--space-md)">
+          <div class="form-group">
+            <input type="text" class="form-input" id="mag-name" placeholder="Naziv (npr. LED sijalica E27)">
+          </div>
+          <div style="display:flex;gap:var(--space-sm)">
+            <select class="form-select" id="mag-category" style="flex:1"></select>
+            <input type="number" class="form-input" id="mag-qty" placeholder="Kol." min="1" value="1" style="width:80px">
+          </div>
+          <button type="button" class="btn btn--secondary btn--block mt-sm" id="add-magazine">Dodaj u magacin</button>
+        </div>
+      </div>
+
+      <div class="section">
         <h2 class="section__title">Dodaj predmet</h2>
         <div class="card card--flat" style="padding:var(--space-md)">
           <div class="form-group">

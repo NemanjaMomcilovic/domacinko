@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <title>Domaćinko — Baza znanja</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+    <main class="main-content">
+      <div class="form-group">
+        <input type="search" class="form-input" id="knowledge-search" placeholder="Pretraži: kako resetovati bojler...">
+      </div>
+      <div class="card card--flat" id="knowledge-list"></div>
+      <div class="section mt-md">
+        <h2 class="section__title">Dodaj rešenje</h2>
+        <div class="card card--flat" style="padding:var(--space-md)">
+          <div class="form-group">
+            <input type="text" class="form-input" id="kb-title" placeholder="Naslov (npr. Reset bojlera)">
+          </div>
+          <div class="form-group">
+            <select class="form-select" id="kb-category">
+              <option value="vodovod">Vodovod</option>
+              <option value="elektrika">Elektrika</option>
+              <option value="grejanje">Grejanje</option>
+              <option value="aparati">Aparati</option>
+              <option value="ostalo">Ostalo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <textarea class="form-textarea" id="kb-solution" rows="4" placeholder="Koraci rešenja..."></textarea>
+          </div>
+          <button type="button" class="btn btn--primary btn--block" id="save-knowledge">Sačuvaj rešenje</button>
+        </div>
+      </div>
+    </main>
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/knowledge.js"></script>
+</body>
+</html>

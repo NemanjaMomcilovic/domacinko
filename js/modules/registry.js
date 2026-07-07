@@ -139,6 +139,118 @@ function registerCoreModules() {
     path: 'ai.html#ucitelj',
     getContext: () => typeof getTeacherContext === 'function' ? getTeacherContext() : null
   });
+
+  ModuleRegistry.register('house-profile', {
+    name: 'Profil kuće',
+    icon: '🏠',
+    description: 'Kvadratura, grejanje, aparati',
+    path: 'house-profile.html',
+    getContext: () => typeof getHouseProfileContext === 'function' ? getHouseProfileContext() : null
+  });
+
+  ModuleRegistry.register('briefing', {
+    name: 'Jutarnji brifing',
+    icon: '☀️',
+    description: 'Proaktivni pregled dana',
+    path: 'home.html',
+    getContext: () => typeof generateMorningBriefing === 'function' ? generateMorningBriefing() : null
+  });
+
+  ModuleRegistry.register('visual-assist', {
+    name: 'Vizuelni asistent',
+    icon: '📷',
+    description: 'Analiza fotografija',
+    path: 'visual-assist.html',
+    getContext: () => null
+  });
+
+  ModuleRegistry.register('forecast', {
+    name: 'Prognoza troškova',
+    icon: '📅',
+    description: 'Predviđeni troškovi',
+    path: 'forecast.html',
+    getContext: () => typeof getForecastContext === 'function' ? getForecastContext() : null
+  });
+
+  ModuleRegistry.register('knowledge', {
+    name: 'Baza znanja',
+    icon: '📚',
+    description: 'Sačuvana rešenja',
+    path: 'knowledge.html',
+    getContext: () => typeof getKnowledgeContext === 'function' ? getKnowledgeContext() : null
+  });
+
+  ModuleRegistry.register('tools-inventory', {
+    name: 'Inventar alata',
+    icon: '🔧',
+    description: 'Alati koje posedujete',
+    path: 'tools.html',
+    getContext: () => typeof getToolsContext === 'function' ? getToolsContext() : null
+  });
+
+  ModuleRegistry.register('diary', {
+    name: 'Dnevnik kuće',
+    icon: '📔',
+    description: 'Istorija radova',
+    path: 'diary.html',
+    getContext: () => typeof getDiaryContext === 'function' ? getDiaryContext() : null
+  });
+
+  ModuleRegistry.register('seasonal', {
+    name: 'Sezonski plan',
+    icon: '📅',
+    description: 'Mesečna checklista',
+    path: 'seasonal.html',
+    getContext: () => typeof getSeasonalContext === 'function' ? getSeasonalContext() : null
+  });
+
+  ModuleRegistry.register('projects', {
+    name: 'Projekti',
+    icon: '🛠️',
+    description: 'DIY projekti i materijal',
+    path: 'projects.html',
+    getContext: () => typeof getProjectsContext === 'function' ? getProjectsContext() : null
+  });
+
+  ModuleRegistry.register('safety', {
+    name: 'Bezbednost',
+    icon: '🚨',
+    description: 'Detektori, prva pomoć, lekovi',
+    path: 'safety.html',
+    getContext: () => typeof getSafetyContext === 'function' ? getSafetyContext() : null
+  });
+
+  ModuleRegistry.register('garden', {
+    name: 'Bašta',
+    icon: '🌿',
+    description: 'Biljke i zalivanje',
+    path: 'garden.html',
+    getContext: () => typeof getGardenContext === 'function' ? getGardenContext() : null
+  });
+
+  ModuleRegistry.register('craftsmen', {
+    name: 'Mreža majstora',
+    icon: '👷',
+    description: 'Orijentacione cene majstora',
+    path: 'craftsmen.html',
+    getContext: () => null
+  });
+
+  ModuleRegistry.register('voice', {
+    name: 'Glasovni režim',
+    icon: '🎤',
+    description: 'Glasovne komande',
+    path: 'home.html',
+    getContext: () => null
+  });
+
+  ModuleRegistry.register('home-magazine', {
+    name: 'Kućni magacin',
+    icon: '🏪',
+    description: 'Sijalice, boja, šrafovi',
+    path: 'inventory.html',
+    getContext: () => typeof getMagazineContext === 'function' ? getMagazineContext() : null
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,5 +1,33 @@
 # Domaćinko — Changelog
 
+## [6.0.0] — 2026-07-07
+
+### Dodato — Faza A (jezgro)
+- **Profil kuće** (`house-profile.html`) — m², grejanje, tip doma, aparati
+- **Jutarnji brifing** — kartica na početnoj, `js/modules/briefing.js`
+- **Finansijski trener** — kategorijski uvid i godišnja projekcija uštede
+- **Kućni magacin** — sijalice, boja, šrafovi sa pretragom u inventaru
+
+### Dodato — Faza B (AI napredno)
+- **Vizuelni asistent** — upload/slikanje, rule-based + OpenAI Vision
+- **Prognoza troškova** — kalendar predstojećih rashoda
+- **Baza znanja** — čuvanje i pretraga rešenja
+- **Inventar alata** — provera dostupnosti za DIY
+
+### Dodato — Faza C (moduli)
+- **Dnevnik kuće**, **Sezonski plan**, **Projekti** (materijal + radni nalog)
+- **Bezbednost** — detektori, prva pomoć, lekovi
+- **Bašta** — biljke, zalivanje, saveti
+- **Glasovni režim** — Web Speech API, plutajući mikrofon
+- **Pametna kupovina** — prepoznavanje navika, lista praćenja cena
+- **Mreža majstora** — placeholder sa orientacionim cenama
+
+### Tehnički
+- Prošireni `storage.js`, `registry.js`, `ai-context.js`
+- Hub „Svi moduli" u podešavanjima
+- Service Worker v6.0.0
+- `docs/vision.md` — kompletna vizija na srpskom
+
 ## [5.0.0] — 2026-07-07
 
 ### Dodato

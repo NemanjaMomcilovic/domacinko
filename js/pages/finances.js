@@ -212,6 +212,16 @@ function renderCategoryBudgets() {
   container.innerHTML = statuses.map(s => renderCategoryBudgetBar(s)).join('');
 }
 
+function renderFinancialTrainer() {
+  const container = document.getElementById('financial-trainer');
+  if (!container) return;
+  const insights = getFinancialTrainerInsights();
+  container.innerHTML = insights.map(i => `
+    <p class="advice-banner__text" style="margin-bottom:var(--space-sm)">${i.message}</p>
+    <p class="text-muted" style="font-size:var(--font-size-sm)">${i.savings}</p>
+  `).join('');
+}
+
 function refreshFinances() {
   const settings = getSettings();
   const now = new Date();
@@ -230,6 +240,7 @@ function refreshFinances() {
   renderCategoryBreakdown(byCategory);
   renderChart(byCategory);
   renderExpensesList();
+  renderFinancialTrainer();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -272,4 +283,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCategoryBreakdown(byCategory);
   renderChart(byCategory);
   renderExpensesList();
+  renderFinancialTrainer();
 });

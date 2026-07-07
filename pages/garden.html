@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <title>Domaćinko — Bašta</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+    <main class="main-content">
+      <div class="card card--gradient-green text-center mb-md" id="weather-tip">
+        <p class="card__title">🌤️ Savet za danas</p>
+        <p id="garden-weather-text">Proverite vremensku prognozu pre zalivanja.</p>
+      </div>
+      <div class="section">
+        <h2 class="section__title">Podsetnici</h2>
+        <div class="card card--flat" id="garden-reminders"></div>
+      </div>
+      <div class="section">
+        <h2 class="section__title">Biljke</h2>
+        <div class="card card--flat" id="plants-list"></div>
+        <div class="card card--flat mt-sm" style="padding:var(--space-md)">
+          <input type="text" class="form-input" id="plant-name" placeholder="Naziv biljke">
+          <input type="number" class="form-input mt-sm" id="plant-water-days" placeholder="Zalivanje na svakih N dana" min="1" value="3">
+          <button type="button" class="btn btn--primary btn--block mt-sm" id="add-plant">Dodaj biljku</button>
+        </div>
+      </div>
+    </main>
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/garden.js"></script>
+</body>
+</html>

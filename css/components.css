@@ -1132,3 +1132,118 @@
   padding: var(--space-sm) var(--space-md);
 }
 
+/* Morning briefing */
+.briefing-card {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #1e6b42 100%);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.briefing-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+}
+
+.briefing-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.briefing-card__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  opacity: 0.95;
+}
+
+.briefing-card__icon {
+  flex-shrink: 0;
+}
+
+/* Voice FAB */
+.voice-fab {
+  position: fixed;
+  bottom: calc(var(--nav-height, 64px) + var(--space-md));
+  right: var(--space-md);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1.4rem;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  z-index: 100;
+  transition: transform var(--transition), background var(--transition);
+}
+
+.voice-fab--active {
+  background: var(--color-danger);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Visual assist */
+.visual-preview {
+  min-height: 160px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+}
+
+.visual-preview img {
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+}
+
+.visual-response {
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.knowledge-item__solution {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs);
+  line-height: 1.5;
+}
+
+.craftsmen-card__price {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-top: var(--space-xs);
+}
+
+.diary-entry__notes {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-xs);
+}
+
+.project-materials,
+.project-workorder {
+  font-size: var(--font-size-sm);
+  padding-left: var(--space-lg);
+  line-height: 1.6;
+}
+

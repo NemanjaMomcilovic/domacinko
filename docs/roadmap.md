@@ -58,10 +58,31 @@
 - [ ] Premium funkcije
 - [ ] Mobilne aplikacije (iOS/Android)
 
-## Faza 6 — Buduće ideje
+## Faza 6 — Vizija v6 ✅ (6.0.0)
+
+- [x] Profil kuće — kvadratura, grejanje, aparati
+- [x] Jutarnji brifing na početnoj
+- [x] Finansijski trener
+- [x] Kućni magacin u inventaru
+- [x] Vizuelni asistent (rule-based + OpenAI Vision)
+- [x] Prognoza troškova
+- [x] Baza znanja
+- [x] Inventar alata
+- [x] Dnevnik kuće
+- [x] Sezonski plan
+- [x] Projekti sa listom materijala
+- [x] Bezbednost (detektori, lekovi)
+- [x] Bašta
+- [x] Glasovni režim (Web Speech API)
+- [x] Navike kupovine + lista praćenja cena
+- [x] Mreža majstora (placeholder)
+- [x] `docs/vision.md` — puna vizija na srpskom
+
+## Faza 7 — Buduće ideje
 
 - [ ] AI Učitelj v2 — kvizovi i sertifikati
 - [ ] Skeniranje dokumenata (OCR)
 - [ ] Integracija sa bankama / open banking
-- [ ] Glasovni asistent
+- [ ] Pravi direktorijum majstora
+- [ ] Automatska upozorenja o cenama
 - [ ] Deljeni inventar i zadaci u porodici

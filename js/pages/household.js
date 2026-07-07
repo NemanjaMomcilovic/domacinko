@@ -49,7 +49,11 @@ const HOUSEHOLD_SECTIONS = [
   { key: 'pantry', label: 'Ostava', icon: '🥫', fields: [{ id: 'name', placeholder: 'Namirnica (npr. jaja, mleko)', type: 'text', required: true }] },
   { key: 'documents', label: 'Dokumenti', icon: '📋', fields: [{ id: 'name', placeholder: 'Naziv dokumenta', type: 'text', required: true }] },
   { key: 'warranties', label: 'Garancije', icon: '🛡️', fields: [{ id: 'name', placeholder: 'Naziv garancije', type: 'text', required: true }] },
-  { key: 'importantDates', label: 'Važni datumi', icon: '📅', fields: [{ id: 'name', placeholder: 'Opis datuma', type: 'text', required: true }] }
+  { key: 'importantDates', label: 'Važni datumi', icon: '📅', fields: [
+    { id: 'name', placeholder: 'Opis datuma', type: 'text', required: true },
+    { id: 'date', placeholder: 'Datum', type: 'date' },
+    { id: 'amount', placeholder: 'Procenjeni iznos', type: 'number', min: 0 }
+  ]}
 ];
 
 function formatHouseholdSubtitle(item, sectionKey) {
@@ -65,6 +69,10 @@ function formatHouseholdSubtitle(item, sectionKey) {
   if (sectionKey === 'pets' && item.type) parts.push(item.type);
   if (sectionKey === 'subscriptions' && item.amount) {
     parts.push(`${formatCurrency(parseFloat(item.amount))} mesečno`);
+  }
+  if (sectionKey === 'importantDates' && item.date) {
+    parts.push(formatDate(item.date));
+    if (item.amount) parts.push(formatCurrency(parseFloat(item.amount)));
   }
   if (item.note && parts.length === 0) parts.push(item.note);
   return parts.join(' · ');

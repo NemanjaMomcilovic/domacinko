@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <title>Domaćinko — Alati</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+    <main class="main-content">
+      <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
+        AI Majstor proverava da li imate potrebne alate za DIY poslove.
+      </p>
+      <div class="card card--flat" id="tools-list"></div>
+      <div class="card card--flat mt-md" style="padding:var(--space-md)">
+        <div class="form-group">
+          <input type="text" class="form-input" id="tool-name" placeholder="Naziv alata (npr. moment ključ)">
+        </div>
+        <div class="form-group">
+          <select class="form-select" id="tool-category"></select>
+        </div>
+        <button type="button" class="btn btn--primary btn--block" id="add-tool">Dodaj alat</button>
+      </div>
+      <div class="section mt-md">
+        <h2 class="section__title">Provera alata</h2>
+        <div class="card card--flat" style="padding:var(--space-md)">
+          <input type="text" class="form-input" id="check-tools" placeholder="Unesite alate odvojene zarezom">
+          <button type="button" class="btn btn--secondary btn--block mt-sm" id="run-check">Proveri</button>
+          <div id="check-result" class="mt-sm"></div>
+        </div>
+      </div>
+    </main>
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/tools.js"></script>
+</body>
+</html>
