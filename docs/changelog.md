@@ -1,5 +1,32 @@
 # Domaćinko — Changelog
 
+## [6.2.0] — 2026-07-07
+
+### Dodato
+- **`js/ui-helpers.js`** — deljeni UI: toast tipovi, skeleton loaderi, offline baner, pull-to-refresh, pristupačnost
+- **Početna v2** — hero jutarnji brifing, brza statistika (danas/kupovina/održavanje), personalizovani saveti
+- **Finansije** — nedeljni pregled potrošnje, trend grafikon (6 meseci), PDF izvoz
+- **Profil stranica** (`profile.html`) — uređivanje profila, brisanje naloga
+- **Kupovina** — kategorije sa bojama, omiljeni proizvici, upozorenja niske zalihe ostave
+- **Plan obroka** — srpska jela presets (pasulj, sarma, musaka...)
+- **Dnevnik** — upload fotografija (base64, limit 500 KB)
+- **Majstori** — lokalno čuvanje kontakata sa telefonom
+- **Vizuelni asistent** — nova pravila za curenje, plavina, bolest biljaka
+- **PWA** — manifest prečice (Dodaj trošak, Kupovina), poboljšan SW keš
+
+### Poboljšano
+- Page headeri sa 44px touch targetima i aria labelima
+- Toast notifikacije sa tipovima (success/error/warning/info)
+- Finansijski trener sa trendom i dnevnim prosekom
+- Podešavanja: veći tekst, visok kontrast
+- Page transitions, focus states, print stylesheet
+- README.md za GitHub
+
+### Tehnički
+- Service Worker v6.2.0
+- `getWeeklySpending`, `getSpendingTrend`, `getPersonalizedTips`, `getTodaySpending`
+- `SHOPPING_CATEGORIES`, `SERBIAN_MEAL_PRESETS`, `favoriteProducts`
+
 ## [6.1.0] — 2026-07-07
 
 ### Dodato

@@ -16,6 +16,9 @@ function getAssetBase() {
 
 function initApp() {
   initTheme();
+  initAccessibility?.();
+  initPageTransition?.();
+  initOfflineBanner?.();
   registerServiceWorker();
   initAuthGuard();
   if (typeof checkAndSendNotifications === 'function') {
@@ -152,19 +155,6 @@ function renderSavingsGoalCard(containerId) {
 function formatDate(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleDateString('sr-RS', { day: 'numeric', month: 'short' });
-}
-
-function showToast(message, duration = 2500) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.className = 'toast';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.classList.add('toast--visible');
-  setTimeout(() => { toast.classList.remove('toast--visible'); }, duration);
 }
 
 function populateCategorySelect(selectId, includeAll = false) {

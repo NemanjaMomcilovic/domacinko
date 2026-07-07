@@ -15,6 +15,16 @@ function generateMorningBriefing() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Dobro jutro' : hour < 18 ? 'Dobar dan' : 'Dobro veče';
 
+  const todaySpent = typeof getTodaySpending === 'function' ? getTodaySpending() : 0;
+  if (todaySpent > 0) {
+    bullets.unshift({ type: 'info', icon: '💸', text: `Danas potrošeno ${formatCurrency(todaySpent)}.` });
+  }
+
+  const lowStock = typeof getLowStockPantry === 'function' ? getLowStockPantry() : [];
+  if (lowStock.length > 0) {
+    bullets.push({ type: 'warn', icon: '🥫', text: `Ostava: ${lowStock[0].name} na isteku.` });
+  }
+
   const expiring = typeof getExpiringWarranties === 'function' ? getExpiringWarranties(30) : [];
   expiring.slice(0, 2).forEach(item => {
     const days = Math.ceil((new Date(item.warrantyEnd) - new Date()) / (1000 * 60 * 60 * 24));
@@ -97,9 +107,12 @@ function renderMorningBriefing(containerId) {
   if (!container) return;
 
   const briefing = generateMorningBriefing();
+  const timeStr = new Date().toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
+
   container.innerHTML = `
-    <div class="briefing-card">
+    <div class="briefing-card briefing-card--hero">
       <h2 class="briefing-card__title">☀️ ${briefing.greeting}</h2>
+      <p class="briefing-card__subtitle">Vaš jutarnji brifing · ${timeStr}</p>
       <ul class="briefing-card__list">
         ${briefing.bullets.map(b => `
           <li class="briefing-card__item briefing-card__item--${b.type}">

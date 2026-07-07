@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <title>Domaćinko — Profil</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content">
+      <div class="app-logo" style="margin-bottom:var(--space-lg)">
+        <div class="user-avatar user-avatar--initial" id="profile-avatar" style="width:80px;height:80px;font-size:2rem;margin:0 auto var(--space-md)">🏡</div>
+        <p class="text-center" id="profile-display-name" style="font-size:var(--font-size-xl);font-weight:700">—</p>
+        <p class="text-center text-muted" id="profile-email" style="font-size:var(--font-size-sm)"></p>
+      </div>
+
+      <form id="profile-form">
+        <div class="settings-group">
+          <h3 class="settings-group__title">Lični podaci</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <div class="form-group">
+              <label class="form-label" for="profile-first-name">Ime</label>
+              <input type="text" class="form-input" id="profile-first-name" placeholder="Vaše ime">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-last-name">Prezime</label>
+              <input type="text" class="form-input" id="profile-last-name" placeholder="Vaše prezime">
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group__title">Finansijski pregled</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <div class="form-group">
+              <label class="form-label" for="profile-income">Mesečna primanja</label>
+              <input type="number" class="form-input" id="profile-income" min="0" step="1000">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-savings">Ušteđeno</label>
+              <input type="number" class="form-input" id="profile-savings" min="0" step="1000">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="profile-budget">Mesečni budžet</label>
+              <input type="number" class="form-input" id="profile-budget" min="0" step="1000">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--block mb-md">Sačuvaj profil</button>
+      </form>
+
+      <div class="settings-group">
+        <h3 class="settings-group__title" style="color:var(--color-danger)">Opasna zona</h3>
+        <div class="card card--flat" style="padding:0;overflow:hidden">
+          <button type="button" class="settings-item" id="delete-account-btn" style="width:100%;border:none;background:none;cursor:pointer;text-align:left;color:var(--color-danger)">
+            <span class="settings-item__label" style="color:var(--color-danger)">Obriši nalog i sve podatke</span>
+            <span class="settings-item__value">→</span>
+          </button>
+        </div>
+        <p class="text-muted mt-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
+          Ova akcija briše sve lokalne podatke i odjavljuje vas. Sinhronizovani podaci na serveru zahtevaju brisanje u Supabase panelu.
+        </p>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/ui-helpers.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/profile.js"></script>
+</body>
+</html>

@@ -15,21 +15,22 @@ function renderBottomNav(activePage) {
   if (!nav) return;
 
   nav.innerHTML = NAV_ITEMS.map(item => `
-    <a href="${item.href}" class="nav-item${item.id === activePage ? ' active' : ''}" data-page="${item.id}">
-      <span class="nav-icon">${item.icon}</span>
+    <a href="${item.href}" class="nav-item${item.id === activePage ? ' active' : ''}" data-page="${item.id}" aria-label="${item.label}" aria-current="${item.id === activePage ? 'page' : 'false'}">
+      <span class="nav-icon" aria-hidden="true">${item.icon}</span>
       <span class="nav-label">${item.label}</span>
     </a>
   `).join('');
 }
 
-function renderPageHeader(title, showBack = false, backHref = 'home.html') {
+function renderPageHeader(title, showBack = false, backHref = 'home.html', rightAction = '') {
   const header = document.getElementById('page-header');
   if (!header) return;
 
+  const spacer = '<span class="page-header__spacer" aria-hidden="true"></span>';
   header.innerHTML = `
-    ${showBack ? `<a href="${backHref}" class="page-header__back" aria-label="Nazad">←</a>` : '<span style="width:36px"></span>'}
+    ${showBack ? `<a href="${backHref}" class="page-header__back" aria-label="Nazad na prethodnu stranicu">←</a>` : spacer}
     <h1 class="page-header__title">${title}</h1>
-    <span style="width:36px"></span>
+    ${rightAction || spacer}
   `;
 }
 

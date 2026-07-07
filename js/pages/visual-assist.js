@@ -1,6 +1,9 @@
 let currentImageData = null;
 
 const VISUAL_RULES = [
+  { keywords: ['curenje', 'kap', 'voda', 'poplava'], response: '💧 **Curenje vode**: Odmah zatvorite glavni ventil! Stavite posudu ispod curenja. Za slavinu — zamena gumice (~200 RSD). Za cev — zategnite spoj ili zovite vodoinstalatera hitno.' },
+  { keywords: ['plavina', 'mold', 'muc', 'gljiv'], response: '🦠 **Plavina/muc**: Uzrok je vlaga. Proverite curenje i provetravanje. Očistite belim sirćetom (1:1 sa vodom). Za veće površine — sredstvo protiv plavine i maska. Ako se vraća — pozovite stručnjaka.' },
+  { keywords: ['bolest', 'pegor', 'insekt', 'crven'], response: '🌱 **Bolest biljke**: Izolujte zaraženu biljku. Orezujte oštećene delove. Za pečurke — fungicid. Za insekte — sapunski rastvor. Proverite zalivanje i svetlost.' },
   { keywords: ['ventil', 'slavina', 'curenje', 'kap'], response: '🔧 **Ventil/slavina**: Zatvorite glavni ventil vode. Proverite gumicu (sedlo) ili zaptivač. Za zamenu sedla treba ključ za slavinu i nova gumica (~200-500 RSD). Ako curi iz čaure — pozovite vodoinstalatera.' },
   { keywords: ['osigurač', 'fuse', 'struja', 'iskra'], response: '⚡ **Osigurač**: Isključite glavni prekidač. Proverite koji osigurač je pao. Uklonite uređaje sa te grane i ponovo uključite. Ako opet pada — kratki spoj, ne dirajte sami, zovite električara.' },
   { keywords: ['fleka', 'mrlja', 'zid', 'boja'], response: '🎨 **Fleka na zidu**: Odredite uzrok (vlaga, voda, dim). Za masne fleke — deterdžent i topla voda. Za vodene — prvo rešite curenje, pa akrilna boja. Testirajte na malom delu.' },

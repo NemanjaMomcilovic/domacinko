@@ -1,11 +1,11 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#2d8f5c">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>DomaÄ‡inko â€” Plan obroka</title>
+  <title>Domacinko — Plan obroka</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
   <link rel="stylesheet" href="../css/style.css">
@@ -16,20 +16,25 @@
 
     <main class="main-content main-content--no-nav">
       <p class="text-muted mb-md" style="font-size:var(--font-size-sm)">
-        Planirajte obroke za celu nedelju i automatski generiÅ¡ite listu za kupovinu.
+        Planirajte obroke za celu nedelju i automatski generišite listu za kupovinu.
       </p>
+
+      <div class="section mb-md">
+        <h2 class="section__title mb-sm">Srpska jela — brzi izbor</h2>
+        <div id="meal-presets"></div>
+      </div>
 
       <div class="card card--flat" id="meal-days"></div>
 
       <button type="button" class="btn btn--primary btn--block mb-md" id="generate-shopping">
-        ðŸ›’ GeneriÅ¡i listu za kupovinu
+        ?? Generiši listu za kupovinu
       </button>
 
       <div class="section">
-        <h2 class="section__title mb-md">Å ta mogu da skuvam?</h2>
+        <h2 class="section__title mb-md">Šta mogu da skuvam?</h2>
         <div class="card card--flat" id="cook-suggestions"></div>
         <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">
-          Dodajte namirnice u DomaÄ‡instvo â†’ Ostava da biste dobili predloge.
+          Dodajte namirnice u Domacinstvo ? Ostava da biste dobili predloge.
         </p>
       </div>
     </main>
@@ -40,6 +45,7 @@
   <script src="../js/storage.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/auth.js"></script>
+  <script src="../js/ui-helpers.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/navigation.js"></script>
   <script src="../js/pages/meal-plan.js"></script>

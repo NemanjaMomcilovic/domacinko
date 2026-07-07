@@ -1,9 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  await waitForAuth?.();
-
-  initNavigation('home');
-  initPwaInstallBanner();
-
+function refreshHomeDashboard() {
   if (typeof renderMorningBriefing === 'function') {
     renderMorningBriefing('morning-briefing');
   }
@@ -18,24 +13,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tasks = getTasks();
   const shopping = getShoppingList().filter(i => !i.bought);
 
-  const name = (typeof getAuthDisplayName === 'function' ? getAuthDisplayName() : settings.userName) || 'prijatelju';
-  document.getElementById('greeting').textContent = `${getGreeting()}, ${name}!`;
+  ensureMaintenanceInitialized?.();
+  const maintenanceDue = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
 
-  const avatarEl = document.getElementById('user-avatar');
-  const avatarContent = getUserAvatarContent(settings);
-  avatarEl.textContent = avatarContent;
-  if (avatarContent.length === 1) avatarEl.classList.add('user-avatar--initial');
+  if (typeof renderQuickStatsRow === 'function') {
+    renderQuickStatsRow('quick-stats', [
+      { icon: '💸', label: 'Danas', value: formatCurrency(getTodaySpending?.() || 0), link: 'add-expense.html' },
+      { icon: '🛒', label: 'Kupovina', value: String(shopping.length), link: 'shopping.html' },
+      { icon: '🔧', label: 'Održavanje', value: String(maintenanceDue.length), link: 'maintenance.html' }
+    ]);
+  }
 
-  const household = getHousehold();
-  const members = household.familyMembers?.length || 0;
-  const statusText = members > 0
-    ? `Domaćinstvo: ${members} članova`
-    : 'Domaćinko prati tvoje domaćinstvo.';
-  document.getElementById('household-status').textContent = statusText;
+  const tipsEl = document.getElementById('personalized-tips');
+  if (tipsEl && typeof getPersonalizedTips === 'function') {
+    const tips = getPersonalizedTips();
+    tipsEl.innerHTML = `
+      <div class="card card--flat">
+        <p class="card__title">💡 Saveti za tebe</p>
+        ${tips.map(t => `<p class="advice-banner__text" style="margin-bottom:var(--space-sm)">${t.icon} ${t.text}</p>`).join('')}
+      </div>
+    `;
+  }
 
   const comparison = getMonthComparison();
   const compEl = document.getElementById('month-comparison');
-  if (comparison) {
+  if (comparison && compEl) {
     compEl.innerHTML = `<div class="comparison-banner ${comparison.less ? 'comparison-banner--good' : 'comparison-banner--warn'}">${comparison.text} 💚</div>`;
   }
 
@@ -50,12 +52,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     : 'stat-card__value stat-card__value--negative';
 
   renderSavingsGoalCard('savings-card');
-
   document.getElementById('daily-advice').textContent = getDomacinkoAdvice();
 
   const reminders = getRecurringReminders();
-  if (reminders.length > 0) {
-    document.getElementById('recurring-section').classList.remove('hidden');
+  const recurringSection = document.getElementById('recurring-section');
+  if (reminders.length > 0 && recurringSection) {
+    recurringSection.classList.remove('hidden');
     document.getElementById('recurring-reminders').innerHTML = reminders.map(r => `
       <div class="reminder-item">
         <span class="reminder-item__icon">${getCategoryIcon(r.category)}</span>
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     tasksEl.innerHTML = todayTasks.map(t => `
       <div class="task-item animate-slide-in">
-        <input type="checkbox" class="task-checkbox" data-id="${t.id}" ${t.done ? 'checked' : ''}>
+        <input type="checkbox" class="task-checkbox" data-id="${t.id}" ${t.done ? 'checked' : ''} aria-label="Označi zadatak: ${t.text}">
         <span>${t.text}</span>
       </div>
     `).join('');
@@ -99,10 +101,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     `).join('');
   }
 
-  if (shopping.length > 0) {
-    document.getElementById('shopping-hint').textContent =
-      `Imate ${shopping.length} stavke na listi za kupovinu.`;
-    document.getElementById('shopping-hint').classList.remove('hidden');
+  const shoppingHint = document.getElementById('shopping-hint');
+  if (shopping.length > 0 && shoppingHint) {
+    shoppingHint.textContent = `Imate ${shopping.length} stavke na listi za kupovinu.`;
+    shoppingHint.classList.remove('hidden');
   }
 
   const budgetWarnings = getCategoryBudgetWarnings();
@@ -116,8 +118,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     `).join('');
   }
 
-  ensureMaintenanceInitialized();
-  const maintenanceDue = getDueMaintenance();
   if (maintenanceDue.length > 0) {
     document.getElementById('maintenance-section').classList.remove('hidden');
     document.getElementById('maintenance-due').innerHTML = maintenanceDue.slice(0, 5).map(t => `
@@ -141,50 +141,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
     }).join('');
   }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await waitForAuth?.();
+
+  initNavigation('home');
+  initPwaInstallBanner();
+
+  const settings = getSettings();
+  const name = (typeof getAuthDisplayName === 'function' ? getAuthDisplayName() : settings.userName) || 'prijatelju';
+  document.getElementById('greeting').textContent = `${getGreeting()}, ${name}!`;
+
+  const avatarEl = document.getElementById('user-avatar');
+  const avatarContent = getUserAvatarContent(settings);
+  avatarEl.textContent = avatarContent;
+  if (avatarContent.length === 1) avatarEl.classList.add('user-avatar--initial');
+
+  const household = getHousehold();
+  const members = household.familyMembers?.length || 0;
+  const statusText = members > 0
+    ? `Domaćinstvo: ${members} članova`
+    : 'Domaćinko prati tvoje domaćinstvo.';
+  document.getElementById('household-status').textContent = statusText;
+
+  refreshHomeDashboard();
+  initPullToRefresh?.(() => {
+    refreshHomeDashboard();
+    return Promise.resolve();
+  });
 });
 
 function initPwaInstallBanner() {
-  const banner = document.getElementById('pwa-install-banner');
-  if (!banner) return;
-
-  const dismissed = localStorage.getItem('domacinko_pwa_dismissed') === 'true';
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true;
-
-  if (dismissed || isStandalone) return;
-
-  let deferredPrompt = null;
-
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    banner.classList.remove('hidden');
-  });
-
-  setTimeout(() => {
-    if (!dismissed && !isStandalone) {
-      banner.classList.remove('hidden');
-    }
-  }, 2000);
-
-  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      banner.classList.add('hidden');
-      return;
-    }
-    showToast('Koristite meni pregledača → „Dodaj na početni ekran".');
-  });
-
-  document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
-    localStorage.setItem('domacinko_pwa_dismissed', 'true');
-    banner.classList.add('hidden');
-  });
-
-  window.addEventListener('appinstalled', () => {
-    banner.classList.add('hidden');
-    showToast('Domaćinko je instaliran! 🎉');
-  });
-}

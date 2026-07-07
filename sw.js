@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v6.1.0';
+const CACHE_NAME = 'domacinko-v6.2.0';
 
 const ASSETS = [
   './',
@@ -14,6 +14,7 @@ const ASSETS = [
   './js/storage.js',
   './js/supabase-client.js',
   './js/auth.js',
+  './js/ui-helpers.js',
   './js/app.js',
   './js/navigation.js',
   './js/notifications.js',
@@ -27,6 +28,7 @@ const ASSETS = [
   './js/pages/ai.js',
   './js/pages/shopping.js',
   './js/pages/settings.js',
+  './js/pages/profile.js',
   './js/pages/add-expense.js',
   './js/pages/scan-receipt.js',
   './js/pages/household.js',
@@ -52,6 +54,7 @@ const ASSETS = [
   './pages/ai.html',
   './pages/shopping.html',
   './pages/settings.html',
+  './pages/profile.html',
   './pages/add-expense.html',
   './pages/scan-receipt.html',
   './pages/household.html',
@@ -95,6 +98,15 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  if (url.pathname.includes('/cdn.jsdelivr.net/') || url.pathname.includes('supabase')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(cached => {

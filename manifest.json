@@ -39,5 +39,21 @@
       "type": "image/png",
       "purpose": "any"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dodaj trošak",
+      "short_name": "Trošak",
+      "description": "Brzo dodavanje novog troška",
+      "url": "./pages/add-expense.html",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Lista za kupovinu",
+      "short_name": "Kupovina",
+      "description": "Otvori listu za kupovinu",
+      "url": "./pages/shopping.html",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    }
   ]
 }

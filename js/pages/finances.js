@@ -1,4 +1,5 @@
 let categoryChart = null;
+let trendChart = null;
 
 function getFilters() {
   return {
@@ -212,6 +213,112 @@ function renderCategoryBudgets() {
   container.innerHTML = statuses.map(s => renderCategoryBudgetBar(s)).join('');
 }
 
+function renderWeeklySpending() {
+  const container = document.getElementById('weekly-spending');
+  if (!container || typeof getWeeklySpending !== 'function') return;
+
+  const days = getWeeklySpending();
+  const max = Math.max(...days.map(d => d.amount), 1);
+  const total = days.reduce((s, d) => s + d.amount, 0);
+
+  container.innerHTML = `
+    <p class="text-muted mb-sm" style="font-size:var(--font-size-sm)">Ukupno 7 dana: <strong>${formatCurrency(total)}</strong></p>
+    <div class="weekly-chart" role="img" aria-label="Grafikon potrošnje po danima">
+      ${days.map(d => `
+        <div class="weekly-bar">
+          <span class="weekly-bar__amount">${d.amount > 0 ? formatCurrency(d.amount) : '—'}</span>
+          <div class="weekly-bar__fill${d.isToday ? ' weekly-bar__fill--today' : ''}" style="height:${Math.max(4, (d.amount / max) * 80)}px"></div>
+          <span class="weekly-bar__label">${d.label}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderTrendChart() {
+  const canvas = document.getElementById('trend-chart');
+  if (!canvas || typeof Chart === 'undefined' || typeof getSpendingTrend !== 'function') return;
+
+  const trend = getSpendingTrend(6);
+
+  if (trendChart) {
+    trendChart.destroy();
+    trendChart = null;
+  }
+
+  trendChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: trend.map(t => t.label),
+      datasets: [{
+        label: 'Potrošnja',
+        data: trend.map(t => t.amount),
+        borderColor: '#2d8f5c',
+        backgroundColor: 'rgba(45, 143, 92, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: '#2d8f5c'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: v => formatCurrency(v) }
+        }
+      }
+    }
+  });
+}
+
+function exportFinancesPdf() {
+  const settings = getSettings();
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget;
+  const score = getFinancialHealthScore();
+  const byCategory = getSpendingByCategory(now.getFullYear(), now.getMonth());
+  const monthName = now.toLocaleDateString('sr-RS', { month: 'long', year: 'numeric' });
+
+  const rows = Object.entries(byCategory)
+    .filter(([, amt]) => amt > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, amt]) => `<tr><td>${getCategoryIcon(id)} ${getCategoryLabel(id)}</td><td style="text-align:right">${formatCurrency(amt)}</td></tr>`)
+    .join('');
+
+  const printWin = window.open('', '_blank');
+  if (!printWin) {
+    showToast('Dozvolite pop-up prozore za izvoz.', 'warning');
+    return;
+  }
+
+  printWin.document.write(`<!DOCTYPE html><html lang="sr"><head><meta charset="UTF-8"><title>Domaćinko — Finansije ${monthName}</title>
+    <style>body{font-family:Segoe UI,sans-serif;padding:24px;max-width:600px;margin:0 auto}
+    h1{color:#2d8f5c}table{width:100%;border-collapse:collapse;margin:16px 0}
+    td{padding:8px;border-bottom:1px solid #eee}.summary{background:#e8f5ee;padding:16px;border-radius:8px;margin:16px 0}
+  </style></head><body>
+    <h1>🏡 Domaćinko — Finansijski pregled</h1>
+    <p>${monthName}</p>
+    <div class="summary">
+      <p><strong>Budžet:</strong> ${formatCurrency(budget)}</p>
+      <p><strong>Potrošeno:</strong> ${formatCurrency(spent)}</p>
+      <p><strong>Preostalo:</strong> ${formatCurrency(budget - spent)}</p>
+      <p><strong>Finansijsko zdravlje:</strong> ${score}/100</p>
+    </div>
+    <h2>Po kategorijama</h2>
+    <table>${rows || '<tr><td colspan="2">Nema troškova</td></tr>'}</table>
+    <p style="color:#888;font-size:12px;margin-top:32px">Generisano iz Domaćinko aplikacije · ${new Date().toLocaleString('sr-RS')}</p>
+  </body></html>`);
+  printWin.document.close();
+  printWin.focus();
+  setTimeout(() => printWin.print(), 400);
+  showToast('PDF pregled spreman za štampu.', 'success');
+}
+
 function renderFinancialTrainer() {
   const container = document.getElementById('financial-trainer');
   if (!container) return;
@@ -239,12 +346,17 @@ function refreshFinances() {
   renderCategoryBudgets();
   renderCategoryBreakdown(byCategory);
   renderChart(byCategory);
+  renderWeeklySpending();
+  renderTrendChart();
   renderExpensesList();
   renderFinancialTrainer();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('finances', { title: 'Finansije' });
+
+  const expensesList = document.getElementById('expenses-list');
+  if (expensesList) expensesList.innerHTML = renderSkeleton(4, 'list');
 
   const settings = getSettings();
   const now = new Date();
@@ -282,6 +394,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCategoryBudgets();
   renderCategoryBreakdown(byCategory);
   renderChart(byCategory);
+  renderWeeklySpending();
+  renderTrendChart();
   renderExpensesList();
   renderFinancialTrainer();
+
+  document.getElementById('export-pdf-btn')?.addEventListener('click', exportFinancesPdf);
 });

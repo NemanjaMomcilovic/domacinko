@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sr">
 <head>
   <meta charset="UTF-8">
@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#2d8f5c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Domaćinko">
-  <title>Domaćinko — Inventar</title>
+  <meta name="apple-mobile-web-app-title" content="Domacinko">
+  <title>Domacinko � Inventar</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
@@ -19,23 +19,23 @@
 
     <main class="main-content">
       <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
-        Pratite kućne predmete, garancije i račune na jednom mestu.
+        Pratite kucne predmete, garancije i racune na jednom mestu.
       </p>
 
       <div class="section">
         <div class="section__header">
-          <h2 class="section__title">Vaš inventar</h2>
+          <h2 class="section__title">Va� inventar</h2>
         </div>
         <div class="card card--flat" id="inventory-list"></div>
       </div>
 
       <div class="section">
         <div class="section__header">
-          <h2 class="section__title">Kućni magacin</h2>
+          <h2 class="section__title">Kucni magacin</h2>
         </div>
-        <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">Sijalice, boja, šrafovi — brza pretraga „imam li sijalice?"</p>
+        <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">Sijalice, boja, �rafovi � brza pretraga �imam li sijalice?"</p>
         <div class="form-group">
-          <input type="search" class="form-input" id="magazine-search" placeholder="Pretraži magacin...">
+          <input type="search" class="form-input" id="magazine-search" placeholder="Pretra�i magacin...">
         </div>
         <div class="card card--flat" id="magazine-list"></div>
         <div class="card card--flat mt-sm" style="padding:var(--space-md)">
@@ -55,7 +55,7 @@
         <div class="card card--flat" style="padding:var(--space-md)">
           <div class="form-group">
             <label class="form-label" for="inv-name">Naziv</label>
-            <input type="text" class="form-input" id="inv-name" placeholder="npr. Usisivač Dyson">
+            <input type="text" class="form-input" id="inv-name" placeholder="npr. Usisivac Dyson">
           </div>
           <div class="form-group">
             <label class="form-label" for="inv-location">Lokacija</label>
@@ -76,8 +76,8 @@
             <input type="text" class="form-input" id="inv-note" placeholder="Opciono">
           </div>
           <div class="form-group">
-            <label class="form-label">Slika računa</label>
-            <div class="receipt-preview" id="receipt-preview"><span>📷 Dodajte sliku računa (opciono)</span></div>
+            <label class="form-label">Slika racuna</label>
+            <div class="receipt-preview" id="receipt-preview"><span>?? Dodajte sliku racuna (opciono)</span></div>
             <input type="file" id="inv-receipt" accept="image/*" hidden>
             <button type="button" class="btn btn--secondary btn--sm mt-sm" onclick="document.getElementById('inv-receipt').click()">Izaberi sliku</button>
           </div>
@@ -94,6 +94,7 @@
   <script src="../js/storage.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/auth.js"></script>
+  <script src="../js/ui-helpers.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/navigation.js"></script>
   <script src="../js/pages/inventory.js"></script>

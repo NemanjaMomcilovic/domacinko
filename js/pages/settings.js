@@ -138,6 +138,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   themeToggle.addEventListener('click', () => {
     const dark = toggleTheme();
     themeToggle.classList.toggle('toggle--on', dark);
+    saveSettings({ darkTheme: dark });
+  });
+
+  const largeTextToggle = document.getElementById('large-text-toggle');
+  if (settings.largeText) largeTextToggle?.classList.add('toggle--on');
+  largeTextToggle?.addEventListener('click', () => {
+    const on = !largeTextToggle.classList.contains('toggle--on');
+    largeTextToggle.classList.toggle('toggle--on', on);
+    saveSettings({ largeText: on });
+    initAccessibility?.();
+    showToast(on ? 'Veći tekst uključen.' : 'Veći tekst isključen.', 'info');
+  });
+
+  const contrastToggle = document.getElementById('high-contrast-toggle');
+  if (settings.highContrast) contrastToggle?.classList.add('toggle--on');
+  contrastToggle?.addEventListener('click', () => {
+    const on = !contrastToggle.classList.contains('toggle--on');
+    contrastToggle.classList.toggle('toggle--on', on);
+    saveSettings({ highContrast: on });
+    initAccessibility?.();
+    showToast(on ? 'Visok kontrast uključen.' : 'Visok kontrast isključen.', 'info');
   });
 
   const notifToggle = document.getElementById('notifications-toggle');

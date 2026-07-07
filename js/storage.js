@@ -116,6 +116,8 @@ const DEFAULT_DATA = {
     savingsGoalName: '',
     categoryBudgets: {},
     darkTheme: false,
+    largeText: false,
+    highContrast: false,
     apiKey: '',
     apiUrl: 'https://api.openai.com/v1/chat/completions',
     notificationsEnabled: false
@@ -123,6 +125,7 @@ const DEFAULT_DATA = {
   expenses: [],
   recurringExpenses: [],
   shoppingList: [],
+  favoriteProducts: [],
   mealPlan: {
     mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: ''
   },
@@ -148,6 +151,7 @@ const DEFAULT_DATA = {
   inventory: [],
   maintenance: [],
   repairHistory: [],
+  craftsmanContacts: [],
   teacherProgress: { completed: [], notes: {} },
   houseProfile: {
     squareMeters: 0,
@@ -548,9 +552,9 @@ function getShoppingList() {
   return getData().shoppingList;
 }
 
-function addShoppingItem(name) {
+function addShoppingItem(name, category = 'other') {
   const data = getData();
-  const item = { id: generateId(), name, bought: false };
+  const item = { id: generateId(), name, bought: false, category };
   data.shoppingList.push(item);
   saveData(data);
   return item;
@@ -1594,6 +1598,140 @@ function detectPurchasePatterns() {
   return patterns.sort((a, b) => b.count - a.count).slice(0, 10);
 }
 
+const SHOPPING_CATEGORIES = [
+  { id: 'food', label: 'Hrana', icon: '🍎', color: '#2d8f5c' },
+  { id: 'home', label: 'Dom', icon: '🏠', color: '#3b82c4' },
+  { id: 'hygiene', label: 'Higijena', icon: '🧴', color: '#8b5cf6' },
+  { id: 'other', label: 'Ostalo', icon: '📦', color: '#8a9a92' }
+];
+
+const SERBIAN_MEAL_PRESETS = [
+  { name: 'Pasulj', ingredients: ['pasulj', 'luk', 'šargarepa', 'krompir', 'crvena paprika'] },
+  { name: 'Sarma', ingredients: ['kupus', 'meso', 'pirinač', 'luk', 'so'] },
+  { name: 'Pljeskavica', ingredients: ['mleveno meso', 'luk', 'so', 'biber'] },
+  { name: 'Musaka', ingredients: ['krompir', 'meso', 'jaja', 'mleko', 'luk'] },
+  { name: 'Gulaš', ingredients: ['meso', 'luk', 'paprika', 'paradajz', 'brašno'] },
+  { name: 'Prebranac', ingredients: ['pasulj', 'luk', 'brašno', 'ulje'] },
+  { name: 'Punjene paprike', ingredients: ['paprika', 'meso', 'pirinač', 'luk', 'paradajz'] },
+  { name: 'Čorba od povrća', ingredients: ['povrće', 'luk', 'šargarepa', 'so'] },
+  { name: 'Palačinke', ingredients: ['brašno', 'jaja', 'mleko', 'šećer', 'ulje'] },
+  { name: 'Šopska salata', ingredients: ['paradajz', 'krastavac', 'sir', 'luk', 'masline'] }
+];
+
+function getTodaySpending() {
+  const today = new Date().toISOString().split('T')[0];
+  return getExpenses()
+    .filter(e => e.date === today)
+    .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+}
+
+function getWeeklySpending() {
+  const now = new Date();
+  const dayLabels = ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'];
+  const days = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(now.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    const amount = getExpenses()
+      .filter(e => e.date === dateStr)
+      .reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
+    days.push({
+      day: date.getDate(),
+      label: dayLabels[date.getDay()],
+      amount,
+      isToday: i === 0
+    });
+  }
+  return days;
+}
+
+function getSpendingTrend(months = 6) {
+  const now = new Date();
+  const trend = [];
+  for (let i = months - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const spent = getTotalSpent(d.getFullYear(), d.getMonth());
+    trend.push({
+      label: d.toLocaleDateString('sr-RS', { month: 'short' }),
+      amount: spent,
+      year: d.getFullYear(),
+      month: d.getMonth()
+    });
+  }
+  return trend;
+}
+
+function getPersonalizedTips() {
+  const tips = [];
+  const settings = getSettings();
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget || 0;
+  const usagePct = budget > 0 ? Math.round((spent / budget) * 100) : 0;
+
+  if (usagePct >= 80) {
+    tips.push({ icon: '💰', text: `Potrošeno ${usagePct}% budžeta — razmisli o uštedi do kraja meseca.` });
+  }
+
+  const pantry = getHousehold().pantry || [];
+  const lowStock = pantry.filter(p => p.quantity !== undefined && parseFloat(p.quantity) <= 1);
+  if (lowStock.length > 0) {
+    tips.push({ icon: '🥫', text: `${lowStock.length} namirnica na isteku u ostavi — proveri špajz.` });
+  }
+
+  const shopping = getShoppingList().filter(i => !i.bought);
+  if (shopping.length >= 5) {
+    tips.push({ icon: '🛒', text: `Lista za kupovinu ima ${shopping.length} stavki — možda je vreme za odlazak u prodavnicu.` });
+  }
+
+  ensureMaintenanceInitialized?.();
+  const due = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
+  const overdue = due.filter(t => t.overdue);
+  if (overdue.length > 0) {
+    tips.push({ icon: '🔧', text: `${overdue.length} zadatak održavanja kasni — ne odlaži popravke.` });
+  }
+
+  const profile = typeof getHouseProfile === 'function' ? getHouseProfile() : {};
+  if (profile.heatingType === 'gas' && [10, 11, 0].includes(now.getMonth())) {
+    tips.push({ icon: '🌡️', text: 'Sezona grejanja — proveri kotao i termostat pre hladnih dana.' });
+  }
+
+  const safety = typeof getSafetyReminders === 'function' ? getSafetyReminders() : [];
+  const expiredSafety = safety.filter(r => r.expired);
+  if (expiredSafety.length > 0) {
+    tips.push({ icon: '🚨', text: 'Proveri detektore dima i prvu pomoć — nešto je isteklo!' });
+  }
+
+  if (tips.length === 0) {
+    tips.push({ icon: '✨', text: 'Sve izgleda odlično! Nastavi da pratiš domaćinstvo redovno.' });
+  }
+
+  return tips.slice(0, 4);
+}
+
+function getFavoriteProducts() {
+  return getData().favoriteProducts || [];
+}
+
+function addFavoriteProduct(name) {
+  const data = getData();
+  if (!data.favoriteProducts) data.favoriteProducts = [];
+  const trimmed = name.trim();
+  if (!trimmed || data.favoriteProducts.includes(trimmed)) return false;
+  data.favoriteProducts.unshift(trimmed);
+  data.favoriteProducts = data.favoriteProducts.slice(0, 20);
+  saveData(data);
+  return true;
+}
+
+function getLowStockPantry() {
+  return (getHousehold().pantry || []).filter(p =>
+    p.name && p.quantity !== undefined && parseFloat(p.quantity) <= 1
+  );
+}
+
 function getFinancialTrainerInsights() {
   const now = new Date();
   const byCategory = getSpendingByCategory(now.getFullYear(), now.getMonth());
@@ -1607,13 +1745,23 @@ function getFinancialTrainerInsights() {
   top.forEach(([catId, amount]) => {
     const annual = amount * 12;
     const label = getCategoryLabel(catId).toLowerCase();
+    const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    const prevAmount = getSpendingByCategory(prevYear, prevMonth)[catId] || 0;
+    let trend = '';
+    if (prevAmount > 0) {
+      const change = Math.round((amount / prevAmount - 1) * 100);
+      if (change > 10) trend = ` (+${change}% vs prošli mesec)`;
+      else if (change < -10) trend = ` (${change}% vs prošli mesec — bravo!)`;
+    }
+    const dailyAvg = Math.round(amount / Math.max(1, now.getDate()));
     insights.push({
       category: catId,
       label: getCategoryLabel(catId),
       amount,
       annual,
-      message: `Ovog meseca si dao ${formatCurrency(amount)} na ${label}.`,
-      savings: `Da si uštedeo 20%, imao bi ${formatCurrency(annual * 0.2)} godišnje više u džepu! 💚`
+      message: `Ovog meseca: ${formatCurrency(amount)} na ${label}${trend}. Prosek: ${formatCurrency(dailyAvg)}/dan.`,
+      savings: `Ušteda od 20% = ${formatCurrency(annual * 0.2)} godišnje. Zameni ${label} jeftinijom alternativom jednom nedeljno.`
     });
   });
 
@@ -1728,4 +1876,36 @@ function getUpcomingCosts(targetMonth, targetYear) {
   });
 
   return costs.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function getCraftsmanContacts() {
+  return getData().craftsmanContacts || [];
+}
+
+function saveCraftsmanContact(contact) {
+  const data = getData();
+  if (!data.craftsmanContacts) data.craftsmanContacts = [];
+  const item = {
+    id: generateId(),
+    trade: contact.trade || '',
+    name: contact.name || '',
+    phone: contact.phone || '',
+    notes: contact.notes || ''
+  };
+  data.craftsmanContacts.unshift(item);
+  saveData(data);
+  return item;
+}
+
+function deleteCraftsmanContact(id) {
+  const data = getData();
+  data.craftsmanContacts = (data.craftsmanContacts || []).filter(c => c.id !== id);
+  saveData(data);
+}
+
+const MAX_DIARY_PHOTO_SIZE = 150000;
+
+function compressImageForStorage(dataUrl, maxSize = MAX_DIARY_PHOTO_SIZE) {
+  if (!dataUrl || dataUrl.length <= maxSize) return dataUrl;
+  return dataUrl.substring(0, maxSize);
 }

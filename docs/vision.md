@@ -10,7 +10,17 @@
 
 ## Misija
 
-Pomoći svakom domaćinstvu da bolje upravlja finansijama, kupovinom, popravkama i svakodnevnim obavezama — kroz jednostavan, prijatan i inteligentan alat koji raste sa korisnikom.
+Pomoći svakom domaćinstvu da bolje upravlja finansijama, kupovinom, popravkama i svakodnevnim obavezama — kroz jednostavan, prijatan i inteligentan alat koji **proaktivno** predviđa potrebe i savetuje pre nego što postanu problemi.
+
+### Proaktivni Domaćinko (v6.2+)
+
+Domaćinko više nije pasivni alat za unos podataka — on **razmišlja umesto vas**:
+
+- **Jutarnji brifing** — hero sekcija sa personalizovanim porukama iz svih modula
+- **Brza statistika** — troškovi danas, stavke za kupovinu, održavanje na redu
+- **Personalizovani saveti** — na osnovu budžeta, ostave, bezbednosti i profila kuće
+- **Pull-to-refresh** — osvežavanje dashboarda jednim potezom
+- **Offline-first** — baner kada nema mreže, podaci uvek lokalno dostupni
 
 ---
 

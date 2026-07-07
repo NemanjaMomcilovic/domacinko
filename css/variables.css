@@ -57,6 +57,27 @@
 
   /* Transitions */
   --transition: 0.2s ease;
+
+  /* Touch targets */
+  --touch-min: 44px;
+}
+
+[data-large-text] {
+  --font-size-xs: 0.875rem;
+  --font-size-sm: 1rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+  --font-size-3xl: 2.125rem;
+}
+
+[data-high-contrast] {
+  --color-text: #000000;
+  --color-text-secondary: #1a1a1a;
+  --color-border: #333333;
+  --color-primary: #006633;
+  --color-primary-dark: #004422;
 }
 
 [data-theme="dark"] {

@@ -61,8 +61,33 @@ function renderCookSuggestions() {
   `;
 }
 
+function renderMealPresets() {
+  const container = document.getElementById('meal-presets');
+  if (!container || typeof SERBIAN_MEAL_PRESETS === 'undefined') return;
+  container.innerHTML = `
+    <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">Dodirnite jelo da ga dodate u prvi slobodan dan</p>
+    <div class="fav-chips">
+      ${SERBIAN_MEAL_PRESETS.map(m => `<button type="button" class="fav-chip meal-preset" data-name="${m.name}">${m.name}</button>`).join('')}
+    </div>
+  `;
+  container.querySelectorAll('.meal-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const plan = getMealPlan();
+      const emptyDay = MEAL_DAYS.find(d => !(plan[d.id] || '').trim());
+      if (!emptyDay) {
+        showToast('Svi dani su popunjeni. Obrišite neki obrok prvo.', 'warning');
+        return;
+      }
+      setMealForDay(emptyDay.id, btn.dataset.name);
+      renderMealDays();
+      showToast(`${btn.dataset.name} → ${emptyDay.label}`, 'success');
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('', { title: 'Plan obroka', showBack: true, backHref: 'home.html' });
+  renderMealPresets();
   renderMealDays();
   renderCookSuggestions();
 
