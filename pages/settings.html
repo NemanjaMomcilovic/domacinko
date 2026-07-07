@@ -29,11 +29,26 @@
 
       <form id="settings-form">
         <div class="settings-group">
+          <h3 class="settings-group__title">Nalog</h3>
+          <div class="card card--flat" id="account-card" style="padding:var(--space-md)">
+            <p class="settings-account__name" id="account-name">—</p>
+            <p class="settings-account__email text-muted" id="account-email" style="font-size:var(--font-size-sm)"></p>
+            <p class="settings-account__mode text-muted" id="account-mode" style="font-size:var(--font-size-xs);margin-top:var(--space-xs)"></p>
+            <button type="button" class="btn btn--secondary btn--block mt-sm hidden" id="logout-btn">Odjavi se</button>
+            <a href="auth.html" class="btn btn--primary btn--block mt-sm hidden" id="login-link">Prijavi se / Registruj se</a>
+          </div>
+        </div>
+
+        <div class="settings-group">
           <h3 class="settings-group__title">Profil</h3>
           <div class="card card--flat" style="padding:0;overflow:hidden">
             <div class="settings-item">
-              <label class="settings-item__label" for="user-name">Ime</label>
-              <input type="text" class="form-input" id="user-name" placeholder="Vaše ime" style="width:140px;text-align:right;border:none;padding:0">
+              <label class="settings-item__label" for="user-first-name">Ime</label>
+              <input type="text" class="form-input" id="user-first-name" placeholder="Ime" style="width:120px;text-align:right;border:none;padding:0">
+            </div>
+            <div class="settings-item">
+              <label class="settings-item__label" for="user-last-name">Prezime</label>
+              <input type="text" class="form-input" id="user-last-name" placeholder="Prezime" style="width:120px;text-align:right;border:none;padding:0">
             </div>
           </div>
         </div>
@@ -48,6 +63,14 @@
                 <option value="EUR">EUR</option>
                 <option value="USD">USD</option>
               </select>
+            </div>
+            <div class="settings-item">
+              <label class="settings-item__label" for="monthly-income">Mesečna primanja</label>
+              <input type="number" class="form-input" id="monthly-income" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
+            </div>
+            <div class="settings-item">
+              <label class="settings-item__label" for="current-savings">Ušteđeno</label>
+              <input type="number" class="form-input" id="current-savings" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
             </div>
             <div class="settings-item">
               <label class="settings-item__label" for="monthly-budget">Mesečni budžet</label>
@@ -252,7 +275,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 4.1.1</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 5.0.0</p>
         </div>
       </div>
     </main>
@@ -260,7 +283,11 @@
     <nav class="bottom-nav" id="bottom-nav"></nav>
   </div>
 
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/notifications.js"></script>
   <script src="../js/navigation.js"></script>

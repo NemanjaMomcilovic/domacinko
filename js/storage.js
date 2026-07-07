@@ -99,9 +99,17 @@ const TEACHER_TOPICS = [
   { id: 'shopping', title: 'Pametna kupovina', icon: '🛒', description: 'Lista, poređenje cena, sezonske akcije' }
 ];
 
+const SYNC_DEBOUNCE_MS = 1500;
+let _syncTimer = null;
+let _skipCloudSync = false;
+
 const DEFAULT_DATA = {
   settings: {
     userName: '',
+    firstName: '',
+    lastName: '',
+    monthlyIncome: 0,
+    currentSavings: 0,
     currency: 'RSD',
     monthlyBudget: 80000,
     savingsGoal: 10000,
@@ -172,18 +180,96 @@ function getData() {
   }
 }
 
-function saveData(data) {
+function saveData(data, options = {}) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  if (!options.skipSync && !_skipCloudSync) {
+    scheduleCloudSync();
+  }
+}
+
+function scheduleCloudSync() {
+  if (typeof isLoggedIn !== 'function' || !isLoggedIn()) return;
+  if (typeof isSupabaseConfigured !== 'function' || !isSupabaseConfigured()) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(() => {
+    pushUserDataToCloud(getData()).catch(() => {});
+  }, SYNC_DEBOUNCE_MS);
+}
+
+async function pushUserDataToCloud(data) {
+  if (typeof isLoggedIn !== 'function' || !isLoggedIn()) return;
+  const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+  const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  if (!client || !user) return;
+
+  const { error } = await client
+    .from('user_data')
+    .upsert({
+      user_id: user.id,
+      data,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+
+  if (error) throw new Error(error.message);
+}
+
+async function pullUserDataFromCloud() {
+  if (typeof isLoggedIn !== 'function' || !isLoggedIn()) return null;
+  const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+  const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  if (!client || !user) return null;
+
+  const { data: row, error } = await client
+    .from('user_data')
+    .select('data')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !row?.data) return null;
+
+  _skipCloudSync = true;
+  const merged = { ...structuredClone(DEFAULT_DATA), ...row.data };
+  merged.settings = { ...DEFAULT_DATA.settings, ...(row.data.settings || {}) };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  _skipCloudSync = false;
+  return merged;
 }
 
 function getSettings() {
   return getData().settings;
 }
 
-function saveSettings(settings) {
+function saveSettings(settings, options = {}) {
   const data = getData();
   data.settings = { ...data.settings, ...settings };
-  saveData(data);
+  if (settings.firstName !== undefined || settings.lastName !== undefined) {
+    const first = settings.firstName ?? data.settings.firstName ?? '';
+    const last = settings.lastName ?? data.settings.lastName ?? '';
+    data.settings.userName = [first, last].filter(Boolean).join(' ').trim();
+  }
+  saveData(data, options);
+
+  if (!options.skipProfileSync && typeof isLoggedIn === 'function' && isLoggedIn()) {
+    syncSettingsToProfile(data.settings);
+  }
+}
+
+async function syncSettingsToProfile(settings) {
+  if (typeof saveProfile !== 'function') return;
+  try {
+    await saveProfile({
+      first_name: settings.firstName || settings.userName?.split(' ')[0] || '',
+      last_name: settings.lastName || settings.userName?.split(' ').slice(1).join(' ') || '',
+      monthly_income: settings.monthlyIncome || 0,
+      current_savings: settings.currentSavings || 0,
+      monthly_budget: settings.monthlyBudget || 80000,
+      savings_goal: settings.savingsGoal || 0,
+      savings_goal_name: settings.savingsGoalName || '',
+      currency: settings.currency || 'RSD'
+    });
+  } catch (e) {
+    console.warn('Sinhronizacija profila:', e.message);
+  }
 }
 
 function getExpenses() {
@@ -538,7 +624,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '4.1.0',
+    version: '5.0.0',
     exportedAt: new Date().toISOString(),
     onboardingComplete: isOnboardingComplete(),
     data: getData()

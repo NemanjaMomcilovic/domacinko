@@ -1,5 +1,28 @@
 # Domaćinko — Changelog
 
+## [5.0.0] — 2026-07-07
+
+### Dodato
+- **Supabase autentifikacija**: email/lozinka, Google OAuth, Facebook OAuth
+- **`pages/auth.html`**: prijava, registracija, društvene mreže, gost režim
+- **`js/auth.js`** i **`js/supabase-client.js`**: sesija, profil, OAuth
+- **`config.example.js`**: šablon za Supabase URL i anon ključ
+- **`docs/supabase-setup.md`**: kompletno uputstvo na srpskom sa SQL šemom
+- **Prošireni onboarding (5 koraka)**:
+  1. O tebi (ime, primanja, štednja, budžet, cilj) — obavezno
+  2. Frižider (namirnice) — opciono, „Preskoči za sada"
+  3. Računi — opciono
+  4. Automobil — opciono
+  5. Gotovo → početna
+- **Sinhronizacija**: `profiles` + `user_data` JSONB u Supabase, localStorage keš
+- **Podešavanja**: nalog (ime, email), odjava, mesečna primanja, ušteđeno
+- Uvoz gost podataka pri prvoj prijavi
+
+### Poboljšano
+- Rutiranje: splash → auth → onboarding → početna
+- Zaštićene stranice proveravaju auth/gost status
+- Service worker v5.0.0
+
 ## [4.1.1] — 2026-07-07
 
 ### Dodato

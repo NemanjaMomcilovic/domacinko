@@ -60,13 +60,28 @@
     <img src="assets/logos/domacinko.png" class="splash-logo" alt="Domaćinko">
     <p class="splash-sub">Vaš AI pomoćnik za domaćinstvo</p>
   </div>
+  <script src="config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/storage.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
   <script>
-    setTimeout(function () {
+    setTimeout(async function () {
       if (typeof setSplashSeen === 'function') setSplashSeen();
       else localStorage.setItem('splashSeen', 'true');
-      const onboarded = localStorage.getItem('onboardingComplete') === 'true';
-      window.location.replace(onboarded ? 'pages/home.html' : 'pages/onboarding.html');
+
+      if (typeof initAuth === 'function') await initAuth();
+
+      if (!isGuestMode() && !isLoggedIn()) {
+        window.location.replace('pages/auth.html');
+        return;
+      }
+
+      if (needsOnboarding()) {
+        window.location.replace('pages/onboarding.html');
+      } else {
+        window.location.replace('pages/home.html');
+      }
     }, 3000);
   </script>
 </body>

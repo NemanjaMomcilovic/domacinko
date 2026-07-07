@@ -51,17 +51,24 @@ function saveCategoryBudgetsFromForm() {
   saveCategoryBudgets(budgets);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await waitForAuth?.();
   initNavigation('settings', { title: 'Podešavanja' });
 
   const settings = getSettings();
+  const profile = getCurrentProfile?.();
 
-  document.getElementById('user-name').value = settings.userName || '';
+  document.getElementById('user-first-name').value = settings.firstName || profile?.first_name || '';
+  document.getElementById('user-last-name').value = settings.lastName || profile?.last_name || '';
   document.getElementById('currency').value = settings.currency || 'RSD';
+  document.getElementById('monthly-income').value = settings.monthlyIncome || profile?.monthly_income || 0;
+  document.getElementById('current-savings').value = settings.currentSavings || profile?.current_savings || 0;
   document.getElementById('monthly-budget').value = settings.monthlyBudget || 80000;
   document.getElementById('savings-goal').value = settings.savingsGoal || 10000;
   document.getElementById('savings-goal-name').value = settings.savingsGoalName || '';
   document.getElementById('api-key').value = settings.apiKey || '';
+
+  renderAccountSection();
 
   const themeToggle = document.getElementById('dark-theme-toggle');
   if (settings.darkTheme) themeToggle.classList.add('toggle--on');
@@ -115,9 +122,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('settings-form').addEventListener('submit', e => {
     e.preventDefault();
+    const firstName = document.getElementById('user-first-name').value.trim();
+    const lastName = document.getElementById('user-last-name').value.trim();
     saveSettings({
-      userName: document.getElementById('user-name').value.trim(),
+      firstName,
+      lastName,
+      userName: [firstName, lastName].filter(Boolean).join(' '),
       currency: document.getElementById('currency').value,
+      monthlyIncome: parseFloat(document.getElementById('monthly-income').value) || 0,
+      currentSavings: parseFloat(document.getElementById('current-savings').value) || 0,
       monthlyBudget: parseFloat(document.getElementById('monthly-budget').value) || 80000,
       savingsGoal: parseFloat(document.getElementById('savings-goal').value) || 10000,
       savingsGoalName: document.getElementById('savings-goal-name').value.trim(),
@@ -191,3 +204,46 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Istorija chata obrisana.');
   });
 });
+
+function renderAccountSection() {
+  const nameEl = document.getElementById('account-name');
+  const emailEl = document.getElementById('account-email');
+  const modeEl = document.getElementById('account-mode');
+  const logoutBtn = document.getElementById('logout-btn');
+  const loginLink = document.getElementById('login-link');
+
+  if (isGuestMode?.()) {
+    nameEl.textContent = getSettings().userName || 'Gost';
+    emailEl.textContent = '';
+    modeEl.textContent = '⚠️ Gost režim — podaci samo na ovom uređaju';
+    logoutBtn.classList.add('hidden');
+    loginLink.classList.remove('hidden');
+    return;
+  }
+
+  if (isLoggedIn?.()) {
+    const user = getCurrentUser();
+    const profile = getCurrentProfile();
+    nameEl.textContent = getAuthDisplayName();
+    emailEl.textContent = user?.email || profile?.email || '';
+    modeEl.textContent = '✓ Sinhronizovano sa Supabase';
+    logoutBtn.classList.remove('hidden');
+    loginLink.classList.add('hidden');
+
+    logoutBtn.onclick = async () => {
+      if (!confirm('Da li ste sigurni da želite da se odjavite?')) return;
+      await signOut();
+      clearGuestMode();
+      window.location.href = 'auth.html';
+    };
+    return;
+  }
+
+  nameEl.textContent = 'Niste prijavljeni';
+  emailEl.textContent = '';
+  modeEl.textContent = isSupabaseConfigured?.()
+    ? 'Prijavite se za sinhronizaciju između uređaja'
+    : 'Supabase nije podešen — koristite gost režim';
+  logoutBtn.classList.add('hidden');
+  loginLink.classList.remove('hidden');
+}

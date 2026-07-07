@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Domaćinko — Prijava</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container auth-page">
+    <header class="auth-page__header">
+      <img src="../assets/logos/domacinko.png" class="auth-page__logo" alt="Domaćinko">
+      <p class="auth-page__tagline">Vaš AI pomoćnik za domaćinstvo</p>
+      <p class="auth-page__brand">Powered by <img src="../assets/logos/10key.png" alt="10KEY" class="auth-page__10key"></p>
+    </header>
+
+    <div class="auth-config-warning hidden" id="config-warning">
+      <p><strong>Supabase nije podešen.</strong> Aplikacija radi u gost režimu (samo na ovom uređaju).</p>
+      <a href="../docs/supabase-setup.md" class="auth-config-warning__link">📖 Uputstvo za podešavanje</a>
+    </div>
+
+    <main class="auth-page__main">
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tabs__btn auth-tabs__btn--active" data-tab="login" role="tab">Prijava</button>
+        <button type="button" class="auth-tabs__btn" data-tab="register" role="tab">Registracija</button>
+      </div>
+
+      <!-- Prijava -->
+      <form class="auth-form" id="login-form" data-panel="login">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email</label>
+          <input type="email" class="form-input" id="login-email" placeholder="vas@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Lozinka</label>
+          <input type="password" class="form-input" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn--primary btn--block" id="login-btn">Prijavi se</button>
+      </form>
+
+      <!-- Registracija -->
+      <form class="auth-form hidden" id="register-form" data-panel="register">
+        <div class="form-group">
+          <label class="form-label" for="register-email">Email</label>
+          <input type="email" class="form-input" id="register-email" placeholder="vas@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="register-password">Lozinka</label>
+          <input type="password" class="form-input" id="register-password" placeholder="Min. 6 karaktera" required minlength="6" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="register-password-confirm">Potvrdi lozinku</label>
+          <input type="password" class="form-input" id="register-password-confirm" placeholder="Ponovi lozinku" required minlength="6" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn--primary btn--block" id="register-btn">Kreiraj nalog</button>
+      </form>
+
+      <div class="auth-divider"><span>ili</span></div>
+
+      <div class="auth-social">
+        <button type="button" class="btn btn--social btn--block" id="google-btn" disabled>
+          <span class="btn--social__icon">G</span> Nastavi sa Google
+        </button>
+        <button type="button" class="btn btn--social btn--social--facebook btn--block" id="facebook-btn" disabled>
+          <span class="btn--social__icon">f</span> Nastavi sa Facebook
+        </button>
+      </div>
+
+      <p class="auth-message hidden" id="auth-message"></p>
+    </main>
+
+    <footer class="auth-page__footer">
+      <button type="button" class="btn btn--ghost btn--block" id="guest-btn">
+        Nastavi kao gost
+        <span class="auth-guest-hint">Ograničeno — podaci samo na ovom uređaju</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/pages/auth.js"></script>
+</body>
+</html>

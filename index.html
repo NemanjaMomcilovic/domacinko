@@ -15,14 +15,26 @@
 </head>
 <body>
   <p style="text-align:center;padding:2rem;">Učitavanje Domaćinka...</p>
+  <script src="config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/storage.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
   <script>
-    (function () {
+    (async function () {
       if (!localStorage.getItem('splashSeen')) {
         window.location.replace('splash.html');
         return;
       }
-      if (!localStorage.getItem('onboardingComplete')) {
+
+      if (typeof initAuth === 'function') await initAuth();
+
+      if (!isGuestMode() && !isLoggedIn()) {
+        window.location.replace('pages/auth.html');
+        return;
+      }
+
+      if (needsOnboarding()) {
         window.location.replace('pages/onboarding.html');
       } else {
         window.location.replace('pages/home.html');

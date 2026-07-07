@@ -29,9 +29,12 @@
 
 ## Faza 3 — Backend i AI (delimično ✅)
 
-- [ ] Korisnički nalozi i autentifikacija (Supabase)
-- [ ] Sinhronizacija između uređaja
-- [ ] **Sledeći korak**: Sinhronizacija domaćinstva između članova porodice (Supabase backend)
+- [x] Korisnički nalozi i autentifikacija (Supabase)
+- [x] Sinhronizacija između uređaja (`user_data` JSONB + profil)
+- [x] Prošireni onboarding (5 koraka: profil, frižider, računi, auto)
+- [x] Email, Google i Facebook prijava
+- [x] Gost režim (localStorage fallback)
+- [ ] **Sledeći korak**: Sinhronizacija domaćinstva između članova porodice
 - [x] Pravi AI asistent (OpenAI opcioni ključ)
 - [x] Personalizovani saveti na osnovu podataka
 - [ ] Deljenje domaćinstva sa članovima porodice (zahteva backend)
@@ -51,8 +54,7 @@
 ## Faza 5 — 10KEY platforma
 
 - [x] Landing stranica za Domaćinko / 10KEY
-- [ ] Više proizvoda pod 10KEY brendom
-- [ ] Centralna autentifikacija
+- [x] Centralna autentifikacija (Supabase — email, Google, Facebook)
 - [ ] Premium funkcije
 - [ ] Mobilne aplikacije (iOS/Android)
 

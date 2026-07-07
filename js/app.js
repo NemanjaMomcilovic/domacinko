@@ -17,8 +17,34 @@ function getAssetBase() {
 function initApp() {
   initTheme();
   registerServiceWorker();
+  initAuthGuard();
   if (typeof checkAndSendNotifications === 'function') {
     setTimeout(() => checkAndSendNotifications(), 2000);
+  }
+}
+
+async function initAuthGuard() {
+  if (typeof waitForAuth !== 'function') return;
+
+  const path = window.location.pathname;
+  const file = path.split('/').pop() || '';
+  const exempt = ['auth.html', 'onboarding.html', 'landing.html', 'splash.html', 'presents.html'];
+  if (exempt.includes(file)) return;
+  if (path.endsWith('/') && !path.includes('/pages/')) return;
+
+  await waitForAuth();
+
+  const inPages = path.includes('/pages/');
+  const authUrl = inPages ? 'auth.html' : 'pages/auth.html';
+  const onboardingUrl = inPages ? 'onboarding.html' : 'pages/onboarding.html';
+
+  if (!isGuestMode() && !isLoggedIn()) {
+    window.location.href = authUrl;
+    return;
+  }
+
+  if (needsOnboarding() && file !== 'onboarding.html') {
+    window.location.href = onboardingUrl;
   }
 }
 

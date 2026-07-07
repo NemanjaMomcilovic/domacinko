@@ -1,8 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-  if (!isOnboardingComplete()) {
-    window.location.href = 'onboarding.html';
-    return;
-  }
+document.addEventListener('DOMContentLoaded', async () => {
+  await waitForAuth?.();
 
   initNavigation('home');
 
@@ -16,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const tasks = getTasks();
   const shopping = getShoppingList().filter(i => !i.bought);
 
-  const name = settings.userName || 'prijatelju';
+  const name = (typeof getAuthDisplayName === 'function' ? getAuthDisplayName() : settings.userName) || 'prijatelju';
   document.getElementById('greeting').textContent = `${getGreeting()}, ${name}!`;
 
   const avatarEl = document.getElementById('user-avatar');
