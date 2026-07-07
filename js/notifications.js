@@ -90,6 +90,40 @@ async function checkAndSendNotifications() {
     );
     markNotified('shopping');
   }
+
+  ensureMaintenanceInitialized();
+  const maintenanceDue = getDueMaintenance().filter(t => t.overdue);
+  if (maintenanceDue.length > 0 && shouldNotify('maintenance')) {
+    const names = maintenanceDue.slice(0, 3).map(t => t.name).join(', ');
+    await showAppNotification(
+      'Održavanje na redu 🏠',
+      `Zakasneli zadaci: ${names}`,
+      'maintenance-due'
+    );
+    markNotified('maintenance');
+  }
+
+  const expiring = getExpiringWarranties(14);
+  if (expiring.length > 0 && shouldNotify('warranty')) {
+    const names = expiring.slice(0, 3).map(i => i.name).join(', ');
+    await showAppNotification(
+      'Garancija ističe 🛡️',
+      `${names} — proverite inventar.`,
+      'warranty-expiring'
+    );
+    markNotified('warranty');
+  }
+
+  const catWarnings = getCategoryBudgetWarnings();
+  if (catWarnings.length > 0 && shouldNotify('category-budget')) {
+    const w = catWarnings[0];
+    await showAppNotification(
+      'Budžet kategorije ⚠️',
+      `${w.label}: ${w.pct}% potrošeno (${formatCurrency(w.spent)} / ${formatCurrency(w.budget)}).`,
+      'category-budget'
+    );
+    markNotified('category-budget');
+  }
 }
 
 async function enableNotifications() {

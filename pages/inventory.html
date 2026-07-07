@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Domaćinko">
+  <title>Domaćinko — Inventar</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.svg">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content">
+      <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
+        Pratite kućne predmete, garancije i račune na jednom mestu.
+      </p>
+
+      <div class="section">
+        <div class="section__header">
+          <h2 class="section__title">Vaš inventar</h2>
+        </div>
+        <div class="card card--flat" id="inventory-list"></div>
+      </div>
+
+      <div class="section">
+        <h2 class="section__title">Dodaj predmet</h2>
+        <div class="card card--flat" style="padding:var(--space-md)">
+          <div class="form-group">
+            <label class="form-label" for="inv-name">Naziv</label>
+            <input type="text" class="form-input" id="inv-name" placeholder="npr. Usisivač Dyson">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inv-location">Lokacija</label>
+            <select class="form-select" id="inv-location"></select>
+          </div>
+          <div style="display:flex;gap:var(--space-sm)">
+            <div class="form-group" style="flex:1">
+              <label class="form-label" for="inv-purchase">Datum kupovine</label>
+              <input type="date" class="form-input" id="inv-purchase">
+            </div>
+            <div class="form-group" style="flex:1">
+              <label class="form-label" for="inv-warranty">Garancija do</label>
+              <input type="date" class="form-input" id="inv-warranty">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inv-note">Napomena</label>
+            <input type="text" class="form-input" id="inv-note" placeholder="Opciono">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Slika računa</label>
+            <div class="receipt-preview" id="receipt-preview"><span>📷 Dodajte sliku računa (opciono)</span></div>
+            <input type="file" id="inv-receipt" accept="image/*" hidden>
+            <button type="button" class="btn btn--secondary btn--sm mt-sm" onclick="document.getElementById('inv-receipt').click()">Izaberi sliku</button>
+          </div>
+          <button type="button" class="btn btn--primary btn--block" id="add-inventory">Dodaj u inventar</button>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/inventory.js"></script>
+</body>
+</html>

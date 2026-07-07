@@ -105,15 +105,22 @@ function renderEmptyState(icon, title, subtitle) {
   `;
 }
 
-function renderProgressBar(pct, label) {
+function renderProgressBar(pct, label, options = {}) {
+  const fillClass = pct >= 100 ? 'progress-bar__fill--danger'
+    : pct >= 80 ? 'progress-bar__fill--warning' : '';
   return `
     <div class="progress-bar">
       ${label ? `<div class="progress-bar__header"><span>${label}</span><span>${pct}%</span></div>` : ''}
       <div class="progress-bar__track">
-        <div class="progress-bar__fill" style="width:${pct}%"></div>
+        <div class="progress-bar__fill ${fillClass}" style="width:${Math.min(100, pct)}%"></div>
       </div>
     </div>
   `;
+}
+
+function renderCategoryBudgetBar(status) {
+  const label = `${status.icon} ${status.label}: ${formatCurrency(status.spent)} / ${formatCurrency(status.budget)}`;
+  return renderProgressBar(status.pct, label);
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

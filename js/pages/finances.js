@@ -192,6 +192,19 @@ function closeEditModal() {
   document.getElementById('edit-modal-container').innerHTML = '';
 }
 
+function renderCategoryBudgets() {
+  const container = document.getElementById('category-budgets');
+  if (!container) return;
+
+  const statuses = getCategoryBudgetStatus().filter(c => c.budget > 0);
+  if (statuses.length === 0) {
+    container.innerHTML = renderEmptyState('📊', 'Nema budžeta po kategorijama', 'Postavite limite u podešavanjima.');
+    return;
+  }
+
+  container.innerHTML = statuses.map(s => renderCategoryBudgetBar(s)).join('');
+}
+
 function refreshFinances() {
   const settings = getSettings();
   const now = new Date();
@@ -206,6 +219,7 @@ function refreshFinances() {
 
   renderComparison();
   renderSavings();
+  renderCategoryBudgets();
   renderCategoryBreakdown(byCategory);
   renderChart(byCategory);
   renderExpensesList();
@@ -247,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderComparison();
   renderSavings();
+  renderCategoryBudgets();
   renderCategoryBreakdown(byCategory);
   renderChart(byCategory);
   renderExpensesList();

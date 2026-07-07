@@ -58,6 +58,14 @@
         </div>
 
         <div class="settings-group">
+          <h3 class="settings-group__title">Budžet po kategorijama</h3>
+          <p class="text-muted mb-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
+            Mesečni limit po kategoriji. Upozorenje na 80%, prekoračenje na 100%.
+          </p>
+          <div class="card card--flat" id="category-budgets-settings" style="padding:0;overflow:hidden"></div>
+        </div>
+
+        <div class="settings-group">
           <h3 class="settings-group__title">Obaveštenja</h3>
           <div class="card card--flat" style="padding:0;overflow:hidden">
             <div class="settings-item">
@@ -68,7 +76,7 @@
             </div>
           </div>
           <p class="text-muted mt-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
-            Podsetnici za račune, budžet i listu za kupovinu.
+            Podsetnici za račune, budžet, održavanje, garancije i listu za kupovinu.
           </p>
         </div>
 
@@ -120,6 +128,18 @@
       <div class="settings-group">
         <h3 class="settings-group__title">Aplikacija</h3>
         <div class="card card--flat" style="padding:0;overflow:hidden">
+          <a href="maintenance.html" class="settings-item" style="text-decoration:none;color:inherit">
+            <span class="settings-item__label">🏠 Održavanje</span>
+            <span class="settings-item__value">→</span>
+          </a>
+          <a href="inventory.html" class="settings-item" style="text-decoration:none;color:inherit">
+            <span class="settings-item__label">📦 Inventar</span>
+            <span class="settings-item__value">→</span>
+          </a>
+          <a href="repairs.html" class="settings-item" style="text-decoration:none;color:inherit">
+            <span class="settings-item__label">🔧 AI Majstor</span>
+            <span class="settings-item__value">→</span>
+          </a>
           <a href="meal-plan.html" class="settings-item" style="text-decoration:none;color:inherit">
             <span class="settings-item__label">🍽️ Plan obroka</span>
             <span class="settings-item__value">→</span>
@@ -179,7 +199,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 3.0.0</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 4.0.0</p>
         </div>
       </div>
     </main>

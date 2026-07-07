@@ -100,4 +100,41 @@ document.addEventListener('DOMContentLoaded', () => {
       `Imate ${shopping.length} stavke na listi za kupovinu.`;
     document.getElementById('shopping-hint').classList.remove('hidden');
   }
+
+  const budgetWarnings = getCategoryBudgetWarnings();
+  if (budgetWarnings.length > 0) {
+    document.getElementById('budget-warnings-section').classList.remove('hidden');
+    document.getElementById('budget-warnings').innerHTML = budgetWarnings.map(w => `
+      <div class="reminder-item ${w.warning === 'exceeded' ? 'reminder-item--danger' : 'reminder-item--warn'}">
+        <span class="reminder-item__icon">${w.icon}</span>
+        <span><strong>${w.label}</strong> — ${w.pct}% budžeta (${formatCurrency(w.spent)} / ${formatCurrency(w.budget)})</span>
+      </div>
+    `).join('');
+  }
+
+  ensureMaintenanceInitialized();
+  const maintenanceDue = getDueMaintenance();
+  if (maintenanceDue.length > 0) {
+    document.getElementById('maintenance-section').classList.remove('hidden');
+    document.getElementById('maintenance-due').innerHTML = maintenanceDue.slice(0, 5).map(t => `
+      <div class="reminder-item ${t.overdue ? 'reminder-item--danger' : ''}">
+        <span class="reminder-item__icon">${t.icon || '📋'}</span>
+        <span><strong>${t.name}</strong> — ${t.overdue ? 'Kasni!' : `Za ${t.daysUntil} dana`}</span>
+      </div>
+    `).join('');
+  }
+
+  const expiringWarranties = getExpiringWarranties(30);
+  if (expiringWarranties.length > 0) {
+    document.getElementById('warranty-section').classList.remove('hidden');
+    document.getElementById('warranty-expiring').innerHTML = expiringWarranties.slice(0, 5).map(item => {
+      const daysLeft = Math.ceil((new Date(item.warrantyEnd) - new Date()) / (1000 * 60 * 60 * 24));
+      return `
+        <div class="reminder-item reminder-item--warn">
+          <span class="reminder-item__icon">🛡️</span>
+          <span><strong>${item.name}</strong> — garancija ističe za ${daysLeft} dana</span>
+        </div>
+      `;
+    }).join('');
+  }
 });

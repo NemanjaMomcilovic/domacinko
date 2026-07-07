@@ -27,6 +27,30 @@ function renderRecurringList() {
   });
 }
 
+function renderCategoryBudgetSettings() {
+  const container = document.getElementById('category-budgets-settings');
+  if (!container) return;
+
+  const budgets = getCategoryBudgets();
+  container.innerHTML = CATEGORIES.map(cat => `
+    <div class="settings-item">
+      <label class="settings-item__label" for="cat-budget-${cat.id}">${cat.icon} ${cat.label}</label>
+      <input type="number" class="form-input cat-budget-input" id="cat-budget-${cat.id}"
+        data-cat="${cat.id}" min="0" step="500" value="${budgets[cat.id] || ''}"
+        placeholder="0" style="width:100px;text-align:right;border:none;padding:0">
+    </div>
+  `).join('');
+}
+
+function saveCategoryBudgetsFromForm() {
+  const budgets = {};
+  document.querySelectorAll('.cat-budget-input').forEach(input => {
+    const val = parseFloat(input.value);
+    if (val > 0) budgets[input.dataset.cat] = val;
+  });
+  saveCategoryBudgets(budgets);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('settings', { title: 'Podešavanja' });
 
@@ -68,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   populateCategorySelect('rec-category');
   renderRecurringList();
+  renderCategoryBudgetSettings();
 
   document.getElementById('add-recurring').addEventListener('click', () => {
     const name = document.getElementById('rec-name').value.trim();
@@ -96,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
       savingsGoal: parseFloat(document.getElementById('savings-goal').value) || 10000,
       apiKey: document.getElementById('api-key').value.trim()
     });
+    saveCategoryBudgetsFromForm();
     showToast('Podešavanja sačuvana!');
   });
 

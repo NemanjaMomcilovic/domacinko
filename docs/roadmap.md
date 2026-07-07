@@ -27,7 +27,7 @@
 - [x] Plan obroka sa generisanjem liste za kupovinu
 - [x] Landing stranica
 
-## Faza 3 — Backend i AI
+## Faza 3 — Backend i AI (delimično ✅)
 
 - [ ] Korisnički nalozi i autentifikacija (Supabase)
 - [ ] Sinhronizacija između uređaja
@@ -36,10 +36,30 @@
 - [x] Personalizovani saveti na osnovu podataka
 - [ ] Deljenje domaćinstva sa članovima porodice (zahteva backend)
 
-## Faza 4 — 10KEY platforma
+## Faza 4 — Moduli i platforma ✅ (v4.0.0)
+
+- [x] Modularna arhitektura (`registry.js`, `ai-context.js`)
+- [x] `docs/vision.md` — puna vizija proizvoda na srpskom
+- [x] **AI Majstor** — popravke sa DIY savetima (8 kategorija)
+- [x] **Održavanje** — predefinisani i prilagođeni zadaci, podsetnici
+- [x] **Inventar 2.0** — garancije, lokacije, slika računa
+- [x] **Budžet po kategorijama** — limiti, progress barovi, upozorenja
+- [x] AI tabovi: Savetnik | Majstor | Učitelj
+- [x] Početna: održavanje, garancije, upozorenja budžeta
+- [x] PWA notifikacije za održavanje i garancije
+
+## Faza 5 — 10KEY platforma
 
 - [x] Landing stranica za Domaćinko / 10KEY
 - [ ] Više proizvoda pod 10KEY brendom
 - [ ] Centralna autentifikacija
 - [ ] Premium funkcije
 - [ ] Mobilne aplikacije (iOS/Android)
+
+## Faza 6 — Buduće ideje
+
+- [ ] AI Učitelj v2 — kvizovi i sertifikati
+- [ ] Skeniranje dokumenata (OCR)
+- [ ] Integracija sa bankama / open banking
+- [ ] Glasovni asistent
+- [ ] Deljeni inventar i zadaci u porodici

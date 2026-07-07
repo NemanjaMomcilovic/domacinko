@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v3';
+const CACHE_NAME = 'domacinko-v4';
 
 const ASSETS = [
   './',
@@ -12,6 +12,8 @@ const ASSETS = [
   './js/app.js',
   './js/navigation.js',
   './js/notifications.js',
+  './js/modules/registry.js',
+  './js/modules/ai-context.js',
   './js/pages/home.js',
   './js/pages/finances.js',
   './js/pages/ai.js',
@@ -22,6 +24,9 @@ const ASSETS = [
   './js/pages/household.js',
   './js/pages/onboarding.js',
   './js/pages/meal-plan.js',
+  './js/pages/repairs.js',
+  './js/pages/maintenance.js',
+  './js/pages/inventory.js',
   './pages/home.html',
   './pages/finances.html',
   './pages/ai.html',
@@ -32,6 +37,9 @@ const ASSETS = [
   './pages/household.html',
   './pages/onboarding.html',
   './pages/meal-plan.html',
+  './pages/repairs.html',
+  './pages/maintenance.html',
+  './pages/inventory.html',
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg'
 ];

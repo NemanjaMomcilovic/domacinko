@@ -64,12 +64,47 @@ const MEAL_SUGGESTIONS = [
   { name: 'Gulaš', ingredients: ['meso', 'luk', 'paprika', 'paradajz'] }
 ];
 
+const INVENTORY_LOCATIONS = ['Špajz', 'Podrum', 'Kuhinja', 'Dnevna soba', 'Spavaća soba', 'Garaža', 'Balkon', 'Ostalo'];
+
+const PREDEFINED_MAINTENANCE = [
+  { id: 'boiler', name: 'Servis bojlera', intervalMonths: 12, icon: '🔥', seasonal: false },
+  { id: 'filter', name: 'Zamena filtera (voda/vazduh)', intervalMonths: 6, icon: '💧', seasonal: false },
+  { id: 'ac', name: 'Čišćenje klime', intervalMonths: 12, icon: '❄️', seasonal: false },
+  { id: 'car', name: 'Servis automobila', intervalMonths: 12, icon: '🚗', seasonal: false },
+  { id: 'smoke', name: 'Baterije detektora dima', intervalMonths: 12, icon: '🚨', seasonal: false },
+  { id: 'spring', name: 'Prolećno čišćenje', intervalMonths: 12, icon: '🌸', seasonal: true, season: 'spring' },
+  { id: 'autumn', name: 'Jesenje pripreme (oluk, bašta)', intervalMonths: 12, icon: '🍂', seasonal: true, season: 'autumn' },
+  { id: 'gutters', name: 'Čišćenje oluka', intervalMonths: 6, icon: '🏠', seasonal: true, season: 'autumn' },
+  { id: 'heating', name: 'Provera grejanja', intervalMonths: 12, icon: '🌡️', seasonal: true, season: 'autumn' }
+];
+
+const REPAIR_CATEGORIES = [
+  { id: 'elektrika', label: 'Elektrika', icon: '⚡' },
+  { id: 'vodovod', label: 'Vodovod', icon: '🚿' },
+  { id: 'gips', label: 'Gips', icon: '🧱' },
+  { id: 'keramika', label: 'Keramika', icon: '🪨' },
+  { id: 'moleraj', label: 'Moleraj', icon: '🎨' },
+  { id: 'basta', label: 'Bašta', icon: '🌿' },
+  { id: 'namestaj', label: 'Nameštaj', icon: '🪑' },
+  { id: 'alati', label: 'Alati', icon: '🔧' }
+];
+
+const TEACHER_TOPICS = [
+  { id: 'budgeting', title: 'Osnovi budžetiranja', icon: '💰', description: 'Kako pratiti troškove i štedeti' },
+  { id: 'cooking', title: 'Planiranje obroka', icon: '🍳', description: 'Kako smanjiti otpad i uštedeti na hrani' },
+  { id: 'repairs', title: 'Osnovne popravke', icon: '🔧', description: 'Alati i bezbednost kod DIY poslova' },
+  { id: 'maintenance', title: 'Održavanje kuće', icon: '🏠', description: 'Redovni servisi i sezonski poslovi' },
+  { id: 'energy', title: 'Ušteda energije', icon: '⚡', description: 'Smanjenje računa za struju i grejanje' },
+  { id: 'shopping', title: 'Pametna kupovina', icon: '🛒', description: 'Lista, poređenje cena, sezonske akcije' }
+];
+
 const DEFAULT_DATA = {
   settings: {
     userName: '',
     currency: 'RSD',
     monthlyBudget: 80000,
     savingsGoal: 10000,
+    categoryBudgets: {},
     darkTheme: false,
     apiKey: '',
     apiUrl: 'https://api.openai.com/v1/chat/completions',
@@ -99,7 +134,11 @@ const DEFAULT_DATA = {
     { id: 't2', text: 'Kupi mleko', done: false },
     { id: 't3', text: 'Proveri račune', done: false }
   ],
-  chatHistory: []
+  chatHistory: [],
+  inventory: [],
+  maintenance: [],
+  repairHistory: [],
+  teacherProgress: { completed: [], notes: {} }
 };
 
 function generateId() {
@@ -120,6 +159,11 @@ function getData() {
     if (!merged.mealPlan) merged.mealPlan = { ...DEFAULT_DATA.mealPlan };
     if (!merged.feedback) merged.feedback = [];
     if (merged.household && !merged.household.pantry) merged.household.pantry = [];
+    if (!merged.inventory) merged.inventory = [];
+    if (!merged.maintenance) merged.maintenance = [];
+    if (!merged.repairHistory) merged.repairHistory = [];
+    if (!merged.teacherProgress) merged.teacherProgress = { completed: [], notes: {} };
+    if (!merged.settings.categoryBudgets) merged.settings.categoryBudgets = {};
     return merged;
   } catch {
     return structuredClone(DEFAULT_DATA);
@@ -322,23 +366,57 @@ function getFinancialHealthScore() {
 
   let score = 50;
 
-  // Budget remaining (up to 40 points)
   score += remainingPct * 40;
 
-  // Spending pace (up to 20 points)
   if (actualSpentPct <= expectedSpentPct) {
     score += 20;
   } else if (actualSpentPct <= expectedSpentPct * 1.2) {
     score += 10;
   }
 
-  // Trend vs last month (up to 10 points)
   if (prevSpent > 0) {
     if (spent < prevSpent) score += 10;
     else if (spent > prevSpent * 1.2) score -= 10;
   }
 
+  const categoryStatus = getCategoryBudgetStatus();
+  const exceeded = categoryStatus.filter(c => c.pct >= 100).length;
+  const warned = categoryStatus.filter(c => c.pct >= 80 && c.pct < 100).length;
+  score -= exceeded * 8;
+  score -= warned * 3;
+
   return Math.min(100, Math.max(0, Math.round(score)));
+}
+
+function getCategoryBudgets() {
+  return getSettings().categoryBudgets || {};
+}
+
+function saveCategoryBudgets(budgets) {
+  saveSettings({ categoryBudgets: budgets });
+}
+
+function getCategoryBudgetStatus() {
+  const settings = getSettings();
+  const budgets = settings.categoryBudgets || {};
+  const now = new Date();
+  const byCategory = getSpendingByCategory(now.getFullYear(), now.getMonth());
+
+  return CATEGORIES.map(cat => {
+    const budget = budgets[cat.id] || 0;
+    const spent = byCategory[cat.id] || 0;
+    const pct = budget > 0 ? Math.round((spent / budget) * 100) : 0;
+    let warning = null;
+    if (budget > 0) {
+      if (pct >= 100) warning = 'exceeded';
+      else if (pct >= 80) warning = 'near';
+    }
+    return { id: cat.id, label: cat.label, icon: cat.icon, budget, spent, pct, warning };
+  }).filter(c => c.budget > 0 || c.spent > 0);
+}
+
+function getCategoryBudgetWarnings() {
+  return getCategoryBudgetStatus().filter(c => c.warning);
 }
 
 function getShoppingList() {
@@ -443,7 +521,7 @@ function resetOnboarding() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '3.0.0',
+    version: '4.0.0',
     exportedAt: new Date().toISOString(),
     onboardingComplete: isOnboardingComplete(),
     data: getData()
@@ -624,6 +702,22 @@ function getDailyAdvice() {
     return `Imate ${subs} pretplate u domaćinstvu.`;
   }
 
+  const maintenanceDue = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
+  if (maintenanceDue.length > 0) {
+    return `Imate ${maintenanceDue.length} zadatak(a) održavanja na redu — proverite!`;
+  }
+
+  const expiring = typeof getExpiringWarranties === 'function' ? getExpiringWarranties(30) : [];
+  if (expiring.length > 0) {
+    return `Garancija ističe za ${expiring.length} predmet(a) u inventaru.`;
+  }
+
+  const budgetWarnings = getCategoryBudgetWarnings();
+  if (budgetWarnings.length > 0) {
+    const w = budgetWarnings[0];
+    return `Kategorija ${w.label} je na ${w.pct}% budžeta — pazite na troškove.`;
+  }
+
   const tips = [
     'Planirajte obroke unapred — uštedite do 20% na hrani.',
     'Pregledajte pretplate — možda neke više ne koristite.',
@@ -632,4 +726,200 @@ function getDailyAdvice() {
   ];
   const dayIndex = now.getDate() % tips.length;
   return tips[dayIndex];
+}
+
+function getInventory() {
+  return getData().inventory || [];
+}
+
+function addInventoryItem(item) {
+  const data = getData();
+  const newItem = {
+    id: generateId(),
+    name: item.name,
+    location: item.location || '',
+    purchaseDate: item.purchaseDate || '',
+    warrantyEnd: item.warrantyEnd || '',
+    receiptPhoto: item.receiptPhoto || '',
+    note: item.note || ''
+  };
+  data.inventory.unshift(newItem);
+  saveData(data);
+  return newItem;
+}
+
+function updateInventoryItem(id, updates) {
+  const data = getData();
+  const item = data.inventory.find(i => i.id === id);
+  if (!item) return null;
+  Object.assign(item, updates);
+  saveData(data);
+  return item;
+}
+
+function deleteInventoryItem(id) {
+  const data = getData();
+  data.inventory = data.inventory.filter(i => i.id !== id);
+  saveData(data);
+}
+
+function getExpiringWarranties(withinDays = 30) {
+  const now = new Date();
+  const limit = new Date(now);
+  limit.setDate(limit.getDate() + withinDays);
+
+  return getInventory().filter(item => {
+    if (!item.warrantyEnd) return false;
+    const end = new Date(item.warrantyEnd);
+    return end >= now && end <= limit;
+  }).sort((a, b) => a.warrantyEnd.localeCompare(b.warrantyEnd));
+}
+
+function getExpiredWarranties() {
+  const now = new Date().toISOString().split('T')[0];
+  return getInventory().filter(item => item.warrantyEnd && item.warrantyEnd < now);
+}
+
+function ensureMaintenanceInitialized() {
+  const data = getData();
+  if (data.maintenance.length > 0) return;
+
+  data.maintenance = PREDEFINED_MAINTENANCE.map(p => ({
+    id: p.id,
+    name: p.name,
+    intervalMonths: p.intervalMonths,
+    icon: p.icon,
+    seasonal: p.seasonal || false,
+    season: p.season || null,
+    lastDone: null,
+    enabled: true,
+    custom: false
+  }));
+  saveData(data);
+}
+
+function getMaintenanceTasks() {
+  ensureMaintenanceInitialized();
+  return getData().maintenance.filter(t => t.enabled);
+}
+
+function getAllMaintenanceTasks() {
+  ensureMaintenanceInitialized();
+  return getData().maintenance;
+}
+
+function addMaintenanceTask(task) {
+  const data = getData();
+  ensureMaintenanceInitialized();
+  const item = {
+    id: generateId(),
+    name: task.name,
+    intervalMonths: parseInt(task.intervalMonths, 10) || 6,
+    icon: task.icon || '📋',
+    lastDone: task.lastDone || null,
+    enabled: true,
+    custom: true,
+    seasonal: false
+  };
+  data.maintenance.push(item);
+  saveData(data);
+  return item;
+}
+
+function updateMaintenanceTask(id, updates) {
+  const data = getData();
+  const task = data.maintenance.find(t => t.id === id);
+  if (!task) return null;
+  Object.assign(task, updates);
+  saveData(data);
+  return task;
+}
+
+function deleteMaintenanceTask(id) {
+  const data = getData();
+  const task = data.maintenance.find(t => t.id === id);
+  if (!task || !task.custom) return false;
+  data.maintenance = data.maintenance.filter(t => t.id !== id);
+  saveData(data);
+  return true;
+}
+
+function markMaintenanceDone(id, date) {
+  return updateMaintenanceTask(id, {
+    lastDone: date || new Date().toISOString().split('T')[0]
+  });
+}
+
+function getNextDueDate(task) {
+  if (!task.lastDone) return new Date();
+
+  const last = new Date(task.lastDone);
+  const next = new Date(last);
+  next.setMonth(next.getMonth() + (task.intervalMonths || 12));
+  return next;
+}
+
+function getDueMaintenance() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return getMaintenanceTasks()
+    .map(task => {
+      const nextDue = getNextDueDate(task);
+      nextDue.setHours(0, 0, 0, 0);
+      const overdue = nextDue <= today;
+      const daysUntil = Math.ceil((nextDue - today) / (1000 * 60 * 60 * 24));
+      return { ...task, nextDue: nextDue.toISOString().split('T')[0], overdue, daysUntil };
+    })
+    .filter(t => t.overdue || t.daysUntil <= 14)
+    .sort((a, b) => a.nextDue.localeCompare(b.nextDue));
+}
+
+function getRepairHistory() {
+  return getData().repairHistory || [];
+}
+
+function addRepairRecord(record) {
+  const data = getData();
+  const item = {
+    id: generateId(),
+    category: record.category,
+    problem: record.problem,
+    advice: record.advice,
+    difficulty: record.difficulty,
+    tools: record.tools || [],
+    diyVsPro: record.diyVsPro || '',
+    costEstimate: record.costEstimate || '',
+    steps: record.steps || [],
+    date: new Date().toISOString()
+  };
+  data.repairHistory.unshift(item);
+  if (data.repairHistory.length > 50) {
+    data.repairHistory = data.repairHistory.slice(0, 50);
+  }
+  saveData(data);
+  return item;
+}
+
+function deleteRepairRecord(id) {
+  const data = getData();
+  data.repairHistory = data.repairHistory.filter(r => r.id !== id);
+  saveData(data);
+}
+
+function getTeacherProgress() {
+  return getData().teacherProgress || { completed: [], notes: {} };
+}
+
+function markTopicComplete(topicId) {
+  const data = getData();
+  if (!data.teacherProgress) data.teacherProgress = { completed: [], notes: {} };
+  if (!data.teacherProgress.completed.includes(topicId)) {
+    data.teacherProgress.completed.push(topicId);
+    saveData(data);
+  }
+}
+
+function isTopicComplete(topicId) {
+  return getTeacherProgress().completed.includes(topicId);
 }

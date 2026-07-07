@@ -1,5 +1,26 @@
 # Domaćinko — Changelog
 
+## [4.0.0] — 2026-07-07
+
+### Dodato
+- **Modularna arhitektura**: `js/modules/registry.js` i `js/modules/ai-context.js`
+- **`docs/vision.md`**: puna vizija proizvoda na srpskom (svi moduli, 10KEY, AI)
+- **AI Majstor** (`pages/repairs.html`): 8 kategorija popravki, korak-po-korak saveti, težina, alati, DIY vs majstor, procena troška
+- Pravila + opcioni OpenAI; istorija popravki u localStorage
+- **Održavanje** (`pages/maintenance.html`): bojler, filter, klima, auto, detektor, sezonski + prilagođeni zadaci
+- **Inventar 2.0** (`pages/inventory.html`): lokacija, garancija, slika računa, podsetnici
+- **Budžet po kategorijama** u podešavanjima sa progress barovima na finansijama
+- Upozorenja na 80% i prekoračenje na 100%
+- **AI tabovi**: Savetnik | Majstor | Učitelj (osnovne lekcije)
+- Početna: održavanje na redu, garancije ističu, upozorenja budžeta
+- PWA notifikacije za održavanje, garancije i budžet kategorija
+- Brze akcije: AI Majstor, Održavanje, Inventar
+
+### Poboljšano
+- AI savetnik koristi unified kontekst iz svih modula
+- Finansijsko zdravlje uzima u obzir budžet po kategorijama
+- Service worker ažuriran na v4
+
 ## [3.0.0] — 2026-07-07
 
 ### Dodato

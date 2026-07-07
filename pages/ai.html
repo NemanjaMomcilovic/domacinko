@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Domaćinko">
-  <title>Domaćinko — Pitaj Domaćinka</title>
+  <title>Domaćinko — AI</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../assets/icons/icon-192.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.svg">
@@ -17,7 +17,13 @@
   <div class="app-container">
     <header class="page-header" id="page-header"></header>
 
-    <main class="main-content main-content--chat">
+    <div class="tabs" id="ai-tabs" style="padding:0 var(--space-lg)">
+      <button type="button" class="tab active" data-tab="savetnik">💬 Savetnik</button>
+      <button type="button" class="tab" data-tab="majstor">🔧 Majstor</button>
+      <button type="button" class="tab" data-tab="ucitelj">📚 Učitelj</button>
+    </div>
+
+    <main class="main-content main-content--chat" id="panel-savetnik">
       <div class="quick-chips" id="quick-chips">
         <button class="chip" data-question="Gde najviše trošim?">Gde najviše trošim?</button>
         <button class="chip" data-question="Koliko mi je ostalo?">Koliko mi je ostalo?</button>
@@ -32,12 +38,36 @@
       </div>
     </main>
 
+    <main class="main-content hidden" id="panel-majstor">
+      <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
+        AI Majstor za kućne popravke — korak po korak na srpskom.
+      </p>
+      <div class="quick-chips" id="majstor-categories" style="padding:0"></div>
+      <div class="card">
+        <div class="form-group">
+          <textarea class="form-textarea" id="majstor-problem" rows="3" placeholder="Opišite problem..."></textarea>
+        </div>
+        <button type="button" class="btn btn--primary btn--block" id="majstor-submit">Daj savet</button>
+      </div>
+      <div id="majstor-result" class="mt-md"></div>
+      <a href="repairs.html" class="btn btn--ghost btn--block mt-md">Puna stranica sa istorijom →</a>
+    </main>
+
+    <main class="main-content hidden" id="panel-ucitelj">
+      <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
+        Naučite osnove domaćinstva — kratke lekcije na srpskom.
+      </p>
+      <div id="teacher-topics"></div>
+    </main>
+
     <nav class="bottom-nav" id="bottom-nav"></nav>
   </div>
 
   <script src="../js/storage.js"></script>
+  <script src="../js/modules/ai-context.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/navigation.js"></script>
+  <script src="../js/pages/repairs.js"></script>
   <script src="../js/pages/ai.js"></script>
 </body>
 </html>
