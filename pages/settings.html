@@ -2,8 +2,15 @@
 <html lang="sr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Domaćinko">
   <title>Domaćinko — Podešavanja</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.svg">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -50,6 +57,48 @@
           </div>
         </div>
 
+        <div class="settings-group">
+          <h3 class="settings-group__title">Izgled</h3>
+          <div class="card card--flat" style="padding:0;overflow:hidden">
+            <div class="settings-item">
+              <span class="settings-item__label">Tamna tema</span>
+              <button type="button" class="toggle" id="dark-theme-toggle" aria-label="Tamna tema">
+                <span class="toggle__knob"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group__title">AI asistent</h3>
+          <div class="card card--flat" style="padding:0;overflow:hidden">
+            <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:var(--space-sm)">
+              <label class="settings-item__label" for="api-key">OpenAI API ključ (opciono)</label>
+              <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off">
+              <p class="text-muted" style="font-size:var(--font-size-xs)">Čuva se samo na vašem uređaju. Bez ključa, Domaćinko koristi pametne lokalne odgovore.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group__title">Mesečni računi</h3>
+          <div class="card card--flat" id="recurring-list" style="padding:var(--space-md);margin-bottom:var(--space-md)"></div>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <div class="form-group">
+              <input type="text" class="form-input" id="rec-name" placeholder="Naziv (npr. Struja)">
+            </div>
+            <div style="display:flex;gap:var(--space-sm)">
+              <input type="number" class="form-input" id="rec-amount" placeholder="Iznos" min="1" style="flex:1">
+              <select class="form-select" id="rec-category" style="flex:1"></select>
+            </div>
+            <div class="form-group mt-sm">
+              <label class="form-label" for="rec-day">Dan u mesecu</label>
+              <input type="number" class="form-input" id="rec-day" min="1" max="31" value="1">
+            </div>
+            <button type="button" class="btn btn--secondary btn--block" id="add-recurring">Dodaj račun</button>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn--primary btn--block mb-md">Sačuvaj podešavanja</button>
       </form>
 
@@ -75,7 +124,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 1.0.0 · Prototip</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 2.0.0</p>
         </div>
       </div>
     </main>

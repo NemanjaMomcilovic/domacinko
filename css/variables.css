@@ -58,3 +58,17 @@
   /* Transitions */
   --transition: 0.2s ease;
 }
+
+[data-theme="dark"] {
+  --color-bg: #1a2e24;
+  --color-surface: #14241c;
+  --color-border: #2a4034;
+  --color-text: #e8f5ee;
+  --color-text-secondary: #a8c4b4;
+  --color-text-muted: #7a9a88;
+  --color-primary-light: #1f3d2c;
+  --color-primary-soft: #2a5040;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+}

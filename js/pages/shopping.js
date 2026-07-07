@@ -3,19 +3,14 @@ function renderShoppingList() {
   const container = document.getElementById('shopping-list');
 
   if (list.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state__icon">🛒</div>
-        <p>Lista za kupovinu je prazna.</p>
-        <p class="text-muted">Dodajte proizvod ispod.</p>
-      </div>
-    `;
+    container.innerHTML = renderEmptyState('🛒', 'Lista je prazna', 'Dodajte proizvod ispod — Domaćinko će vam pomoći da ne zaboravite ništa!');
+    document.getElementById('list-count').textContent = '';
     return;
   }
 
   const unbought = list.filter(i => !i.bought).length;
   document.getElementById('list-count').textContent =
-    unbought > 0 ? `Imate ${unbought} stavke na listi za kupovinu.` : 'Sve je kupljeno!';
+    unbought > 0 ? `Imate ${unbought} stavke na listi za kupovinu.` : 'Sve je kupljeno! 🎉';
 
   container.innerHTML = list.map(item => `
     <div class="shopping-item${item.bought ? ' bought' : ''}" data-id="${item.id}">
@@ -27,9 +22,11 @@ function renderShoppingList() {
 
   container.querySelectorAll('.shopping-checkbox').forEach(cb => {
     cb.addEventListener('change', () => {
-      const id = cb.closest('.shopping-item').dataset.id;
+      const itemEl = cb.closest('.shopping-item');
+      itemEl.classList.add('shopping-item--checked');
+      const id = itemEl.dataset.id;
       toggleShoppingItem(id);
-      renderShoppingList();
+      setTimeout(() => renderShoppingList(), 300);
     });
   });
 

@@ -2,8 +2,15 @@
 <html lang="sr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Domaćinko">
   <title>Domaćinko — Pitaj Domaćinka</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.svg">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -11,6 +18,11 @@
     <header class="page-header" id="page-header"></header>
 
     <main class="main-content main-content--chat">
+      <div class="quick-chips" id="quick-chips">
+        <button class="chip" data-question="Gde najviše trošim?">Gde najviše trošim?</button>
+        <button class="chip" data-question="Koliko mi je ostalo?">Koliko mi je ostalo?</button>
+        <button class="chip" data-question="Šta da kupim?">Šta da kupim?</button>
+      </div>
       <div class="chat-area">
         <div class="chat-messages" id="chat-messages"></div>
       </div>

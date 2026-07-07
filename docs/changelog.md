@@ -1,5 +1,28 @@
 # Domaćinko — Changelog
 
+## [2.0.0] — 2026-07-07
+
+### Dodato
+- **PWA**: manifest.json, service worker za offline keširanje, ikone aplikacije
+- Meta tagovi za mobilne uređaje (theme-color, apple-mobile-web-app)
+- Tamna tema sa prekidačem u podešavanjima
+- CSS animacije za troškove i listu za kupovinu
+- Prazna stanja sa prijateljskim porukama na svim stranicama
+- **Finansije**: izmena i brisanje troškova, filteri po kategoriji i datumu
+- Chart.js grafikon raspodele troškova po kategorijama
+- Poređenje sa prošlim mesecom ("X% manje/više")
+- Progress bar za cilj štednje
+- Mesečni računi (ponavljajući troškovi) sa podsetnicima na početnoj
+- **AI asistent**: kontekstualni odgovori na osnovu stvarnih podataka
+- Opcioni OpenAI API ključ u podešavanjima
+- Brza pitanja (chips): "Gde najviše trošim?", "Koliko mi je ostalo?", "Šta da kupim?"
+- **Skeniranje računa**: Tesseract.js OCR za iznos, prodavnicu i datum
+- Dugme "Kreiraj trošak" nakon skeniranja
+
+### Poboljšano
+- AI više ne koristi nasumične odgovore — analizira budžet, troškove i kupovinu
+- Finansijska stranica sa kompletnim pregledom i grafikonima
+
 ## [1.0.0] — 2026-07-07
 
 ### Dodato

@@ -2,8 +2,15 @@
 <html lang="sr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Domaćinko">
   <title>Domaćinko — Početna</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.svg">
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -13,6 +20,8 @@
         <h1 class="greeting__text" id="greeting">Dobro jutro!</h1>
         <p class="greeting__sub" id="household-status">Domaćinstvo</p>
       </div>
+
+      <div id="month-comparison"></div>
 
       <div class="card text-center">
         <p class="card__title">Finansijsko zdravlje</p>
@@ -34,12 +43,24 @@
         </div>
       </div>
 
+      <div class="card" id="savings-card">
+        <p class="card__title">Cilj štednje</p>
+        <div id="savings-progress"></div>
+      </div>
+
       <div class="advice-banner mb-md">
         <div class="advice-banner__label">Savet dana 💚</div>
         <p class="advice-banner__text" id="daily-advice">Učitavanje...</p>
       </div>
 
       <p class="text-muted text-center hidden" id="shopping-hint" style="font-size:var(--font-size-sm);margin-bottom:var(--space-md)"></p>
+
+      <div class="section hidden" id="recurring-section">
+        <div class="section__header">
+          <h2 class="section__title">Podsetnici</h2>
+        </div>
+        <div class="card card--flat" id="recurring-reminders"></div>
+      </div>
 
       <div class="section">
         <div class="section__header">

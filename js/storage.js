@@ -24,9 +24,13 @@ const DEFAULT_DATA = {
     userName: '',
     currency: 'RSD',
     monthlyBudget: 80000,
-    savingsGoal: 10000
+    savingsGoal: 10000,
+    darkTheme: false,
+    apiKey: '',
+    apiUrl: 'https://api.openai.com/v1/chat/completions'
   },
   expenses: [],
+  recurringExpenses: [],
   shoppingList: [],
   household: {
     familyMembers: [],
@@ -59,7 +63,10 @@ function getData() {
       return structuredClone(DEFAULT_DATA);
     }
     const parsed = JSON.parse(raw);
-    return { ...structuredClone(DEFAULT_DATA), ...parsed };
+    const merged = { ...structuredClone(DEFAULT_DATA), ...parsed };
+    merged.settings = { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) };
+    if (!merged.recurringExpenses) merged.recurringExpenses = [];
+    return merged;
   } catch {
     return structuredClone(DEFAULT_DATA);
   }
@@ -102,6 +109,114 @@ function deleteExpense(id) {
   const data = getData();
   data.expenses = data.expenses.filter(e => e.id !== id);
   saveData(data);
+}
+
+function updateExpense(id, updates) {
+  const data = getData();
+  const expense = data.expenses.find(e => e.id === id);
+  if (!expense) return null;
+  Object.assign(expense, {
+    name: updates.name ?? expense.name,
+    amount: updates.amount !== undefined ? parseFloat(updates.amount) : expense.amount,
+    category: updates.category ?? expense.category,
+    date: updates.date ?? expense.date,
+    note: updates.note ?? expense.note
+  });
+  saveData(data);
+  return expense;
+}
+
+function filterExpenses({ category, dateFrom, dateTo } = {}) {
+  let expenses = getExpenses();
+  if (category) {
+    expenses = expenses.filter(e => e.category === category);
+  }
+  if (dateFrom) {
+    expenses = expenses.filter(e => e.date >= dateFrom);
+  }
+  if (dateTo) {
+    expenses = expenses.filter(e => e.date <= dateTo);
+  }
+  return expenses.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function getMonthComparison() {
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const prev = getPreviousMonthSpent();
+  if (prev <= 0) return null;
+  const diff = spent - prev;
+  const pct = Math.round(Math.abs(diff / prev) * 100);
+  return {
+    spent,
+    prev,
+    pct,
+    less: diff < 0,
+    text: diff < 0
+      ? `${pct}% manje nego prošlog meseca`
+      : diff > 0
+        ? `${pct}% više nego prošlog meseca`
+        : 'Isto kao prošlog meseca'
+  };
+}
+
+function getSavingsProgress() {
+  const settings = getSettings();
+  const goal = settings.savingsGoal || 0;
+  if (goal <= 0) return { goal: 0, saved: 0, pct: 0 };
+
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget || 0;
+  const saved = Math.max(0, budget - spent);
+  const pct = Math.min(100, Math.round((saved / goal) * 100));
+
+  return { goal, saved, pct };
+}
+
+function getRecurringExpenses() {
+  return getData().recurringExpenses || [];
+}
+
+function addRecurringExpense(expense) {
+  const data = getData();
+  if (!data.recurringExpenses) data.recurringExpenses = [];
+  const item = {
+    id: generateId(),
+    name: expense.name,
+    amount: parseFloat(expense.amount),
+    category: expense.category,
+    dayOfMonth: parseInt(expense.dayOfMonth, 10) || 1,
+    note: expense.note || ''
+  };
+  data.recurringExpenses.push(item);
+  saveData(data);
+  return item;
+}
+
+function deleteRecurringExpense(id) {
+  const data = getData();
+  data.recurringExpenses = (data.recurringExpenses || []).filter(e => e.id !== id);
+  saveData(data);
+}
+
+function getRecurringReminders() {
+  const recurring = getRecurringExpenses();
+  if (!recurring.length) return [];
+
+  const now = new Date();
+  const day = now.getDate();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const monthExpenses = getMonthlyExpenses(year, month);
+
+  return recurring.filter(r => {
+    if (day < r.dayOfMonth) return false;
+    const alreadyPaid = monthExpenses.some(e =>
+      e.name.toLowerCase() === r.name.toLowerCase() && e.amount === r.amount
+    );
+    return !alreadyPaid;
+  });
 }
 
 function getMonthlyExpenses(year, month) {

@@ -9,6 +9,36 @@ function getGreeting() {
   return 'Dobro veče';
 }
 
+function getAssetBase() {
+  const path = window.location.pathname;
+  return path.includes('/pages/') ? '..' : '.';
+}
+
+function initApp() {
+  initTheme();
+  registerServiceWorker();
+}
+
+function initTheme() {
+  const settings = getSettings();
+  const theme = settings.darkTheme ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function toggleTheme() {
+  const settings = getSettings();
+  const dark = !settings.darkTheme;
+  saveSettings({ darkTheme: dark });
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  return dark;
+}
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  const base = getAssetBase();
+  navigator.serviceWorker.register(`${base}/sw.js`, { scope: `${base}/` }).catch(() => {});
+}
+
 function renderScoreRing(score, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -45,24 +75,42 @@ function showToast(message, duration = 2500) {
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'toast';
-    toast.style.cssText = `
-      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-      background: var(--color-text); color: white; padding: 12px 24px;
-      border-radius: 24px; font-size: 14px; z-index: 200;
-      opacity: 0; transition: opacity 0.3s; pointer-events: none;
-      max-width: 90%; text-align: center;
-    `;
+    toast.className = 'toast';
     document.body.appendChild(toast);
   }
   toast.textContent = message;
-  toast.style.opacity = '1';
-  setTimeout(() => { toast.style.opacity = '0'; }, duration);
+  toast.classList.add('toast--visible');
+  setTimeout(() => { toast.classList.remove('toast--visible'); }, duration);
 }
 
-function populateCategorySelect(selectId) {
+function populateCategorySelect(selectId, includeAll = false) {
   const select = document.getElementById(selectId);
   if (!select) return;
-  select.innerHTML = CATEGORIES.map(c =>
+  const options = includeAll ? [{ id: '', label: 'Sve kategorije', icon: '📋' }] : [];
+  select.innerHTML = [...options, ...CATEGORIES].map(c =>
     `<option value="${c.id}">${c.icon} ${c.label}</option>`
   ).join('');
 }
+
+function renderEmptyState(icon, title, subtitle) {
+  return `
+    <div class="empty-state animate-fade-in">
+      <div class="empty-state__icon">${icon}</div>
+      <p class="empty-state__title">${title}</p>
+      ${subtitle ? `<p class="empty-state__subtitle">${subtitle}</p>` : ''}
+    </div>
+  `;
+}
+
+function renderProgressBar(pct, label) {
+  return `
+    <div class="progress-bar">
+      ${label ? `<div class="progress-bar__header"><span>${label}</span><span>${pct}%</span></div>` : ''}
+      <div class="progress-bar__track">
+        <div class="progress-bar__fill" style="width:${pct}%"></div>
+      </div>
+    </div>
+  `;
+}
+
+document.addEventListener('DOMContentLoaded', initApp);

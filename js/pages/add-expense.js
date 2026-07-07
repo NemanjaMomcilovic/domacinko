@@ -7,12 +7,12 @@ function renderExpenses() {
 
   const list = document.getElementById('expenses-list');
   if (expenses.length === 0) {
-    list.innerHTML = '<p class="text-muted text-center">Nema troškova ovog meseca.</p>';
+    list.innerHTML = renderEmptyState('💸', 'Nema troškova ovog meseca', 'Dodajte prvi trošak iznad!');
     return;
   }
 
   list.innerHTML = expenses.slice(0, 10).map(e => `
-    <div class="list-item">
+    <div class="list-item list-item--new">
       <div class="list-item__icon">${getCategoryIcon(e.category)}</div>
       <div class="list-item__content">
         <div class="list-item__title">${e.name}</div>
@@ -32,11 +32,20 @@ function renderExpenses() {
   });
 }
 
+function prefillFromParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('name')) document.getElementById('expense-name').value = params.get('name');
+  if (params.get('amount')) document.getElementById('expense-amount').value = params.get('amount');
+  if (params.get('date')) document.getElementById('expense-date').value = params.get('date');
+  if (params.get('category')) document.getElementById('expense-category').value = params.get('category');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('', { title: 'Dodaj trošak', showBack: true, backHref: 'home.html' });
 
   populateCategorySelect('expense-category');
   document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+  prefillFromParams();
 
   const form = document.getElementById('expense-form');
   form.addEventListener('submit', e => {
