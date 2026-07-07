@@ -5,6 +5,7 @@ const HOUSEHOLD_SECTIONS = [
   { key: 'pets', label: 'Ljubimci', icon: '🐾', placeholder: 'Ime ljubimca' },
   { key: 'subscriptions', label: 'Pretplate', icon: '📱', placeholder: 'Naziv pretplate' },
   { key: 'appliances', label: 'Aparati', icon: '🔌', placeholder: 'Naziv aparata' },
+  { key: 'pantry', label: 'Ostava', icon: '🥫', placeholder: 'Namirnica (npr. jaja, mleko)' },
   { key: 'documents', label: 'Dokumenti', icon: '📋', placeholder: 'Naziv dokumenta' },
   { key: 'warranties', label: 'Garancije', icon: '🛡️', placeholder: 'Naziv garancije' },
   { key: 'importantDates', label: 'Važni datumi', icon: '📅', placeholder: 'Opis datuma' }
@@ -24,7 +25,7 @@ function renderHousehold() {
         </div>
         <div class="section-items">
           ${items.length === 0
-            ? '<p class="text-muted" style="font-size:var(--font-size-sm)">Nema unosa.</p>'
+            ? '<p class="text-muted" style="font-size:var(--font-size-sm)">Nema unosa. Dodajte prvi ispod!</p>'
             : items.map(item => `
               <div class="list-item" style="padding:var(--space-sm) 0">
                 <div class="list-item__content">

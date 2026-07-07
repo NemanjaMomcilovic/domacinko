@@ -58,6 +58,21 @@
         </div>
 
         <div class="settings-group">
+          <h3 class="settings-group__title">Obaveštenja</h3>
+          <div class="card card--flat" style="padding:0;overflow:hidden">
+            <div class="settings-item">
+              <span class="settings-item__label">Podsetnici (PWA)</span>
+              <button type="button" class="toggle" id="notifications-toggle" aria-label="Obaveštenja">
+                <span class="toggle__knob"></span>
+              </button>
+            </div>
+          </div>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
+            Podsetnici za račune, budžet i listu za kupovinu.
+          </p>
+        </div>
+
+        <div class="settings-group">
           <h3 class="settings-group__title">Izgled</h3>
           <div class="card card--flat" style="padding:0;overflow:hidden">
             <div class="settings-item">
@@ -103,13 +118,53 @@
       </form>
 
       <div class="settings-group">
+        <h3 class="settings-group__title">Aplikacija</h3>
+        <div class="card card--flat" style="padding:0;overflow:hidden">
+          <a href="meal-plan.html" class="settings-item" style="text-decoration:none;color:inherit">
+            <span class="settings-item__label">🍽️ Plan obroka</span>
+            <span class="settings-item__value">→</span>
+          </a>
+          <a href="../landing.html" class="settings-item" style="text-decoration:none;color:inherit">
+            <span class="settings-item__label">O Domaćinku</span>
+            <span class="settings-item__value">→</span>
+          </a>
+          <button type="button" class="settings-item" id="replay-onboarding" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
+            <span class="settings-item__label">Ponovo prikaži uvod</span>
+            <span class="settings-item__value">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3 class="settings-group__title">Povratna informacija</h3>
+        <div class="card card--flat" style="padding:var(--space-md)">
+          <div class="form-group" style="margin-bottom:var(--space-sm)">
+            <textarea class="form-textarea" id="feedback-text" placeholder="Vaš predlog ili komentar..." rows="3"></textarea>
+          </div>
+          <div style="display:flex;gap:var(--space-sm)">
+            <button type="button" class="btn btn--secondary" id="send-feedback" style="flex:1">Pošalji predlog</button>
+            <a href="mailto:feedback@10key.app?subject=Domaćinko%20predlog" class="btn btn--ghost btn--sm" title="Email">✉️</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-group">
         <h3 class="settings-group__title">Podaci</h3>
         <div class="card card--flat" style="padding:0;overflow:hidden">
-          <button class="settings-item" id="clear-chat" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
+          <button type="button" class="settings-item" id="export-data" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
+            <span class="settings-item__label">Izvezi podatke (JSON)</span>
+            <span class="settings-item__value">→</span>
+          </button>
+          <label class="settings-item" style="cursor:pointer">
+            <span class="settings-item__label">Uvezi podatke (JSON)</span>
+            <span class="settings-item__value">→</span>
+            <input type="file" id="import-data" accept=".json,application/json" hidden>
+          </label>
+          <button type="button" class="settings-item" id="clear-chat" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
             <span class="settings-item__label">Obriši istoriju chata</span>
             <span class="settings-item__value">→</span>
           </button>
-          <button class="settings-item" id="reset-data" style="width:100%;border:none;background:none;cursor:pointer;text-align:left;color:var(--color-danger)">
+          <button type="button" class="settings-item" id="reset-data" style="width:100%;border:none;background:none;cursor:pointer;text-align:left;color:var(--color-danger)">
             <span class="settings-item__label" style="color:var(--color-danger)">Resetuj sve podatke</span>
             <span class="settings-item__value">→</span>
           </button>
@@ -124,7 +179,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 2.0.0</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 3.0.0</p>
         </div>
       </div>
     </main>
@@ -134,6 +189,7 @@
 
   <script src="../js/storage.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/notifications.js"></script>
   <script src="../js/navigation.js"></script>
   <script src="../js/pages/settings.js"></script>
 </body>

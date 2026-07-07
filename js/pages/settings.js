@@ -3,7 +3,7 @@ function renderRecurringList() {
   const container = document.getElementById('recurring-list');
 
   if (list.length === 0) {
-    container.innerHTML = '<p class="text-muted text-center" style="font-size:var(--font-size-sm)">Nema mesečnih računa. Dodajte ispod.</p>';
+    container.innerHTML = renderEmptyState('📄', 'Nema mesečnih računa', 'Dodajte struju, internet ili druge redovne troškove ispod.');
     return;
   }
 
@@ -38,12 +38,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('savings-goal').value = settings.savingsGoal || 10000;
   document.getElementById('api-key').value = settings.apiKey || '';
 
-  const toggle = document.getElementById('dark-theme-toggle');
-  if (settings.darkTheme) toggle.classList.add('toggle--on');
+  const themeToggle = document.getElementById('dark-theme-toggle');
+  if (settings.darkTheme) themeToggle.classList.add('toggle--on');
 
-  toggle.addEventListener('click', () => {
+  themeToggle.addEventListener('click', () => {
     const dark = toggleTheme();
-    toggle.classList.toggle('toggle--on', dark);
+    themeToggle.classList.toggle('toggle--on', dark);
+  });
+
+  const notifToggle = document.getElementById('notifications-toggle');
+  if (settings.notificationsEnabled) notifToggle.classList.add('toggle--on');
+
+  notifToggle.addEventListener('click', async () => {
+    const isOn = notifToggle.classList.contains('toggle--on');
+    if (isOn) {
+      disableNotifications();
+      notifToggle.classList.remove('toggle--on');
+      showToast('Obaveštenja isključena.');
+    } else {
+      const ok = await enableNotifications();
+      notifToggle.classList.toggle('toggle--on', ok);
+      if (ok) {
+        showToast('Obaveštenja uključena!');
+      } else {
+        showToast('Dozvolite obaveštenja u pregledaču.');
+      }
+    }
   });
 
   populateCategorySelect('rec-category');
@@ -79,9 +99,60 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Podešavanja sačuvana!');
   });
 
+  document.getElementById('replay-onboarding').addEventListener('click', () => {
+    resetOnboarding();
+    window.location.href = 'onboarding.html';
+  });
+
+  document.getElementById('send-feedback').addEventListener('click', () => {
+    const text = document.getElementById('feedback-text').value.trim();
+    if (!text) {
+      showToast('Unesite predlog pre slanja.');
+      return;
+    }
+    addFeedback(text);
+    const payload = `Domaćinko predlog (${new Date().toLocaleDateString('sr-RS')}):\n\n${text}`;
+    navigator.clipboard.writeText(payload).then(() => {
+      showToast('Predlog sačuvan i kopiran u clipboard!');
+    }).catch(() => {
+      showToast('Predlog sačuvan lokalno!');
+    });
+    document.getElementById('feedback-text').value = '';
+  });
+
+  document.getElementById('export-data').addEventListener('click', () => {
+    const json = exportAllData();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `domacinko-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Podaci izvezeni!');
+  });
+
+  document.getElementById('import-data').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        importAllData(reader.result);
+        showToast('Podaci uvezeni! Osvežavam...');
+        setTimeout(() => location.reload(), 1000);
+      } catch (err) {
+        showToast('Greška pri uvozu: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
   document.getElementById('reset-data').addEventListener('click', () => {
     if (confirm('Da li ste sigurni? Svi podaci će biti obrisani i vraćeni na početne vrednosti.')) {
       resetAllData();
+      resetOnboarding();
       showToast('Podaci su resetovani.');
       setTimeout(() => location.reload(), 1000);
     }

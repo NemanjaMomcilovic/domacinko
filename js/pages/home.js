@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+  if (!isOnboardingComplete()) {
+    window.location.href = 'onboarding.html';
+    return;
+  }
+
   initNavigation('home');
 
   const settings = getSettings();

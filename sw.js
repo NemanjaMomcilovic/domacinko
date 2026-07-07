@@ -1,8 +1,9 @@
-const CACHE_NAME = 'domacinko-v2';
+const CACHE_NAME = 'domacinko-v3';
 
 const ASSETS = [
   './',
   './index.html',
+  './landing.html',
   './manifest.json',
   './css/variables.css',
   './css/components.css',
@@ -10,6 +11,7 @@ const ASSETS = [
   './js/storage.js',
   './js/app.js',
   './js/navigation.js',
+  './js/notifications.js',
   './js/pages/home.js',
   './js/pages/finances.js',
   './js/pages/ai.js',
@@ -18,6 +20,8 @@ const ASSETS = [
   './js/pages/add-expense.js',
   './js/pages/scan-receipt.js',
   './js/pages/household.js',
+  './js/pages/onboarding.js',
+  './js/pages/meal-plan.js',
   './pages/home.html',
   './pages/finances.html',
   './pages/ai.html',
@@ -26,6 +30,8 @@ const ASSETS = [
   './pages/add-expense.html',
   './pages/scan-receipt.html',
   './pages/household.html',
+  './pages/onboarding.html',
+  './pages/meal-plan.html',
   './assets/icons/icon-192.svg',
   './assets/icons/icon-512.svg'
 ];
@@ -60,4 +66,28 @@ self.addEventListener('fetch', event => {
       return cached || fetchPromise;
     })
   );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || './pages/home.html';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      for (const client of clientList) {
+        if (client.url.includes('domacinko') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+    })
+  );
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SHOW_NOTIFICATION') {
+    const { title, options } = event.data;
+    event.waitUntil(self.registration.showNotification(title, options));
+  }
 });

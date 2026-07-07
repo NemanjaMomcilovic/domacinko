@@ -1,5 +1,26 @@
 # Domaćinko — Changelog
 
+## [3.0.0] — 2026-07-07
+
+### Dodato
+- **Onboarding**: 3 koraka za nove korisnike (dobrodošlica, budžet + ime, prvi trošak)
+- Preskoči opcija na svakom koraku, `onboardingComplete` flag u localStorage
+- "Ponovo prikaži uvod" u podešavanjima
+- **Plan obroka**: nedeljni planer (Pon–Ned), generisanje liste za kupovinu iz obroka
+- "Šta mogu da skuvam?" — predlozi na osnovu ostave u domaćinstvu
+- **PWA obaveštenja**: podsetnici za račune, budžet (>80%), listu za kupovinu
+- Prekidač obaveštenja u podešavanjima
+- **Landing stranica** (`landing.html`) — marketing prezentacija sa 10KEY brendingom
+- **Pošalji predlog** u podešavanjima (lokalno čuvanje + clipboard + mailto)
+- **Izvezi/Uvezi podatke** (JSON backup/restore)
+- Ostava sekcija u domaćinstvu za namirnice
+- Brza akcija "Plan obroka" na početnoj
+
+### Poboljšano
+- `index.html` usmerava na onboarding ili početnu
+- Prazna stanja za mesečne račune i domaćinstvo
+- Service worker ažuriran na v3 sa podrškom za notifikacije
+
 ## [2.0.0] — 2026-07-07
 
 ### Dodato

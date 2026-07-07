@@ -1,6 +1,6 @@
 # Domaćinko — Roadmap
 
-## Faza 1 — Prototip (trenutna) ✅
+## Faza 1 — Prototip ✅
 
 - [x] Osnovna struktura projekta
 - [x] CSS dizajn sistem (zelena primarna, mobile-first)
@@ -15,25 +15,30 @@
 - [x] Podešavanja i reset podataka
 - [x] localStorage integracija
 
-## Faza 2 — Poboljšanja
+## Faza 2 — Poboljšanja ✅
 
-- [ ] Grafikoni troškova (Chart.js ili slično)
-- [ ] OCR za skeniranje računa
-- [ ] Notifikacije i podsetnici
-- [ ] Izvezi/uvozi podatke (JSON/CSV)
-- [ ] Tamna tema
-- [ ] PWA podrška (offline, instalacija)
+- [x] Grafikoni troškova (Chart.js)
+- [x] OCR za skeniranje računa
+- [x] Notifikacije i podsetnici (PWA, client-side)
+- [x] Izvezi/uvozi podatke (JSON)
+- [x] Tamna tema
+- [x] PWA podrška (offline, instalacija)
+- [x] Onboarding za nove korisnike
+- [x] Plan obroka sa generisanjem liste za kupovinu
+- [x] Landing stranica
 
 ## Faza 3 — Backend i AI
 
-- [ ] Korisnički nalozi i autentifikacija
+- [ ] Korisnički nalozi i autentifikacija (Supabase)
 - [ ] Sinhronizacija između uređaja
-- [ ] Pravi AI asistent (OpenAI ili lokalni model)
-- [ ] Personalizovani saveti na osnovu podataka
-- [ ] Deljenje domaćinstva sa članovima porodice
+- [ ] **Sledeći korak**: Sinhronizacija domaćinstva između članova porodice (Supabase backend)
+- [x] Pravi AI asistent (OpenAI opcioni ključ)
+- [x] Personalizovani saveti na osnovu podataka
+- [ ] Deljenje domaćinstva sa članovima porodice (zahteva backend)
 
 ## Faza 4 — 10KEY platforma
 
+- [x] Landing stranica za Domaćinko / 10KEY
 - [ ] Više proizvoda pod 10KEY brendom
 - [ ] Centralna autentifikacija
 - [ ] Premium funkcije

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Domaćinko — Dobrodošli</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container onboarding">
+    <button type="button" class="onboarding__skip" id="skip-btn">Preskoči</button>
+
+    <main class="onboarding__content" id="onboarding-content">
+      <!-- Screen 1 -->
+      <div class="onboarding__screen" data-screen="1">
+        <div class="onboarding__emoji">🏡</div>
+        <h1 class="onboarding__title">Dobrodošli u Domaćinko!</h1>
+        <p class="onboarding__text">
+          Vaš prijateljski AI pomoćnik za domaćinstvo. Pratite troškove, planirajte obroke,
+          vodite listu za kupovinu i držite finansije pod kontrolom — sve na jednom mestu.
+        </p>
+        <ul class="onboarding__features">
+          <li>💰 Budžet i finansijsko zdravlje</li>
+          <li>🛒 Lista za kupovinu</li>
+          <li>🍽️ Plan obroka</li>
+          <li>💬 AI saveti prilagođeni vama</li>
+        </ul>
+      </div>
+
+      <!-- Screen 2 -->
+      <div class="onboarding__screen hidden" data-screen="2">
+        <div class="onboarding__emoji">👋</div>
+        <h1 class="onboarding__title">Hajde da se upoznamo</h1>
+        <p class="onboarding__text">
+          Kako da vas zovemo? I koliki je vaš mesečni budžet za domaćinstvo?
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="onb-name">Vaše ime</label>
+          <input type="text" class="form-input" id="onb-name" placeholder="npr. Ana">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="onb-budget">Mesečni budžet (RSD)</label>
+          <input type="number" class="form-input" id="onb-budget" min="0" step="1000" value="80000">
+        </div>
+      </div>
+
+      <!-- Screen 3 -->
+      <div class="onboarding__screen hidden" data-screen="3">
+        <div class="onboarding__emoji">💸</div>
+        <h1 class="onboarding__title">Prvi trošak?</h1>
+        <p class="onboarding__text">
+          Dodajte prvi trošak da odmah vidite kako Domaćinko prati vaš budžet.
+          Možete i preskočiti — uvek možete dodati kasnije.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="onb-expense-name">Naziv troška</label>
+          <input type="text" class="form-input" id="onb-expense-name" placeholder="npr. Kafa, Hrana...">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="onb-expense-amount">Iznos</label>
+          <input type="number" class="form-input" id="onb-expense-amount" placeholder="0" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="onb-expense-category">Kategorija</label>
+          <select class="form-select" id="onb-expense-category"></select>
+        </div>
+      </div>
+    </main>
+
+    <footer class="onboarding__footer">
+      <div class="onboarding__dots" id="dots">
+        <span class="onboarding__dot onboarding__dot--active" data-dot="1"></span>
+        <span class="onboarding__dot" data-dot="2"></span>
+        <span class="onboarding__dot" data-dot="3"></span>
+      </div>
+      <button type="button" class="btn btn--primary btn--block" id="next-btn">Nastavi</button>
+    </footer>
+  </div>
+
+  <script src="../js/storage.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/notifications.js"></script>
+  <script src="../js/pages/onboarding.js"></script>
+</body>
+</html>

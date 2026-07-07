@@ -17,6 +17,9 @@ function getAssetBase() {
 function initApp() {
   initTheme();
   registerServiceWorker();
+  if (typeof checkAndSendNotifications === 'function') {
+    setTimeout(() => checkAndSendNotifications(), 2000);
+  }
 }
 
 function initTheme() {

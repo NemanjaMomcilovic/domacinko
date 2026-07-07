@@ -11,11 +11,19 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/icons/icon-192.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-  <meta http-equiv="refresh" content="0;url=pages/home.html">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <p style="text-align:center;padding:2rem;">Preusmeravanje na Domaćinko...</p>
-  <script>window.location.href = 'pages/home.html';</script>
+  <p style="text-align:center;padding:2rem;">Učitavanje Domaćinka...</p>
+  <script src="js/storage.js"></script>
+  <script>
+    (function () {
+      if (!localStorage.getItem('onboardingComplete')) {
+        window.location.replace('pages/onboarding.html');
+      } else {
+        window.location.replace('pages/home.html');
+      }
+    })();
+  </script>
 </body>
 </html>

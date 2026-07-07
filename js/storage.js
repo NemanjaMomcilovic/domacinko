@@ -19,6 +19,51 @@ const CATEGORIES = [
   { id: 'other', label: 'Ostalo', icon: '📦' }
 ];
 
+const ONBOARDING_KEY = 'onboardingComplete';
+const NOTIFICATION_STATE_KEY = 'domacinko_notifications';
+
+const MEAL_DAYS = [
+  { id: 'mon', label: 'Pon' },
+  { id: 'tue', label: 'Uto' },
+  { id: 'wed', label: 'Sre' },
+  { id: 'thu', label: 'Čet' },
+  { id: 'fri', label: 'Pet' },
+  { id: 'sat', label: 'Sub' },
+  { id: 'sun', label: 'Ned' }
+];
+
+const MEAL_INGREDIENT_MAP = {
+  'piletina': ['piletina', 'so', 'biber', 'ulje'],
+  'ćuretina': ['ćuretina', 'so', 'biber', 'ulje'],
+  'gulaš': ['meso', 'luk', 'paprika', 'paradajz', 'brašno'],
+  'pasulj': ['pasulj', 'luk', 'šargarepa', 'krompir', 'crvena paprika'],
+  'riba': ['riba', 'limun', 'so', 'biber', 'ulje'],
+  'palačinke': ['brašno', 'jaja', 'mleko', 'šećer', 'ulje'],
+  'pasta': ['pasta', 'paradajz', 'luk', 'sir', 'ulje'],
+  'šopska': ['paradajz', 'krastavac', 'sir', 'luk', 'masline'],
+  'pizza': ['brašno', 'sir', 'paradajz', 'šunka', 'masline'],
+  'supa': ['povrće', 'luk', 'šargarepa', 'krompir', 'so'],
+  'musaka': ['krompir', 'meso', 'jaja', 'mleko', 'luk'],
+  'sarma': ['kupus', 'meso', 'pirinač', 'luk', 'so'],
+  'pljeskavica': ['mleveno meso', 'luk', 'so', 'biber'],
+  'kuvano jaje': ['jaja', 'so'],
+  'omlet': ['jaja', 'mleko', 'sir', 'so'],
+  'salata': ['zelena salata', 'paradajz', 'krastavac', 'ulje'],
+  'čorba': ['povrće', 'luk', 'šargarepa', 'so'],
+  'kuvano meso': ['meso', 'luk', 'šargarepa', 'krompir', 'so']
+};
+
+const MEAL_SUGGESTIONS = [
+  { name: 'Piletina sa povrćem', ingredients: ['piletina', 'paprika', 'luk', 'ulje'] },
+  { name: 'Pasulj', ingredients: ['pasulj', 'luk', 'šargarepa', 'krompir'] },
+  { name: 'Palačinke', ingredients: ['brašno', 'jaja', 'mleko', 'šećer'] },
+  { name: 'Pasta sa sirom', ingredients: ['pasta', 'sir', 'ulje'] },
+  { name: 'Omlet', ingredients: ['jaja', 'mleko', 'sir'] },
+  { name: 'Šopska salata', ingredients: ['paradajz', 'krastavac', 'sir', 'luk'] },
+  { name: 'Kuvano jaje', ingredients: ['jaja'] },
+  { name: 'Gulaš', ingredients: ['meso', 'luk', 'paprika', 'paradajz'] }
+];
+
 const DEFAULT_DATA = {
   settings: {
     userName: '',
@@ -27,11 +72,16 @@ const DEFAULT_DATA = {
     savingsGoal: 10000,
     darkTheme: false,
     apiKey: '',
-    apiUrl: 'https://api.openai.com/v1/chat/completions'
+    apiUrl: 'https://api.openai.com/v1/chat/completions',
+    notificationsEnabled: false
   },
   expenses: [],
   recurringExpenses: [],
   shoppingList: [],
+  mealPlan: {
+    mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: ''
+  },
+  feedback: [],
   household: {
     familyMembers: [],
     cars: [],
@@ -39,6 +89,7 @@ const DEFAULT_DATA = {
     pets: [],
     subscriptions: [],
     appliances: [],
+    pantry: [],
     documents: [],
     warranties: [],
     importantDates: []
@@ -66,6 +117,9 @@ function getData() {
     const merged = { ...structuredClone(DEFAULT_DATA), ...parsed };
     merged.settings = { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) };
     if (!merged.recurringExpenses) merged.recurringExpenses = [];
+    if (!merged.mealPlan) merged.mealPlan = { ...DEFAULT_DATA.mealPlan };
+    if (!merged.feedback) merged.feedback = [];
+    if (merged.household && !merged.household.pantry) merged.household.pantry = [];
     return merged;
   } catch {
     return structuredClone(DEFAULT_DATA);
@@ -371,7 +425,152 @@ function clearChatHistory() {
 
 function resetAllData() {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(NOTIFICATION_STATE_KEY);
   saveData(DEFAULT_DATA);
+}
+
+function isOnboardingComplete() {
+  return localStorage.getItem(ONBOARDING_KEY) === 'true';
+}
+
+function setOnboardingComplete() {
+  localStorage.setItem(ONBOARDING_KEY, 'true');
+}
+
+function resetOnboarding() {
+  localStorage.removeItem(ONBOARDING_KEY);
+}
+
+function exportAllData() {
+  return JSON.stringify({
+    version: '3.0.0',
+    exportedAt: new Date().toISOString(),
+    onboardingComplete: isOnboardingComplete(),
+    data: getData()
+  }, null, 2);
+}
+
+function importAllData(jsonString) {
+  const parsed = JSON.parse(jsonString);
+  const payload = parsed.data || parsed;
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Neispravan format podataka.');
+  }
+  saveData({ ...structuredClone(DEFAULT_DATA), ...payload });
+  if (parsed.onboardingComplete) setOnboardingComplete();
+  return true;
+}
+
+function addFeedback(text) {
+  const data = getData();
+  if (!data.feedback) data.feedback = [];
+  data.feedback.push({
+    id: generateId(),
+    text,
+    date: new Date().toISOString()
+  });
+  saveData(data);
+}
+
+function getMealPlan() {
+  return getData().mealPlan || { ...DEFAULT_DATA.mealPlan };
+}
+
+function saveMealPlan(mealPlan) {
+  const data = getData();
+  data.mealPlan = { ...data.mealPlan, ...mealPlan };
+  saveData(data);
+}
+
+function setMealForDay(dayId, mealName) {
+  const data = getData();
+  if (!data.mealPlan) data.mealPlan = { ...DEFAULT_DATA.mealPlan };
+  data.mealPlan[dayId] = mealName;
+  saveData(data);
+}
+
+function extractIngredientsFromMeals() {
+  const plan = getMealPlan();
+  const ingredients = new Set();
+
+  Object.values(plan).forEach(meal => {
+    const name = (meal || '').trim().toLowerCase();
+    if (!name) return;
+
+    let matched = false;
+    for (const [key, items] of Object.entries(MEAL_INGREDIENT_MAP)) {
+      if (name.includes(key)) {
+        items.forEach(i => ingredients.add(i));
+        matched = true;
+      }
+    }
+
+    if (!matched) {
+      name.split(/[,+\-/&]| i /).forEach(part => {
+        const trimmed = part.trim();
+        if (trimmed.length > 2) ingredients.add(trimmed);
+      });
+    }
+  });
+
+  return [...ingredients];
+}
+
+function generateShoppingFromMealPlan() {
+  const ingredients = extractIngredientsFromMeals();
+  const existing = getShoppingList().map(i => i.name.toLowerCase());
+  let added = 0;
+
+  ingredients.forEach(ing => {
+    if (!existing.includes(ing.toLowerCase())) {
+      addShoppingItem(ing.charAt(0).toUpperCase() + ing.slice(1));
+      added++;
+    }
+  });
+
+  return { added, total: ingredients.length };
+}
+
+function getPantryItems() {
+  const household = getHousehold();
+  return household.pantry || [];
+}
+
+function suggestMealsFromPantry() {
+  const pantry = getPantryItems().map(p => (p.name || '').toLowerCase());
+  if (!pantry.length) return null;
+
+  const matches = MEAL_SUGGESTIONS.filter(meal =>
+    meal.ingredients.some(ing => pantry.some(p => p.includes(ing) || ing.includes(p)))
+  );
+
+  if (!matches.length) {
+    return { pantry, suggestions: [], message: 'Imate namirnice u ostavi, ali nismo pronašli gotove recepte. Probajte da planirate obrok ručno!' };
+  }
+
+  return { pantry, suggestions: matches.map(m => m.name), message: null };
+}
+
+function getBudgetUsagePct() {
+  const settings = getSettings();
+  const now = new Date();
+  const spent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget || 0;
+  if (budget <= 0) return 0;
+  return Math.round((spent / budget) * 100);
+}
+
+function getNotificationState() {
+  try {
+    const raw = localStorage.getItem(NOTIFICATION_STATE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveNotificationState(state) {
+  localStorage.setItem(NOTIFICATION_STATE_KEY, JSON.stringify(state));
 }
 
 function getCategoryLabel(id) {
