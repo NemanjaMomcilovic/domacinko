@@ -153,6 +153,20 @@ function getSmartResponse(message) {
     return 'Za popravke koristite AI Majstor tab — opišite problem i dobijte korak-po-korak savet! 🔧';
   }
 
+  if (lower.includes('magacin') || lower.includes('sijalic') || lower.includes('inventar')) {
+    const mag = typeof getHomeMagazine === 'function' ? getHomeMagazine() : [];
+    if (mag.length === 0) return 'Kućni magacin je prazan. Dodajte sijalice, boju i šrafove u Inventar → Magacin.';
+    return `U magacinu imate: ${mag.slice(0, 6).map(i => i.name).join(', ')}. Proverite pre kupovine! 📦`;
+  }
+
+  if (lower.includes('ostav') || lower.includes('namirnic')) {
+    const low = typeof getLowStockPantry === 'function' ? getLowStockPantry() : [];
+    if (low.length > 0) return `U ostavi na isteku: ${low.map(p => p.name).join(', ')}. Vreme za kupovinu! 🥫`;
+    const pantry = getPantryItems();
+    if (pantry.length === 0) return 'Ostava je prazna — dodajte namirnice u Domaćinstvo.';
+    return `U ostavi: ${pantry.slice(0, 8).map(p => p.name).join(', ')}.`;
+  }
+
   return `Razumem! Na ${formatCurrency(ctx.spent)} od ${formatCurrency(ctx.budget)} budžeta. Pitajte o finansijama, kupovini, održavanju ili popravkama! 💚`;
 }
 
@@ -169,10 +183,18 @@ async function getAIResponse(message) {
 }
 
 async function callOpenAI(message, settings) {
-  const ctx = typeof getAdvisorContext === 'function' ? getAdvisorContext() : buildHouseholdContext();
+  const ctx = typeof buildFullAIContext === 'function' ? buildFullAIContext() : getAdvisorContext();
+  const profile = ctx.houseProfile || {};
   const systemPrompt = `Ti si Domaćinko, prijateljski AI pomoćnik za domaćinstvo na srpskom. Topao i ohrabrujući ton.
-Kontekst: budžet ${formatCurrency(ctx.budget)}, potrošeno ${formatCurrency(ctx.spent)}, zdravlje ${ctx.score}/100.
-Održavanje na redu: ${ctx.maintenanceDue || 0}. Odgovaraj kratko (2-4 rečenice), srpski, emoji 💚.`;
+Kontekst korisnika:
+- Budžet: ${formatCurrency(ctx.finance?.budget || ctx.budget)}, potrošeno: ${formatCurrency(ctx.finance?.spent || ctx.spent)}, zdravlje: ${ctx.finance?.score || ctx.score}/100
+- Kuća: ${profile.squareMeters || '?'}m², grejanje: ${profile.heatingType || 'nepoznato'}, tip: ${profile.homeType || 'nepoznato'}
+- Kupovina: ${ctx.shopping?.pendingCount || ctx.shoppingCount || 0} stavki na listi
+- Održavanje: ${ctx.maintenance?.dueCount || ctx.maintenanceDue || 0} na redu (${ctx.maintenance?.overdueCount || ctx.maintenanceOverdue || 0} kasni)
+- Alati: ${ctx.tools?.count || 0}, Baza znanja: ${ctx.knowledge?.count || 0} rešenja
+- Magacin: ${(ctx.magazine?.items || ctx.magazineItems || []).slice(0, 5).join(', ') || 'prazan'}
+- Ostava na isteku: ${(ctx.lowStockPantry || []).join(', ') || 'nema'}
+Odgovaraj kratko (2-4 rečenice), srpski, emoji 💚.`;
 
   const response = await fetch(settings.apiUrl || 'https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -297,6 +319,18 @@ function switchAITab(tabId) {
   }
 }
 
+function renderSuggestedChips(containerId, module = 'savetnik') {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const questions = typeof getSuggestedQuestions === 'function' ? getSuggestedQuestions(module) : [];
+  container.innerHTML = questions.map(q =>
+    `<button type="button" class="chip" data-question="${q}">${q}</button>`
+  ).join('');
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => sendMessage(chip.dataset.question));
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('ai', { title: 'AI' });
 
@@ -310,12 +344,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderChat();
   renderTeacherTopics();
+  renderSuggestedChips('quick-chips', 'savetnik');
 
   const input = document.getElementById('chat-input');
   const sendBtn = document.getElementById('chat-send');
   sendBtn.addEventListener('click', () => sendMessage());
   input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-  document.querySelectorAll('#quick-chips .chip').forEach(chip => {
-    chip.addEventListener('click', () => sendMessage(chip.dataset.question));
-  });
 });

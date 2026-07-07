@@ -1,5 +1,25 @@
 # Domaćinko — Changelog
 
+## [6.3.0] — 2026-07-07
+
+### Dodato
+- **AI kontekst** — profil kuće, magacin, alati, baza znanja u OpenAI promptu
+- **Predložena pitanja** po modulu (`MODULE_SUGGESTED_QUESTIONS`)
+- **AI Majstor** — direktno čuvanje rešenja u bazu znanja jednim klikom
+- **Bašta** — raspored zalivanja, badge-ovi „Zaliti!"/„Uskoro"
+- **Bezbednost** — alert baner za istekle stavke
+- **Projekti** — upload fotografije (base64, max 500 KB)
+
+### Poboljšano
+- Popravljen AI HTML (srpski tekst, emoji, aria labele)
+- Lokalni AI odgovori za magacin i ostavu
+- Onboarding slide animacije, auth logo fade-in
+- Lazy loading logotipa na auth stranici
+
+### Tehnički
+- Service Worker v6.3.0
+- `getSuggestedQuestions`, prošireni `getAdvisorContext`
+
 ## [6.2.0] — 2026-07-07
 
 ### Dodato

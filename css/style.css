@@ -364,13 +364,25 @@ body {
 }
 
 .onboarding__screen {
-  animation: fadeIn 0.35s ease;
+  animation: onboardingSlideIn 0.4s ease;
+}
+
+@keyframes onboardingSlideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .onboarding__emoji {
   font-size: 4rem;
   text-align: center;
   margin-bottom: var(--space-lg);
+  animation: onboardingBounce 0.6s ease;
+}
+
+@keyframes onboardingBounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .onboarding__title {
@@ -488,9 +500,15 @@ body {
 }
 
 .auth-page__logo {
+  animation: authLogoFade 0.6s ease;
   width: 70%;
   max-width: 240px;
   height: auto;
+}
+
+@keyframes authLogoFade {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .auth-page__tagline {

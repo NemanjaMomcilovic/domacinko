@@ -211,7 +211,7 @@ function renderRepairResult(advice, source, meta = {}) {
   `;
 }
 
-function saveRepairToKnowledge(category, problem, advice) {
+function saveRepairToKnowledge(category, problem, advice, silent = false) {
   const catLabel = getRepairCategoryLabel(category);
   const steps = (advice.steps || []).map((s, i) => `${i + 1}. ${s}`).join('\n');
   const solution = [
@@ -225,6 +225,17 @@ function saveRepairToKnowledge(category, problem, advice) {
     advice.diyVsPro || '',
     advice.costEstimate || ''
   ].filter(Boolean).join('\n');
+
+  if (typeof addKnowledgeEntry === 'function' && silent) {
+    addKnowledgeEntry({
+      title: `${catLabel}: ${problem}`,
+      solution,
+      category: 'popravke',
+      tags: [category]
+    });
+    showToast('Rešenje sačuvano u bazu znanja!', 'success');
+    return;
+  }
 
   const categoryMap = {
     elektrika: 'elektrika',
@@ -330,7 +341,7 @@ function initRepairsUI(options = {}) {
         problem
       });
       document.getElementById('save-repair-solution')?.addEventListener('click', () => {
-        saveRepairToKnowledge(selectedCategory, problem, advice);
+        saveRepairToKnowledge(selectedCategory, problem, advice, true);
       });
     }
 

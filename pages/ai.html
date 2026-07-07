@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#2d8f5c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Domacinko">
-  <title>Domacinko — AI</title>
+  <meta name="apple-mobile-web-app-title" content="Doma?inko">
+  <title>Doma?inko — AI</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
@@ -18,29 +18,25 @@
     <header class="page-header" id="page-header"></header>
 
     <div class="tabs" id="ai-tabs" style="padding:0 var(--space-lg)">
-      <button type="button" class="tab active" data-tab="savetnik">?? Savetnik</button>
-      <button type="button" class="tab" data-tab="majstor">?? Majstor</button>
-      <button type="button" class="tab" data-tab="ucitelj">?? Ucitelj</button>
+      <button type="button" class="tab active" data-tab="savetnik" aria-label="AI Savetnik">?? Savetnik</button>
+      <button type="button" class="tab" data-tab="majstor" aria-label="AI Majstor">?? Majstor</button>
+      <button type="button" class="tab" data-tab="ucitelj" aria-label="AI U?itelj">?? U?itelj</button>
     </div>
 
     <main class="main-content main-content--chat" id="panel-savetnik">
-      <div class="quick-chips" id="quick-chips">
-        <button class="chip" data-question="Gde najviše trošim?">Gde najviše trošim?</button>
-        <button class="chip" data-question="Koliko mi je ostalo?">Koliko mi je ostalo?</button>
-        <button class="chip" data-question="Šta da kupim?">Šta da kupim?</button>
-      </div>
+      <div class="quick-chips" id="quick-chips"></div>
       <div class="chat-area">
         <div class="chat-messages" id="chat-messages"></div>
       </div>
       <div class="chat-input-bar">
-        <input type="text" class="form-input" id="chat-input" placeholder="Pitaj Domacinka..." autocomplete="off">
-        <button class="btn btn--primary" id="chat-send">Pošalji</button>
+        <input type="text" class="form-input" id="chat-input" placeholder="Pitaj Doma?inka..." autocomplete="off" aria-label="Poruka za AI">
+        <button class="btn btn--primary" id="chat-send" aria-label="Pošalji poruku">Pošalji</button>
       </div>
     </main>
 
     <main class="main-content hidden" id="panel-majstor">
       <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
-        AI Majstor za kucne popravke — korak po korak na srpskom.
+        AI Majstor za ku?ne popravke — korak po korak na srpskom.
       </p>
       <div class="quick-chips" id="majstor-categories" style="padding:0"></div>
       <div class="card">
@@ -55,7 +51,7 @@
 
     <main class="main-content hidden" id="panel-ucitelj">
       <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
-        Naucite osnove domacinstva — kratke lekcije na srpskom.
+        Nau?ite osnove doma?instva — kratke lekcije na srpskom.
       </p>
       <div id="teacher-topics"></div>
     </main>

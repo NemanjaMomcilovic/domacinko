@@ -18,6 +18,10 @@
         <p id="garden-weather-text">Proverite vremensku prognozu pre zalivanja.</p>
       </div>
       <div class="section">
+        <h2 class="section__title">Raspored zalivanja</h2>
+        <div class="card card--flat" id="watering-schedule"></div>
+      </div>
+      <div class="section">
         <h2 class="section__title">Podsetnici</h2>
         <div class="card card--flat" id="garden-reminders"></div>
       </div>
@@ -26,7 +30,7 @@
         <div class="card card--flat" id="plants-list"></div>
         <div class="card card--flat mt-sm" style="padding:var(--space-md)">
           <input type="text" class="form-input" id="plant-name" placeholder="Naziv biljke">
-          <input type="number" class="form-input mt-sm" id="plant-water-days" placeholder="Zalivanje na svakih N dana" min="1" value="3">
+          <select class="form-select mt-sm" id="plant-water-days" aria-label="Interval zalivanja"></select>
           <button type="button" class="btn btn--primary btn--block mt-sm" id="add-plant">Dodaj biljku</button>
         </div>
       </div>

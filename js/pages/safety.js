@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('first-aid').value = safety.firstAidCheck || '';
   renderSafetyReminders();
   renderMedicines();
+  checkSafetyNotifications();
 
   document.getElementById('safety-form').addEventListener('submit', e => {
     e.preventDefault();
@@ -63,7 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
       firstAidCheck: document.getElementById('first-aid').value
     });
     renderSafetyReminders();
-    showToast('Bezbednost sačuvana!');
+    checkSafetyNotifications();
+    showToast('Bezbednost sačuvana!', 'success');
   });
 
   document.getElementById('add-med').addEventListener('click', () => {
@@ -77,3 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Lek dodat.');
   });
 });
+
+function checkSafetyNotifications() {
+  const reminders = getSafetyReminders();
+  const expired = reminders.filter(r => r.expired);
+  const banner = document.getElementById('safety-alert-banner');
+  if (!banner) return;
+
+  if (expired.length > 0) {
+    banner.classList.remove('hidden');
+    banner.innerHTML = `
+      <div class="reminder-item reminder-item--danger" style="margin:0">
+        <span class="reminder-item__icon">🚨</span>
+        <span><strong>Hitno!</strong> ${expired.length} stavka istekla — proverite aparat, detektor ili lekove.</span>
+      </div>
+    `;
+  } else if (reminders.length > 0) {
+    banner.classList.remove('hidden');
+    banner.innerHTML = `
+      <div class="reminder-item reminder-item--warn" style="margin:0">
+        <span class="reminder-item__icon">⚠️</span>
+        <span>${reminders.length} stavka uskoro ističe — proverite datume ispod.</span>
+      </div>
+    `;
+  } else {
+    banner.classList.add('hidden');
+  }
+}

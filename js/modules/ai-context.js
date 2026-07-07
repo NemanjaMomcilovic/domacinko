@@ -139,6 +139,11 @@ function getAdvisorContext() {
   const shopping = getShoppingContext();
   const household = getHouseholdContext();
   const maintenance = getMaintenanceContext();
+  const houseProfile = typeof getHouseProfileContext === 'function' ? getHouseProfileContext() : {};
+  const knowledge = typeof getKnowledgeContext === 'function' ? getKnowledgeContext() : { count: 0 };
+  const tools = typeof getToolsContext === 'function' ? getToolsContext() : { count: 0 };
+  const magazine = typeof getMagazineContext === 'function' ? getMagazineContext() : { count: 0 };
+  const lowStock = typeof getLowStockPantry === 'function' ? getLowStockPantry() : [];
 
   return {
     ...finance,
@@ -146,8 +151,52 @@ function getAdvisorContext() {
     shoppingCount: shopping.pendingCount,
     members: household.members,
     maintenanceDue: maintenance.dueCount,
+    maintenanceOverdue: maintenance.overdueCount,
+    houseProfile,
+    knowledgeCount: knowledge.count,
+    toolsCount: tools.count,
+    magazineItems: magazine.items || [],
+    lowStockPantry: lowStock.map(p => p.name),
     name: finance.settings.userName || 'korisnik'
   };
+}
+
+const MODULE_SUGGESTED_QUESTIONS = {
+  savetnik: [
+    'Gde najviše trošim?',
+    'Koliko mi je ostalo?',
+    'Šta da kupim?',
+    'Kako da uštedim?',
+    'Šta je na redu za održavanje?'
+  ],
+  majstor: [
+    'Curi slavina u kupatilu',
+    'Pregoreo osigurač',
+    'Pukotina na zidu',
+    'Biljka ima žute listove'
+  ],
+  finances: [
+    'Koliko sam potrošio ovog meseca?',
+    'Koja kategorija prekoračuje budžet?',
+    'Koliko mogu da uštedim?'
+  ],
+  shopping: [
+    'Šta imam na listi?',
+    'Šta mi nedostaje u ostavi?',
+    'Šta često kupujem?'
+  ],
+  garden: [
+    'Koje biljke treba zaliti?',
+    'Saveti za zalivanje leti'
+  ],
+  safety: [
+    'Šta je isteklo u apoteci?',
+    'Kada proveriti detektor dima?'
+  ]
+};
+
+function getSuggestedQuestions(module = 'savetnik') {
+  return MODULE_SUGGESTED_QUESTIONS[module] || MODULE_SUGGESTED_QUESTIONS.savetnik;
 }
 
 function getTeacherContext() {

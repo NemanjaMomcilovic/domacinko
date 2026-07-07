@@ -3,7 +3,7 @@
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-6.2.0-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-6.3.0-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
 
 Domaćinko prati vaše finansije, kupovinu, održavanje, inventar i popravke — sa proaktivnim jutarnjim brifingom, AI savetnikom i offline PWA podrškom.
@@ -40,7 +40,7 @@ Za sinhronizaciju naloga između uređaja, pogledajte [docs/supabase-setup.md](d
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v6.2.0)
+- Offline keširanje (Service Worker v6.3.0)
 - Prečice: Dodaj trošak, Lista za kupovinu
 - Push podsetnici za račune, budžet i održavanje
 
