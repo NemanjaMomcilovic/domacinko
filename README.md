@@ -1,33 +1,27 @@
-# Domaćinko v6.5
+# Domaćinko v7.0
 
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-6.5.0-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-7.0.0-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
+[![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84)](docs/android-build.md)
 
-Domaćinko prati vaše finansije, kupovinu, održavanje, inventar i popravke — sa proaktivnim jutarnjim brifingom, AI savetnikom i offline PWA podrškom.
+Domaćinko prati vaše finansije, kupovinu, održavanje, inventar i popravke — sa proaktivnim jutarnjim brifingom, AI savetnikom, **porodičnom sinhronizacijom** i offline PWA podrškom.
 
 ## ✨ Ključne funkcije
 
 | Modul | Opis |
 |-------|------|
-| 🏠 **Početna** | Digitalni domaćin — jutarnji brifing sa 15+ scenarija |
+| 🏠 **Početna** | Digitalni domaćin — jutarnji brifing sa 20+ scenarija |
+| 👨‍👩‍👧‍👦 **Porodica** | Deljenje troškova i kupovine — pozivni kod, Supabase sync |
 | 💰 **Finansije** | Budžet, trend, nedeljni pregled, **Štampaj izveštaj** (PDF) |
 | 🤖 **AI** | Savetnik, Majstor, Vizuelni asistent — offline + OpenAI opcija |
-| 🍽️ **Plan obroka** | Drag-and-drop, srpska jela, auto lista za kupovinu |
-| 👤 **Lokalni profili** | Više članova na istom uređaju (priprema za family sync) |
-| ❓ **Pomoć** | Kontekstualni ? tooltips na složenim ekranima |
+| 🍽️ **Plan obroka** | Drag-and-drop, 24+ srpska jela, auto lista za kupovinu |
+| 👤 **Lokalni profili** | Više članova na istom uređaju + porodična sinhronizacija |
 | 🛒 **Kupovina** | Lista sa kategorijama, omiljeni proizvodi, upozorenja ostave |
 | 🔧 **Održavanje** | Sezonski zadaci, podsetnici, garancije |
-
-## 📸 Snimci ekrana
-
-> Placeholder — dodajte snimke u `docs/screenshots/`:
-> - `home-briefing.png` — jutarnji brifing
-> - `finances-report.png` — mesečni izveštaj
-> - `meal-plan-drag.png` — plan obroka
-> - `ai-savetnik.png` — AI chat
+| 📱 **Android APK** | Capacitor wrapper — build lokalno u Android Studio |
 
 ## 🚀 Pokretanje
 
@@ -37,7 +31,7 @@ python -m http.server 8080
 # Otvorite http://localhost:8080
 ```
 
-Ili direktno otvorite `index.html` u browseru.
+Ili direktno otvorite `index.html` u browseru (Service Worker zahteva lokalni server).
 
 ### GitHub Pages
 
@@ -45,12 +39,30 @@ Aplikacija je podešena za deploy na GitHub Pages — sve putanje koriste relati
 
 ### Supabase (opciono)
 
-Za sinhronizaciju naloga između uređaja, pogledajte [docs/supabase-setup.md](docs/supabase-setup.md).
+Za sinhronizaciju naloga i **porodičnog deljenja**, pogledajte [docs/supabase-setup.md](docs/supabase-setup.md).
+
+1. Kreirajte Supabase projekat
+2. Pokrenite SQL šemu (osnovnu + §3b porodična sinhronizacija)
+3. Unesite ključeve u **Podešavanja → Poveži nalog**
+4. **Podešavanja → Pozovi porodicu** — kreirajte domaćinstvo i podelite 6-cifreni kod
+
+### Android APK
+
+Za native Android aplikaciju:
+
+```powershell
+npm install
+npx cap add android    # prvi put
+npx cap sync android
+npx cap open android   # Build APK u Android Studio
+```
+
+Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
 
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v6.5.0)
+- Offline keširanje (Service Worker v7.0.0)
 - Prečice: Dodaj trošak, Lista za kupovinu, AI Savetnik
 - Push podsetnici za račune, budžet i održavanje
 
@@ -58,15 +70,16 @@ Za sinhronizaciju naloga između uređaja, pogledajte [docs/supabase-setup.md](d
 
 ```
 domacinko/
-├── pages/          # 25+ HTML stranica
+├── pages/          # 26+ HTML stranica
 ├── js/
-│   ├── storage.js      # localStorage API + lokalni profili
-│   ├── help-tooltips.js
-│   ├── ui-helpers.js   # Deljeni UI (toast, skeleton, offline)
-│   ├── modules/        # Briefing, registry, AI kontekst
-│   └── pages/          # Page-specific logika
-├── css/            # Dizajn sistem (tamna tema, pristupačnost)
-└── docs/           # Vizija, changelog, roadmap, user-quickstart
+│   ├── storage.js          # localStorage API + lokalni profili
+│   ├── household-sync.js   # Porodična sinhronizacija (Supabase)
+│   ├── ui-helpers.js       # Deljeni UI (toast, skeleton, offline)
+│   ├── modules/            # Briefing, registry, AI kontekst
+│   └── pages/              # Page-specific logika
+├── css/            # Dizajn sistem v2 (tamna tema, pristupačnost)
+├── capacitor.config.ts     # Android wrapper
+└── docs/           # Vizija, changelog, roadmap, android-build
 ```
 
 Čist **HTML + CSS + JavaScript** — bez frameworka. Podaci u `localStorage`, opciona sinhronizacija preko Supabase.
@@ -77,6 +90,9 @@ domacinko/
 - [Changelog](docs/changelog.md)
 - [Brzi vodič za korisnike](docs/user-quickstart.md)
 - [Roadmap](docs/roadmap.md)
+- [Supabase podešavanje](docs/supabase-setup.md)
+- [Android build](docs/android-build.md)
+- [Poznati problemi](docs/known-issues.md)
 
 ## Powered by 10KEY
 

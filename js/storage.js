@@ -301,7 +301,15 @@ function scheduleCloudSync() {
   if (typeof isSupabaseConfigured !== 'function' || !isSupabaseConfigured()) return;
   clearTimeout(_syncTimer);
   _syncTimer = setTimeout(() => {
-    pushUserDataToCloud(getData()).catch(() => {});
+    const data = getData();
+    pushUserDataToCloud(data).catch(() => {});
+    if (typeof isInHousehold === 'function' && isInHousehold()) {
+      if (typeof pushHouseholdDataToCloud === 'function') {
+        pushHouseholdDataToCloud(data).catch(() => {});
+      } else if (typeof scheduleHouseholdSync === 'function') {
+        scheduleHouseholdSync();
+      }
+    }
   }, SYNC_DEBOUNCE_MS);
 }
 
@@ -733,7 +741,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '6.5.0',
+    version: '7.0.0',
     app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
     profileId: getActiveProfileId(),

@@ -110,6 +110,9 @@ async function initAuth() {
     if (typeof pullUserDataFromCloud === 'function') {
       await pullUserDataFromCloud();
     }
+    if (typeof initHouseholdSync === 'function') {
+      await initHouseholdSync();
+    }
   }
 
   client.auth.onAuthStateChange(async (event, session) => {
@@ -240,6 +243,9 @@ async function signIn(email, password) {
   if (typeof pullUserDataFromCloud === 'function') {
     await pullUserDataFromCloud();
   }
+  if (typeof initHouseholdSync === 'function') {
+    await initHouseholdSync();
+  }
   await offerGuestDataImport();
   return data;
 }
@@ -283,6 +289,9 @@ async function signOut() {
   _currentProfile = null;
   cacheProfile(null);
   localStorage.removeItem(AUTH_MODE_KEY);
+  if (typeof clearHouseholdCache === 'function') {
+    clearHouseholdCache();
+  }
 }
 
 async function saveHouseholdItem(type, data) {

@@ -1,7 +1,7 @@
 {
   "name": "Domaćinko",
   "short_name": "Domaćinko",
-  "description": "AI pomoćnik za domaćinstvo — budžet, kupovina, popravke, održavanje i sinhronizacija naloga",
+  "description": "AI pomoćnik za domaćinstvo — budžet, kupovina, porodična sinhronizacija i Android APK",
   "start_url": "./pages/home.html",
   "display": "standalone",
   "background_color": "#ffffff",

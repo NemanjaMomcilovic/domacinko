@@ -34,11 +34,11 @@
 - [x] Prošireni onboarding (5 koraka: profil, frižider, računi, auto)
 - [x] Email, Google i Facebook prijava
 - [x] Gost režim (localStorage fallback)
-- [ ] **Sledeći korak**: Sinhronizacija domaćinstva između članova porodice
+- [ ] **Sledeći korak**: ~~Sinhronizacija domaćinstva između članova porodice~~ ✅ v7.0.0
 - [x] Lokalni profili na uređaju (v6.4.0 — priprema za family sync)
 - [x] Pravi AI asistent (OpenAI opcioni ključ)
 - [x] Personalizovani saveti na osnovu podataka
-- [ ] Deljenje domaćinstva sa članovima porodice (zahteva backend + Supabase)
+- [x] Deljenje domaćinstva sa članovima porodice (Supabase households — v7.0.0)
 
 ## Faza 4 — Moduli i platforma ✅ (v4.0.0)
 
@@ -57,7 +57,8 @@
 - [x] Landing stranica za Domaćinko / 10KEY
 - [x] Centralna autentifikacija (Supabase — email, Google, Facebook)
 - [ ] Premium funkcije
-- [ ] Mobilne aplikacije (iOS/Android)
+- [x] Mobilna aplikacija Android (Capacitor — v7.0.0, build lokalno)
+- [ ] iOS native aplikacija
 
 ## Faza 6 — Vizija v6 ✅ (6.0.0)
 
@@ -99,9 +100,19 @@
 - [x] Prošireni offline AI odgovori (struja, gas, grejanje...)
 - [x] `docs/user-quickstart.md`
 
+## Faza 10 — Porodica i Android (v7.0.0) ✅
+
+- [x] Supabase `households` + `household_members` + `household_data`
+- [x] Pozivni kod (6 karaktera) i UI „Pozovi porodicu"
+- [x] Pridruživanje domaćinstvu kodom
+- [x] Sinhronizacija troškova, kupovine, domaćinstva
+- [x] Capacitor Android wrapper (`com.tenkey.domacinko`)
+- [x] Dizajn sistem refresh (variables, components, nav, empty states)
+- [x] `docs/known-issues.md`, `docs/android-build.md`
+
 ## Faza 9 — Buduće ideje
 
-- [ ] **Lokalni profili → Supabase family sync** (članovi porodice, deljeni podaci)
+- [x] ~~Lokalni profili → Supabase family sync~~ ✅ v7.0.0
 - [ ] AI Učitelj v2 — kvizovi i sertifikati
 - [ ] Skeniranje dokumenata (OCR)
 - [ ] Integracija sa bankama / open banking

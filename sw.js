@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v6.5.1';
+const CACHE_NAME = 'domacinko-v7.0.0';
 
 const ASSETS = [
   './',

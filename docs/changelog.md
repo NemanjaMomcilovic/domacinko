@@ -1,5 +1,31 @@
 # Domaćinko — Changelog
 
+## [7.0.0] — 2026-07-08
+
+### Dodato
+- **Porodična sinhronizacija (Supabase)** — `households`, `household_members`, `household_data` tabele
+- **Pozovi porodicu** — kreiranje domaćinstva, 6-cifreni pozivni kod, kopiranje
+- **Pridruži se domaćinstvu** — unos koda, lista članova, napuštanje
+- **Deljeni podaci** — troškovi, kupovina, domaćinstvo, obroci, održavanje, inventar, zadaci
+- **Android (Capacitor)** — `package.json`, `capacitor.config.ts`, `docs/android-build.md`
+- **docs/known-issues.md** — dokumentacija poznatih problema
+
+### Poboljšano
+- **Dizajn sistem v2** — paleta boja, spacing skala, tipografija, senke
+- **Donja navigacija** — aktivni indikator, veći touch targeti (48px)
+- **Prazna stanja** — veće ikone/emoji, bolji tekst
+- **Tamna tema i visok kontrast** — konzistentnije boje
+- **Mobilni layout** — `overflow-x: hidden`, responsive slike
+- **Početna** — hero brifing i stats red (postojeći stilovi usklađeni)
+- **Auth** — čistiji layout sa logotipima
+- **Service Worker** v7.0.0 — keš za household-sync modul
+
+### Tehnički
+- `js/household-sync.js` — API za porodično deljenje
+- `pages/household-share.html` — UI za pozivanje i pridruživanje
+- Automatsko učitavanje household-sync na Supabase stranicama
+- Lokalni profili i dalje rade offline (fallback)
+
 ## [6.5.0] — 2026-07-08
 
 ### Dodato

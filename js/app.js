@@ -36,6 +36,19 @@ function loadHelpTooltipsScript() {
   document.body.appendChild(script);
 }
 
+function loadScriptIfNeeded(filename) {
+  const base = getAssetBase();
+  const src = `${base}/js/${filename}`;
+  if (document.querySelector(`script[src*="${filename}"]`)) return Promise.resolve();
+  return new Promise(resolve => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = resolve;
+    document.body.appendChild(script);
+  });
+}
+
 async function initAuthGuard() {
   if (typeof waitForAuth !== 'function') return;
 
@@ -44,6 +57,10 @@ async function initAuthGuard() {
   const exempt = ['auth.html', 'onboarding.html', 'landing.html', 'splash.html', 'presents.html'];
   if (exempt.includes(file)) return;
   if (path.endsWith('/') && !path.includes('/pages/')) return;
+
+  if (typeof isSupabaseConfigured === 'function' && isSupabaseConfigured()) {
+    await loadScriptIfNeeded('household-sync.js');
+  }
 
   await waitForAuth();
 

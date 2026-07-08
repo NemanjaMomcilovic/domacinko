@@ -21,6 +21,7 @@
   <script src="js/storage.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/household-sync.js"></script>
   <script>
     (async function () {
       if (!localStorage.getItem('splashSeen')) {
@@ -29,6 +30,9 @@
       }
 
       if (typeof initAuth === 'function') await initAuth();
+      if (typeof initHouseholdSync === 'function' && isLoggedIn()) {
+        await initHouseholdSync();
+      }
 
       if (!isGuestMode() && !isLoggedIn()) {
         window.location.replace('pages/auth.html');
