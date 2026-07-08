@@ -99,6 +99,19 @@ function isConfigJsSupabase() {
   return source === 'config.js' && configured;
 }
 
+function renderDeveloperSection() {
+  const section = document.getElementById('developer-settings');
+  if (!section) return;
+
+  if (isConfigJsSupabase()) {
+    section.classList.add('hidden');
+    return;
+  }
+
+  section.classList.remove('hidden');
+  renderSupabaseConfigSection();
+}
+
 function renderSupabaseConfigSection() {
   const group = document.getElementById('supabase-config-group');
   const statusEl = document.getElementById('supabase-config-status');
@@ -145,20 +158,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   initNavigation('settings', { title: 'Više' });
 
   const settings = getSettings();
-  const profile = getCurrentProfile?.();
 
   document.getElementById('currency').value = settings.currency || 'RSD';
-  document.getElementById('monthly-income').value = settings.monthlyIncome || profile?.monthly_income || 0;
-  document.getElementById('current-savings').value = settings.currentSavings || profile?.current_savings || 0;
-  document.getElementById('monthly-budget').value = settings.monthlyBudget || 80000;
-  document.getElementById('savings-goal').value = settings.savingsGoal || 10000;
-  document.getElementById('savings-goal-name').value = settings.savingsGoalName || '';
   document.getElementById('api-key').value = settings.apiKey || '';
   document.getElementById('contact-email').value = settings.contactEmail || '';
 
   renderAccountSection();
   renderHouseholdSection();
-  renderSupabaseConfigSection();
+  renderDeveloperSection();
   renderLocalProfiles();
 
   document.getElementById('add-local-profile')?.addEventListener('click', () => {
@@ -184,7 +191,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       saveSupabaseConfig(url, key);
       showToast('Supabase ključevi sačuvani! Možete se prijaviti.');
-      renderSupabaseConfigSection();
+      renderDeveloperSection();
       renderAccountSection();
     } catch (err) {
       showToast(err.message || 'Čuvanje nije uspelo.', 'error');
@@ -208,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (result.ok && url && key && typeof saveSupabaseConfig === 'function') {
         try {
           saveSupabaseConfig(url, key);
-          renderSupabaseConfigSection();
+          renderDeveloperSection();
           renderAccountSection();
         } catch { /* već testirano */ }
       }
@@ -223,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof clearSupabaseConfig === 'function') {
       clearSupabaseConfig();
       showToast('Ključevi obrisani.');
-      renderSupabaseConfigSection();
+      renderDeveloperSection();
       renderAccountSection();
     }
   });
@@ -301,16 +308,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('settings-form').addEventListener('submit', e => {
     e.preventDefault();
-    saveSettings({
-      currency: document.getElementById('currency').value,
-      monthlyIncome: parseFloat(document.getElementById('monthly-income').value) || 0,
-      currentSavings: parseFloat(document.getElementById('current-savings').value) || 0,
-      monthlyBudget: parseFloat(document.getElementById('monthly-budget').value) || 80000,
-      savingsGoal: parseFloat(document.getElementById('savings-goal').value) || 10000,
-      savingsGoalName: document.getElementById('savings-goal-name').value.trim(),
-      apiKey: document.getElementById('api-key').value.trim(),
-      contactEmail: document.getElementById('contact-email').value.trim()
-    });
+    const payload = {
+      currency: document.getElementById('currency').value
+    };
+    const apiKeyEl = document.getElementById('api-key');
+    const contactEmailEl = document.getElementById('contact-email');
+    if (apiKeyEl) payload.apiKey = apiKeyEl.value.trim();
+    if (contactEmailEl) payload.contactEmail = contactEmailEl.value.trim();
+    saveSettings(payload);
     saveCategoryBudgetsFromForm();
     showToast('Podešavanja sačuvana!');
   });

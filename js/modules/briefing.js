@@ -116,8 +116,8 @@ function generateMorningBriefing() {
     }
   });
 
-  const savings = typeof getSavingsProgress === 'function' ? getSavingsProgress() : { goal: 0, pct: 0 };
-  if (savings.goal > 0) {
+  const savings = typeof getSavingsProgress === 'function' ? getSavingsProgress() : { goal: 0, pct: 0, goalName: '' };
+  if (savings.goal > 0 && savings.goalName) {
     if (savings.pct >= 50) {
       bullets.push({ type: 'good', icon: '🎯', text: `Cilj „${savings.goalName}": ${savings.pct}% — odličan napredak!` });
     } else if (savings.pct > 0) {
@@ -222,17 +222,14 @@ function generateMorningBriefing() {
   }
 
   const month = now.getMonth() + 1;
-  const seasonal = typeof getSeasonalTasks === 'function' ? getSeasonalTasks(month) : [];
-  const progress = typeof getSeasonalProgress === 'function' ? getSeasonalProgress(month) : {};
-  const undone = seasonal.filter(t => !progress[t.id]);
-  if (undone.length > 0) {
-    bullets.push({ type: 'tip', icon: '📅', text: `Sezonski posao: ${undone[0].text}` });
-  }
-
-  if (dayOfMonth === 1) {
-    bullets.push({ type: 'tip', icon: '🗓️', text: 'Prvi dan meseca — proverite budžet, račune i plan obroka za nedelju.' });
-  } else if (dayOfMonth <= 3) {
-    bullets.push({ type: 'tip', icon: '🗓️', text: 'Početak meseca: platite račune na vreme i pregledajte prognozu troškova.' });
+  const seasonalProgress = typeof getSeasonalProgress === 'function' ? getSeasonalProgress(month) : {};
+  const hasSeasonalEngagement = Object.keys(seasonalProgress).length > 0;
+  if (hasSeasonalEngagement) {
+    const seasonal = typeof getSeasonalTasks === 'function' ? getSeasonalTasks(month) : [];
+    const undone = seasonal.filter(t => !seasonalProgress[t.id]);
+    if (undone.length > 0) {
+      bullets.push({ type: 'tip', icon: '📅', text: `Sezonski posao: ${undone[0].text}` });
+    }
   }
 
   const patterns = typeof detectPurchasePatterns === 'function' ? detectPurchasePatterns() : [];
@@ -241,31 +238,9 @@ function generateMorningBriefing() {
     bullets.push({ type: 'tip', icon: '🔄', text: `Često kupujete „${p.name}" (${p.frequency}) — dodajte na listu unapred.` });
   }
 
-  const seasonalTips = {
-    1: 'Januar — proverite grejanje i zaštitu cevi od mraza.',
-    2: 'Februar — zamena filtera vazduha pre proleća.',
-    3: 'Mart — prolećno čišćenje i priprema bašte.',
-    4: 'April — provera klime pre toplih dana.',
-    5: 'Maj — sadnja i đubrenje u bašti.',
-    6: 'Jun — servis klime pre vrucine.',
-    7: 'Leto — redovno zalivanje i klima na 24–25°C.',
-    8: 'Avgust — berba i navodnjavanje ujutru ili uveče.',
-    9: 'Septembar — čišćenje oluka pre kišne sezone.',
-    10: 'Oktobar — priprema grejanja i termostat.',
-    11: 'Novembar — metlice spremne, provera kotla.',
-    12: 'Decembar — detektori dima, CO i aparat za gašenje.'
-  };
-  if (seasonalTips[month] && bullets.length < 8) {
-    bullets.push({ type: 'tip', icon: '💡', text: seasonalTips[month] });
-  }
-
   const comparison = typeof getMonthComparison === 'function' ? getMonthComparison() : null;
   if (comparison && comparison.less && comparison.pct >= 10) {
     bullets.push({ type: 'good', icon: '✨', text: `Bravo! ${comparison.pct}% manje nego prošlog meseca.` });
-  }
-
-  if (bullets.length === 0) {
-    bullets.push({ type: 'good', icon: '✨', text: 'Kuća je pod kontrolom — danas možete mirno da uživate!' });
   }
 
   const priority = { warn: 0, info: 1, tip: 2, good: 3 };
@@ -274,6 +249,7 @@ function generateMorningBriefing() {
   return {
     greeting,
     bullets: bullets.slice(0, 8),
+    isEmpty: bullets.length === 0,
     generatedAt: now.toISOString()
   };
 }
@@ -285,10 +261,18 @@ function renderMorningBriefing(containerId) {
   const briefing = generateMorningBriefing();
   const timeStr = new Date().toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
 
-  container.innerHTML = `
-    <div class="briefing-card briefing-card--hero">
-      <h2 class="briefing-card__title">☀️ ${briefing.greeting}</h2>
-      <p class="briefing-card__subtitle">Vaš digitalni domaćin · ${timeStr}</p>
+  const bodyHtml = briefing.isEmpty
+    ? `
+      <div class="briefing-card__empty">
+        <p class="briefing-card__empty-text">Dodajte trošak, račun ili cilj u aplikaciji da vidite pregled.</p>
+        <div class="briefing-card__empty-links">
+          <a href="add-expense.html" class="briefing-card__empty-link">💸 Dodaj trošak</a>
+          <a href="settings.html" class="briefing-card__empty-link">📄 Računi i ciljevi</a>
+          <a href="maintenance.html" class="briefing-card__empty-link">🔧 Održavanje</a>
+        </div>
+      </div>
+    `
+    : `
       <ul class="briefing-card__list">
         ${briefing.bullets.map(b => `
           <li class="briefing-card__item briefing-card__item--${b.type}">
@@ -297,6 +281,13 @@ function renderMorningBriefing(containerId) {
           </li>
         `).join('')}
       </ul>
+    `;
+
+  container.innerHTML = `
+    <div class="briefing-card briefing-card--hero">
+      <h2 class="briefing-card__title">☀️ ${briefing.greeting}</h2>
+      <p class="briefing-card__subtitle">Vaš digitalni domaćin · ${timeStr}</p>
+      ${bodyHtml}
     </div>
   `;
 }

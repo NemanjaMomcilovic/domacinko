@@ -185,7 +185,7 @@ const DEFAULT_DATA = {
     currentSavings: 0,
     currency: 'RSD',
     monthlyBudget: 80000,
-    savingsGoal: 10000,
+    savingsGoal: 0,
     savingsGoalName: '',
     categoryBudgets: {},
     darkTheme: false,
@@ -216,11 +216,7 @@ const DEFAULT_DATA = {
     warranties: [],
     importantDates: []
   },
-  tasks: [
-    { id: 't1', text: 'Plati struju', done: false },
-    { id: 't2', text: 'Kupi mleko', done: false },
-    { id: 't3', text: 'Proveri račune', done: false }
-  ],
+  tasks: [],
   chatHistory: [],
   inventory: [],
   maintenance: [],
@@ -467,7 +463,8 @@ function getMonthComparison() {
 function getSavingsProgress() {
   const settings = getSettings();
   const goal = settings.savingsGoal || 0;
-  if (goal <= 0) return { goal: 0, saved: 0, pct: 0 };
+  const goalName = (settings.savingsGoalName || '').trim();
+  if (goal <= 0 || !goalName) return { goal: 0, saved: 0, pct: 0, goalName: '' };
 
   const now = new Date();
   const spent = getTotalSpent(now.getFullYear(), now.getMonth());
@@ -481,7 +478,7 @@ function getSavingsProgress() {
     saved,
     pct,
     remaining,
-    goalName: settings.savingsGoalName || 'Cilj štednje'
+    goalName
   };
 }
 
@@ -1128,7 +1125,13 @@ function getExpiredWarranties() {
 
 function ensureMaintenanceInitialized() {
   const data = getData();
-  if (data.maintenance.length > 0) return;
+  if (!data.maintenance) data.maintenance = [];
+}
+
+function seedPredefinedMaintenance() {
+  const data = getData();
+  if (!data.maintenance) data.maintenance = [];
+  if (data.maintenance.length > 0) return false;
 
   data.maintenance = PREDEFINED_MAINTENANCE.map(p => ({
     id: p.id,
@@ -1142,6 +1145,7 @@ function ensureMaintenanceInitialized() {
     custom: false
   }));
   saveData(data);
+  return true;
 }
 
 function getMaintenanceTasks() {
@@ -1210,6 +1214,7 @@ function getDueMaintenance() {
   today.setHours(0, 0, 0, 0);
 
   return getMaintenanceTasks()
+    .filter(task => task.lastDone || task.custom)
     .map(task => {
       const nextDue = getNextDueDate(task);
       nextDue.setHours(0, 0, 0, 0);

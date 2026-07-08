@@ -1,5 +1,15 @@
 # Domaćinko — Changelog
 
+## [7.0.6] — 2026-07-08
+
+### Poboljšano
+- **Više (beta cleanup)** — samo 6 jasnih sekcija bez nasumičnih stavki
+- **Napredno** — mesečni računi, budžet po kategorijama, reset podataka; dev stavke u sklopljenom „Za developere"
+- **Za developere** — sakriveno za beta korisnike kada `config.js` radi (Supabase, AI ključ, export/import, lokalni profili)
+- **Uklonjeno iz Naprednog** — duplikat finansija (već u Moj profil), beta email (već u Pomoć), visok kontrast premešten u Izgled
+- **Početna** — brze akcije smanjene na 5 osnovnih modula (bez Bašte, Domaćinstva, Vizuelnog)
+- Service Worker v7.0.6
+
 ## [7.0.5] — 2026-07-08
 
 ### Poboljšano

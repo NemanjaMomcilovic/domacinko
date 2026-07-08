@@ -97,6 +97,12 @@
                     <span class="toggle__knob"></span>
                   </button>
                 </div>
+                <div class="settings-item">
+                  <span class="settings-item__label">Visok kontrast</span>
+                  <button type="button" class="toggle" id="high-contrast-toggle" aria-label="Visok kontrast">
+                    <span class="toggle__knob"></span>
+                  </button>
+                </div>
               </div>
             </details>
           </div>
@@ -114,90 +120,13 @@
           </div>
         </div>
 
-        <!-- Napredno (sklopljeno, edge case) -->
+        <!-- Napredno (sklopljeno) -->
         <details class="settings-advanced" id="advanced-settings">
           <summary class="settings-advanced__summary">Napredno podešavanje</summary>
           <div class="settings-advanced__content">
-            <div class="settings-group settings-group--nested" id="supabase-config-group">
-              <h4 class="settings-group__subtitle">Sinhronizacija (ručno)</h4>
-              <div class="card card--flat" style="padding:var(--space-md)">
-                <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status">Učitavanje...</p>
-                <div class="form-group">
-                  <label class="form-label" for="supabase-url">Supabase URL</label>
-                  <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="supabase-anon-key">Anon ključ</label>
-                  <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
-                </div>
-                <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
-                  <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj</button>
-                  <button type="button" class="btn btn--secondary" id="test-supabase-config">Test</button>
-                  <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-group settings-group--nested">
-              <h4 class="settings-group__subtitle">AI asistent</h4>
-              <div class="card card--flat" style="padding:var(--space-md)">
-                <div class="form-group" style="margin-bottom:0">
-                  <label class="form-label" for="api-key">OpenAI API ključ (opciono)</label>
-                  <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off" aria-describedby="api-key-hint">
-                  <p class="text-muted mt-xs" id="api-key-hint" style="font-size:var(--font-size-xs)">
-                    Bez ključa Domaćinko koristi pametne lokalne odgovore.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-group settings-group--nested" id="local-profiles-group">
-              <h4 class="settings-group__subtitle">Članovi aplikacije</h4>
-              <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">
-                Lokalni profili na istom uređaju.
-              </p>
-              <div class="card card--flat" style="padding:var(--space-md)" id="local-profiles-card">
-                <div id="local-profiles-list"></div>
-                <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
-                  <input type="text" class="form-input" id="new-profile-name" placeholder="npr. Roditelj 1" style="flex:1" aria-label="Ime novog profila">
-                  <button type="button" class="btn btn--secondary" id="add-local-profile">Dodaj</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-group settings-group--nested">
-              <h4 class="settings-group__subtitle">Finansije</h4>
-              <div class="card card--flat" style="padding:0;overflow:hidden">
-                <div class="settings-item">
-                  <label class="settings-item__label" for="monthly-budget">Mesečni budžet</label>
-                  <input type="number" class="form-input" id="monthly-budget" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
-                </div>
-                <div class="settings-item">
-                  <label class="settings-item__label" for="monthly-income">Mesečna primanja</label>
-                  <input type="number" class="form-input" id="monthly-income" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
-                </div>
-                <div class="settings-item">
-                  <label class="settings-item__label" for="current-savings">Ušteđeno</label>
-                  <input type="number" class="form-input" id="current-savings" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
-                </div>
-                <div class="settings-item">
-                  <label class="settings-item__label" for="savings-goal-name">Naziv cilja</label>
-                  <input type="text" class="form-input" id="savings-goal-name" placeholder="npr. Odmor" style="width:140px;text-align:right;border:none;padding:0">
-                </div>
-                <div class="settings-item">
-                  <label class="settings-item__label" for="savings-goal">Iznos cilja</label>
-                  <input type="number" class="form-input" id="savings-goal" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
-                </div>
-              </div>
-            </div>
-
-            <div class="settings-group settings-group--nested">
-              <h4 class="settings-group__subtitle">Budžet po kategorijama</h4>
-              <div class="card card--flat" id="category-budgets-settings" style="padding:0;overflow:hidden"></div>
-            </div>
-
             <div class="settings-group settings-group--nested">
               <h4 class="settings-group__subtitle">Mesečni računi</h4>
+              <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">Podsetnici za struju, internet i druge redovne troškove.</p>
               <div class="card card--flat" id="recurring-list" style="padding:var(--space-md);margin-bottom:var(--space-md)"></div>
               <div class="card card--flat" style="padding:var(--space-md)">
                 <div class="form-group">
@@ -216,27 +145,13 @@
             </div>
 
             <div class="settings-group settings-group--nested">
-              <h4 class="settings-group__subtitle">Beta testiranje</h4>
-              <div class="card card--flat" style="padding:var(--space-md)">
-                <div class="form-group" style="margin-bottom:0">
-                  <label class="form-label" for="contact-email">Email za feedback</label>
-                  <input type="email" class="form-input" id="contact-email" placeholder="feedback@10key.app" autocomplete="email">
-                </div>
-              </div>
+              <h4 class="settings-group__subtitle">Budžet po kategorijama</h4>
+              <div class="card card--flat" id="category-budgets-settings" style="padding:0;overflow:hidden"></div>
             </div>
 
             <div class="settings-group settings-group--nested">
               <h4 class="settings-group__subtitle">Podaci</h4>
               <div class="card card--flat" style="padding:0;overflow:hidden">
-                <button type="button" class="settings-item" id="export-data" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
-                  <span class="settings-item__label">Izvezi podatke (JSON)</span>
-                  <span class="settings-item__value">→</span>
-                </button>
-                <label class="settings-item" style="cursor:pointer">
-                  <span class="settings-item__label">Uvezi podatke (JSON)</span>
-                  <span class="settings-item__value">→</span>
-                  <input type="file" id="import-data" accept=".json,application/json" hidden>
-                </label>
                 <button type="button" class="settings-item" id="clear-chat" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
                   <span class="settings-item__label">Obriši istoriju chata</span>
                   <span class="settings-item__value">→</span>
@@ -248,19 +163,84 @@
               </div>
             </div>
 
-            <div class="settings-group settings-group--nested">
-              <h4 class="settings-group__subtitle">Izgled (napredno)</h4>
-              <div class="card card--flat" style="padding:0;overflow:hidden">
-                <div class="settings-item">
-                  <span class="settings-item__label">Visok kontrast</span>
-                  <button type="button" class="toggle" id="high-contrast-toggle" aria-label="Visok kontrast">
-                    <span class="toggle__knob"></span>
-                  </button>
+            <button type="button" class="btn btn--secondary btn--block" id="replay-onboarding">Ponovo prikaži uvod</button>
+
+            <details class="settings-developer" id="developer-settings">
+              <summary class="settings-developer__summary">Za developere</summary>
+              <div class="settings-developer__content">
+                <div class="settings-group settings-group--nested" id="supabase-config-group">
+                  <h4 class="settings-group__subtitle">Sinhronizacija (ručno)</h4>
+                  <div class="card card--flat" style="padding:var(--space-md)">
+                    <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status">Učitavanje...</p>
+                    <div class="form-group">
+                      <label class="form-label" for="supabase-url">Supabase URL</label>
+                      <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" for="supabase-anon-key">Anon ključ</label>
+                      <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
+                    </div>
+                    <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
+                      <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj</button>
+                      <button type="button" class="btn btn--secondary" id="test-supabase-config">Test</button>
+                      <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group--nested">
+                  <h4 class="settings-group__subtitle">AI asistent</h4>
+                  <div class="card card--flat" style="padding:var(--space-md)">
+                    <div class="form-group" style="margin-bottom:0">
+                      <label class="form-label" for="api-key">OpenAI API ključ (opciono)</label>
+                      <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off" aria-describedby="api-key-hint">
+                      <p class="text-muted mt-xs" id="api-key-hint" style="font-size:var(--font-size-xs)">
+                        Bez ključa Domaćinko koristi pametne lokalne odgovore.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group--nested" id="local-profiles-group">
+                  <h4 class="settings-group__subtitle">Članovi aplikacije</h4>
+                  <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">
+                    Lokalni profili na istom uređaju.
+                  </p>
+                  <div class="card card--flat" style="padding:var(--space-md)" id="local-profiles-card">
+                    <div id="local-profiles-list"></div>
+                    <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
+                      <input type="text" class="form-input" id="new-profile-name" placeholder="npr. Roditelj 1" style="flex:1" aria-label="Ime novog profila">
+                      <button type="button" class="btn btn--secondary" id="add-local-profile">Dodaj</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group--nested">
+                  <h4 class="settings-group__subtitle">Backup podataka</h4>
+                  <div class="card card--flat" style="padding:0;overflow:hidden">
+                    <button type="button" class="settings-item" id="export-data" style="width:100%;border:none;background:none;cursor:pointer;text-align:left">
+                      <span class="settings-item__label">Izvezi podatke (JSON)</span>
+                      <span class="settings-item__value">→</span>
+                    </button>
+                    <label class="settings-item" style="cursor:pointer">
+                      <span class="settings-item__label">Uvezi podatke (JSON)</span>
+                      <span class="settings-item__value">→</span>
+                      <input type="file" id="import-data" accept=".json,application/json" hidden>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="settings-group settings-group--nested">
+                  <h4 class="settings-group__subtitle">Feedback (admin)</h4>
+                  <div class="card card--flat" style="padding:var(--space-md)">
+                    <div class="form-group" style="margin-bottom:0">
+                      <label class="form-label" for="contact-email">Email za feedback</label>
+                      <input type="email" class="form-input" id="contact-email" placeholder="feedback@10key.app" autocomplete="email">
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <button type="button" class="btn btn--secondary btn--block" id="replay-onboarding">Ponovo prikaži uvod</button>
+            </details>
           </div>
         </details>
       </form>
@@ -273,7 +253,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.0.5</p>
+          <p class="text-muted settings-about__version">Verzija 7.0.6</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>
