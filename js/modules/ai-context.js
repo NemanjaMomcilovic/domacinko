@@ -163,11 +163,12 @@ function getAdvisorContext() {
 
 const MODULE_SUGGESTED_QUESTIONS = {
   savetnik: [
+    'Koliko sam potrošio?',
+    'Šta da kuvam danas?',
+    'Šta kasni u kući?',
     'Gde najviše trošim?',
     'Koliko mi je ostalo?',
-    'Kako da uštedim na struji?',
-    'Šta je na redu za održavanje?',
-    'Savet za grejanje'
+    'Šta je na listi za kupovinu?'
   ],
   majstor: [
     'Curi slavina u kupatilu',

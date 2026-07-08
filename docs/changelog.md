@@ -1,5 +1,20 @@
 # Domaćinko — Changelog
 
+## [7.1.0] — 2026-07-08
+
+### AI Savetnik — napredna verzija
+- **Lokalni savetnik (Tier 1)** — intent engine sa 25+ namera: budžet, kuvanje, održavanje, kupovina, štednja, računi, prognoza
+- **Proaktivni welcome** — pozdrav sa brifingom, kasnim servisima, današnjim obrokom i listom za kupovinu
+- **GPT-4o streaming (Tier 2)** — tokeni uživo u chatu kada je OpenAI ključ unet
+- **Bogat kontekst** — budžet %, top troškovi, održavanje, plan obroka, štednja, mesečni računi u system promptu
+- **Status bedž** — „🧠 Lokalni savetnik" vs „✨ GPT-4o povezan"
+- **Brzi chipovi** — „Koliko sam potrošio?", „Šta da kuvam danas?", „Šta kasni u kući?"
+- **Glasovni unos** — mikrofon u chat baru (Web Speech API)
+- **Akcije** — „Dodaj na listu" dugme i linkovi ka modulima
+- **OpenAI ključ** — premešten iz skrivenog „Za developere" u vidljivo Napredno → AI asistent
+- **Greške na srpskom** — neispravan ključ, rate limit, mreža
+- Service Worker v7.1.0
+
 ## [7.0.6] — 2026-07-08
 
 ### Poboljšano

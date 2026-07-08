@@ -696,9 +696,11 @@ function getChatHistory() {
   return getData().chatHistory;
 }
 
-function addChatMessage(role, text) {
+function addChatMessage(role, text, meta) {
   const data = getData();
-  data.chatHistory.push({ id: generateId(), role, text, time: new Date().toISOString() });
+  const msg = { id: generateId(), role, text, time: new Date().toISOString() };
+  if (meta?.actions) msg.actions = meta.actions;
+  data.chatHistory.push(msg);
   if (data.chatHistory.length > 50) {
     data.chatHistory = data.chatHistory.slice(-50);
   }

@@ -163,6 +163,20 @@
               </div>
             </div>
 
+            <div class="settings-group settings-group--nested" id="ai-key-settings">
+              <h4 class="settings-group__subtitle">AI asistent</h4>
+              <div class="card card--flat" style="padding:var(--space-md)">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label" for="api-key">OpenAI API ključ (opciono)</label>
+                  <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off" aria-describedby="api-key-hint">
+                  <p class="text-muted mt-xs" id="api-key-hint" style="font-size:var(--font-size-xs)">
+                    Bez ključa Domaćinko koristi pametne lokalne odgovore na osnovu vaših podataka — radi i offline.
+                    Sa ključem sa <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a> dobijate GPT odgovore.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <button type="button" class="btn btn--secondary btn--block" id="replay-onboarding">Ponovo prikaži uvod</button>
 
             <details class="settings-developer" id="developer-settings">
@@ -184,19 +198,6 @@
                       <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj</button>
                       <button type="button" class="btn btn--secondary" id="test-supabase-config">Test</button>
                       <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="settings-group settings-group--nested">
-                  <h4 class="settings-group__subtitle">AI asistent</h4>
-                  <div class="card card--flat" style="padding:var(--space-md)">
-                    <div class="form-group" style="margin-bottom:0">
-                      <label class="form-label" for="api-key">OpenAI API ključ (opciono)</label>
-                      <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off" aria-describedby="api-key-hint">
-                      <p class="text-muted mt-xs" id="api-key-hint" style="font-size:var(--font-size-xs)">
-                        Bez ključa Domaćinko koristi pametne lokalne odgovore.
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -253,7 +254,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.0.6</p>
+          <p class="text-muted settings-about__version">Verzija 7.1.0</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>

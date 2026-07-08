@@ -14,9 +14,11 @@
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
   <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
+<body class="no-voice">
   <div class="app-container">
     <header class="page-header" id="page-header"></header>
+
+    <div class="ai-status" id="ai-status" role="status" aria-live="polite"></div>
 
     <div class="tabs" id="ai-tabs" style="padding:0 var(--space-lg)">
       <button type="button" class="tab active" data-tab="savetnik" aria-label="AI Savetnik">🤖 Savetnik</button>
@@ -30,6 +32,7 @@
         <div class="chat-messages" id="chat-messages"></div>
       </div>
       <div class="chat-input-bar">
+        <button type="button" class="btn btn--ghost chat-voice" id="chat-voice" aria-label="Glasovni unos" title="Glasovni unos">🎤</button>
         <input type="text" class="form-input" id="chat-input" placeholder="Pitaj Domaćinka..." autocomplete="off" aria-label="Poruka za AI">
         <button class="btn btn--primary" id="chat-send" aria-label="Pošalji poruku">Pošalji</button>
       </div>
