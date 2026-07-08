@@ -30,6 +30,7 @@
                 <p class="settings-account__name" id="account-name">—</p>
                 <p class="settings-account__email text-muted" id="account-email"></p>
                 <p class="settings-account__mode text-muted" id="account-mode"></p>
+                <p class="settings-account__sync hidden" id="account-sync-status"></p>
               </div>
             </div>
             <button type="button" class="btn btn--secondary btn--block mt-sm hidden" id="logout-btn">Odjavi se</button>
@@ -114,38 +115,6 @@
         <details class="settings-advanced" id="advanced-settings">
           <summary class="settings-advanced__summary">Napredno podešavanje</summary>
           <div class="settings-advanced__content">
-            <div id="supabase-connected-banner" class="cloud-connected-banner hidden" role="status">
-              Cloud povezan ✓
-            </div>
-
-            <div class="settings-group settings-group--nested" id="supabase-config-group">
-              <h4 class="settings-group__subtitle">Poveži nalog (Supabase)</h4>
-              <div class="card card--flat" style="padding:var(--space-md)">
-                <ol class="supabase-steps text-muted mb-md" style="font-size:var(--font-size-xs);padding-left:var(--space-lg);line-height:1.7">
-                  <li>Napravite besplatan projekat na <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a></li>
-                  <li>Kopirajte <strong>Project URL</strong> i <strong>anon public</strong> ključ ispod</li>
-                  <li>Sačuvajte i prijavite se — podaci se sinhronizuju između uređaja</li>
-                </ol>
-                <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status">Učitavanje...</p>
-                <div class="form-group">
-                  <label class="form-label" for="supabase-url">Supabase URL</label>
-                  <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="supabase-anon-key">Anon / publishable ključ</label>
-                  <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ... ili sb_publishable_..." autocomplete="off">
-                </div>
-                <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
-                  <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj ključeve</button>
-                  <button type="button" class="btn btn--secondary" id="test-supabase-config">Test veze</button>
-                  <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
-                </div>
-                <a href="https://github.com/NemanjaMomcilovic/domacinko/blob/main/docs/supabase-setup.md" target="_blank" rel="noopener" class="btn btn--secondary btn--block mt-sm">
-                  📖 Uputstvo za Supabase
-                </a>
-              </div>
-            </div>
-
             <div class="settings-group settings-group--nested">
               <h4 class="settings-group__subtitle">AI asistent</h4>
               <div class="card card--flat" style="padding:var(--space-md)">
@@ -270,6 +239,26 @@
         </details>
       </form>
 
+      <details class="settings-group settings-dev hidden" id="supabase-dev-section">
+        <summary class="settings-group__title settings-dev__summary">Za developere</summary>
+        <div class="card card--flat" style="padding:var(--space-md);margin-top:var(--space-sm)">
+          <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status"></p>
+          <div class="form-group">
+            <label class="form-label" for="supabase-url">URL</label>
+            <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="supabase-anon-key">Anon ključ</label>
+            <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
+          </div>
+          <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
+            <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj</button>
+            <button type="button" class="btn btn--secondary" id="test-supabase-config">Test</button>
+            <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
+          </div>
+        </div>
+      </details>
+
       <!-- Section 5: O aplikaciji -->
       <div class="settings-group settings-group--footer">
         <h3 class="settings-group__title">O aplikaciji</h3>
@@ -278,7 +267,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.0.4</p>
+          <p class="text-muted settings-about__version">Verzija 7.0.5</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>

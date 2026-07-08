@@ -93,29 +93,19 @@ function saveCategoryBudgetsFromForm() {
   saveCategoryBudgets(budgets);
 }
 
-function showSupabaseConnectedBanner() {
-  const banner = document.getElementById('supabase-connected-banner');
-  const group = document.getElementById('supabase-config-group');
-  const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
-  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
-
-  if (source === 'config.js' && configured) {
-    banner?.classList.remove('hidden');
-    group?.classList.add('hidden');
-    return true;
-  }
-
-  banner?.classList.add('hidden');
-  group?.classList.remove('hidden');
-  return false;
-}
-
 function renderSupabaseConfigSection() {
-  if (showSupabaseConnectedBanner()) return;
-
+  const devSection = document.getElementById('supabase-dev-section');
   const statusEl = document.getElementById('supabase-config-status');
   const urlEl = document.getElementById('supabase-url');
   const keyEl = document.getElementById('supabase-anon-key');
+  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
+
+  if (configured) {
+    devSection?.classList.add('hidden');
+    return;
+  }
+
+  devSection?.classList.remove('hidden');
   if (!statusEl || !urlEl || !keyEl) return;
 
   const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
@@ -125,22 +115,18 @@ function renderSupabaseConfigSection() {
     statusEl.textContent = 'Lokalno sačuvani ključevi.';
     urlEl.value = cfg.SUPABASE_URL || '';
     keyEl.value = cfg.SUPABASE_ANON_KEY || '';
-    urlEl.readOnly = false;
-    keyEl.readOnly = false;
   } else if (source === 'config.js-invalid') {
     statusEl.textContent = 'Neispravna konfiguracija — unesite ključeve ispod.';
     urlEl.value = cfg.SUPABASE_URL || '';
     keyEl.value = cfg.SUPABASE_ANON_KEY || '';
-    urlEl.readOnly = false;
-    keyEl.readOnly = false;
   } else {
     statusEl.textContent = 'Sinhronizacija nije podešena.';
     urlEl.value = '';
     keyEl.value = '';
-    urlEl.readOnly = false;
-    keyEl.readOnly = false;
   }
 
+  urlEl.readOnly = false;
+  keyEl.readOnly = false;
   document.getElementById('save-supabase-config')?.classList.remove('hidden');
   document.getElementById('clear-supabase-config')?.classList.remove('hidden');
   document.getElementById('test-supabase-config')?.classList.remove('hidden');
@@ -376,6 +362,7 @@ function renderAccountSection() {
   const nameEl = document.getElementById('account-name');
   const emailEl = document.getElementById('account-email');
   const modeEl = document.getElementById('account-mode');
+  const syncEl = document.getElementById('account-sync-status');
   const avatarEl = document.getElementById('account-avatar');
   const logoutBtn = document.getElementById('logout-btn');
   const loginLink = document.getElementById('login-link');
@@ -392,6 +379,7 @@ function renderAccountSection() {
     nameEl.textContent = settings.userName || 'Gost';
     emailEl.textContent = '';
     modeEl.textContent = 'Gost režim — podaci samo na ovom uređaju';
+    syncEl?.classList.add('hidden');
     logoutBtn.classList.add('hidden');
     loginLink.classList.remove('hidden');
     return;
@@ -402,9 +390,16 @@ function renderAccountSection() {
     const profile = getCurrentProfile();
     nameEl.textContent = getAuthDisplayName();
     emailEl.textContent = user?.email || profile?.email || '';
-    modeEl.textContent = configured
-      ? (isInHousehold?.() ? '✓ Porodično domaćinstvo' : '✓ Sinhronizovano')
-      : '';
+    if (configured) {
+      modeEl.textContent = isInHousehold?.() ? 'Porodično domaćinstvo' : '';
+      if (syncEl) {
+        syncEl.textContent = '☁️ Nalog sinhronizovan';
+        syncEl.classList.remove('hidden');
+      }
+    } else {
+      modeEl.textContent = '';
+      syncEl?.classList.add('hidden');
+    }
     logoutBtn.classList.remove('hidden');
     loginLink.classList.add('hidden');
 
@@ -422,6 +417,7 @@ function renderAccountSection() {
   modeEl.textContent = configured
     ? 'Prijavite se za sinhronizaciju između uređaja'
     : 'Prijavite se ili koristite gost režim';
+  syncEl?.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   loginLink.classList.remove('hidden');
 }

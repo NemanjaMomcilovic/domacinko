@@ -969,6 +969,21 @@ img, video, svg {
   margin-top: var(--space-xs);
 }
 
+.settings-account__sync {
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-xs);
+  color: var(--color-success);
+}
+
+.settings-dev__summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.settings-dev__summary::-webkit-details-marker {
+  display: none;
+}
+
 .settings-item--stacked {
   flex-direction: column;
   align-items: stretch;
