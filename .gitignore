@@ -6,6 +6,7 @@ Thumbs.db
 *.log
 .env
 .env.*
-config.js
+# config.js is committed publicly (anon/publishable key only — safe for static SPAs)
+config.secret.js
 dist/
 .cache/

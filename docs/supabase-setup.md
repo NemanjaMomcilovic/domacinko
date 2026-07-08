@@ -8,11 +8,34 @@ Ovaj vodič objašnjava kako da podesite Supabase backend za autentifikaciju i s
 
 | Način | Kada koristiti | Prioritet |
 |-------|----------------|-----------|
-| **`config.js`** | Lokalni razvoj na računaru | 1 (najviši) |
-| **Podešavanja → Poveži nalog** | GitHub Pages, telefon, tablet | 2 |
+| **`config.js`** | GitHub Pages, lokalni razvoj | 1 (najviši) |
+| **Podešavanja → Poveži nalog** | Sopstveni fork bez config.js, override na uređaju | 2 |
 | **Gost režim** | Bez naloga, samo na jednom uređaju | — |
 
-Ključevi se **nikada ne šalju na GitHub** — `config.js` je u `.gitignore`, a localStorage ostaje na vašem uređaju.
+Na zvaničnom Domaćinku (`nemanjamomcilovic.github.io/domacinko`) `config.js` je već u repozitorijumu — **ne morate ništa da unosite**.
+
+---
+
+## Javni config za sve korisnike
+
+Za statičke SPA aplikacije (GitHub Pages, Netlify, Vercel) **standardna praksa** je da se u repozitorijum commit-uje:
+
+- **Project URL** (`https://....supabase.co`) — javan
+- **anon public** ili **publishable** ključ (`eyJ...` ili `sb_publishable_...`) — namenjen za frontend
+
+Ovaj ključ **nije tajna** — ugrađen je u svaki klijentski kod i štiti ga **Row Level Security (RLS)** u bazi. Korisnici vide samo svoje podatke.
+
+**Šta NIKADA ne commitujte:**
+
+| Ključ | Opasnost |
+|-------|----------|
+| `service_role` | Zaobilazi RLS — puna kontrola nad bazom |
+| Database lozinka | Direktan pristup PostgreSQL-u |
+| OAuth Client Secret (van Supabase providera) | Držite u Supabase dashboardu |
+
+U `.gitignore` ostaje samo `config.secret.js` za eventualne dodatne tajne koje nisu Supabase anon ključ.
+
+Zvanični `config.js` u repozitorijumu omogućava da **svi posetioci** GitHub Pages stranice odmah vide „Supabase povezan" i mogu da se registruju/prijave bez ručnog unosa ključeva u Podešavanjima.
 
 ---
 
@@ -38,20 +61,18 @@ Ključevi se **nikada ne šalju na GitHub** — `config.js` je u `.gitignore`, a
 copy config.example.js config.js
 ```
 
-4. Otvorite `config.js` i zamenite vrednosti:
+4. Otvorite `config.js` i zamenite vrednosti (samo ako pravite sopstveni fork):
 
 ```javascript
 window.DOMACINKO_CONFIG = {
   SUPABASE_URL: 'https://VAS-PROJECT-ID.supabase.co',
-  SUPABASE_ANON_KEY: 'vas-anon-kljuc'
+  SUPABASE_ANON_KEY: 'vas-anon-ili-publishable-kljuc'
 };
 ```
 
-> **Napomena:** `config.js` je u `.gitignore` i neće biti na GitHub-u.
+> **Napomena:** Na zvaničnom Domaćinku `config.js` je već u repozitorijumu sa anon ključem. Za fork, commit-ujte samo anon/publishable ključ — nikad `service_role`.
 
-### Način B — Podešavanja u aplikaciji (preporučeno za telefon)
-
-Idealno za **GitHub Pages** i mobilne uređaje gde ne možete dodati `config.js`:
+### Način B — Podešavanja u aplikaciji (opciono)
 
 1. Otvorite Domaćinko u pregledaču
 2. Idite na **Podešavanja** (⚙️ Više) — dostupno i pre prijave ako Supabase nije podešen
@@ -429,19 +450,20 @@ https://VASE-KORISNICKO-IME.github.io/domacinko/
 
 ## 6. Login na telefonu (GitHub Pages)
 
-Kada koristite Domaćinko sa telefona preko GitHub Pages-a, **ne možete** dodati `config.js` u repozitorijum (bezbednosni rizik). Umesto toga:
+Na zvaničnom Domaćinku (`https://nemanjamomcilovic.github.io/domacinko/`) Supabase je već podešen preko `config.js` — otvorite **Prijava** i registrujte se.
 
-### Opcija A — Ključevi u Podešavanjima (preporučeno)
+### Opcija A — Podrazumevano (config.js u repozitorijumu)
 
 1. Otvorite aplikaciju u Chrome/Safari na telefonu
-2. **Podešavanja** → **Poveži nalog (Supabase)**
-3. Nalepite URL i anon ključ iz Supabase dashboarda
-4. **Sačuvaj ključeve**
-5. **Prijava** → email ili Google/Facebook
+2. **Prijava** → email ili Google/Facebook
+3. Zeleni baner „Supabase povezan" potvrđuje da je sve spremno
 
-### Opcija B — `config.js` lokalno
+### Opcija B — Ručni unos (sopstveni fork bez config.js)
 
-Samo za razvoj na računaru (`python -m http.server`). Ne commitujte `config.js`!
+1. **Podešavanja** → **Poveži nalog (Supabase)**
+2. Nalepite URL i anon ključ iz Supabase dashboarda
+3. **Sačuvaj ključeve**
+4. **Prijava** → email ili Google/Facebook
 
 ### Instalacija na početni ekran (PWA)
 
@@ -511,4 +533,4 @@ Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
 
 ---
 
-**Domaćinko v7.0.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)
+**Domaćinko v7.0.1** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)

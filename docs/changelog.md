@@ -1,5 +1,15 @@
 # Domaćinko — Changelog
 
+## [7.0.1] — 2026-07-08
+
+### Dodato
+- **Javni `config.js` na GitHub Pages** — svi posetioci vide Supabase povezan bez ručnog unosa ključeva
+- **docs/supabase-setup.md** — sekcija „Javni config za sve korisnike" (anon ključ je bezbedan za SPA)
+
+### Poboljšano
+- **auth.html** — zeleni baner „Supabase povezan" kada je config.js učitan
+- **`.gitignore`** — `config.js` više nije ignorisan; samo `config.secret.js` za dodatne tajne
+
 ## [7.0.0] — 2026-07-08
 
 ### Dodato

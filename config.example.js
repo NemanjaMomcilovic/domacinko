@@ -1,10 +1,12 @@
 /**
- * Domaćinko — Supabase konfiguracija (primer za fork / lokalni razvoj)
- * Kopirajte ovaj fajl kao config.js i unesite svoje vrednosti.
- * config.js je u .gitignore i neće biti poslat na GitHub.
+ * Domaćinko — Supabase konfiguracija (primer za fork)
  *
- * Alternativa (GitHub Pages / telefon): Podešavanja → Poveži nalog (Supabase)
- * — ključevi se čuvaju u localStorage (domacinko_supabase_config) na uređaju.
+ * Za zvanični Domaćinko na GitHub Pages, config.js je već u repozitorijumu
+ * sa anon/publishable ključem. Za sopstveni fork, kopirajte ovaj fajl:
+ *
+ *   copy config.example.js config.js
+ *
+ * Alternativa: Podešavanja → Poveži nalog (Supabase) — ključevi u localStorage.
  * Prioritet: važeći config.js → localStorage → gost režim.
  *
  * Podržani formati ključa:
