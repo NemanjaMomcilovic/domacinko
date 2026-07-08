@@ -353,6 +353,51 @@ CREATE POLICY "Član vidi profile članova domaćinstva"
 
 ---
 
+### 3c. Beta feedback (v7.0.2)
+
+Pokrenite dodatni SQL ako želite da prikupljate beta feedback preko Supabase-a:
+
+```sql
+-- =============================================
+-- Domaćinko v7.0.2 — Beta feedback
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS feedback (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  rating INT CHECK (rating >= 1 AND rating <= 5),
+  likes TEXT,
+  improvements TEXT,
+  would_use_daily TEXT,
+  name TEXT,
+  email TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at DESC);
+
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+
+-- Prijavljeni korisnici mogu slati feedback (sa ili bez user_id)
+CREATE POLICY "Prijavljeni šalju feedback"
+  ON feedback FOR INSERT
+  TO authenticated
+  WITH CHECK (user_id IS NULL OR auth.uid() = user_id);
+
+-- Beta: anonimni korisnici mogu slati feedback bez naloga
+CREATE POLICY "Anonimni beta feedback"
+  ON feedback FOR INSERT
+  TO anon
+  WITH CHECK (user_id IS NULL);
+
+-- Čitanje: samo service_role (bez SELECT politike za korisnike)
+-- Pregledajte feedback u Supabase Table Editoru ili preko SQL sa service_role ključem
+```
+
+Aplikacija uvek čuva feedback lokalno u `domacinko_feedback` na uređaju. Supabase insert je opcion i ne blokira slanje ako tabela nije kreirana.
+
+---
+
 ## 4. Podesite autentifikaciju
 
 ### Email + lozinka
@@ -506,6 +551,7 @@ Ako Supabase nije podešen (nema `config.js` ni ključeva u podešavanjima), apl
 | Frižider, računi, auto (onboarding) | `household_items` + lokalno u `household` |
 | Troškovi, kupovina, održavanje, inventar | `user_data.data` JSONB + localStorage keš |
 | **Porodična sinhronizacija (v7.0)** | `household_data` JSONB — deljeno među članovima domaćinstva |
+| **Beta feedback (v7.0.2)** | `feedback` tabela (opciono) + lokalno `domacinko_feedback` |
 
 Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
 
@@ -533,4 +579,4 @@ Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
 
 ---
 
-**Domaćinko v7.0.1** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)
+**Domaćinko v7.0.2** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)

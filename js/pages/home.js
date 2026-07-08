@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initNavigation('home');
   initPwaInstallBanner();
+  initFeedbackBanner();
 
   const settings = getSettings();
   const name = (typeof getAuthDisplayName === 'function' ? getAuthDisplayName() : settings.userName) || 'prijatelju';
@@ -212,4 +213,19 @@ function initPwaInstallBanner() {
       }
     }, 2500);
   }
+}
+
+function initFeedbackBanner() {
+  const banner = document.getElementById('feedback-banner');
+  if (!banner) return;
+
+  const DISMISS_KEY = 'domacinko_feedback_banner_dismissed';
+  if (localStorage.getItem(DISMISS_KEY) === 'true') return;
+
+  banner.classList.remove('hidden');
+
+  document.getElementById('feedback-banner-dismiss')?.addEventListener('click', () => {
+    banner.classList.add('hidden');
+    localStorage.setItem(DISMISS_KEY, 'true');
+  });
 }

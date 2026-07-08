@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Domaćinko">
+  <title>Domaćinko — Beta feedback</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content">
+      <div class="feedback-hero card card--gradient-green mb-md">
+        <p class="feedback-hero__emoji" aria-hidden="true">💬</p>
+        <h2 class="feedback-hero__title">Hvala što testirate Domaćinko!</h2>
+        <p class="feedback-hero__text">
+          Vaše mišljenje nam znači — svaki komentar pomaže da aplikacija bude bolja za sva domaćinstva.
+        </p>
+      </div>
+
+      <form id="feedback-form" novalidate>
+        <div class="settings-group">
+          <h3 class="settings-group__title">Ocena</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <p class="form-label" id="rating-label">Koliko vam se sviđa Domaćinko?</p>
+            <div class="star-rating" id="star-rating" role="radiogroup" aria-labelledby="rating-label">
+              <button type="button" class="star-rating__btn" data-value="1" aria-label="1 zvezda">☆</button>
+              <button type="button" class="star-rating__btn" data-value="2" aria-label="2 zvezde">☆</button>
+              <button type="button" class="star-rating__btn" data-value="3" aria-label="3 zvezde">☆</button>
+              <button type="button" class="star-rating__btn" data-value="4" aria-label="4 zvezde">☆</button>
+              <button type="button" class="star-rating__btn" data-value="5" aria-label="5 zvezda">☆</button>
+            </div>
+            <p class="star-rating__hint text-muted" id="rating-hint" aria-live="polite">Dodirnite zvezde za ocenu</p>
+            <p class="form-error hidden" id="rating-error">Izaberite ocenu od 1 do 5.</p>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group__title">Vaše utiske</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <div class="form-group">
+              <label class="form-label" for="feedback-likes">Šta vam se sviđa?</label>
+              <textarea class="form-textarea" id="feedback-likes" rows="3" placeholder="npr. jutarnji brifing, AI savetnik, jednostavan unos troškova…"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="feedback-improvements">Šta fali / šta poboljšati?</label>
+              <textarea class="form-textarea" id="feedback-improvements" rows="3" placeholder="npr. tamna tema, brža sinhronizacija, više srpskih jela…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group__title">Da li biste koristili app svaki dan?</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <div class="radio-chips" id="daily-usage" role="radiogroup" aria-label="Da li biste koristili app svaki dan?">
+              <label class="radio-chip">
+                <input type="radio" name="would-use-daily" value="Da" required>
+                <span class="radio-chip__label">Da</span>
+              </label>
+              <label class="radio-chip">
+                <input type="radio" name="would-use-daily" value="Možda">
+                <span class="radio-chip__label">Možda</span>
+              </label>
+              <label class="radio-chip">
+                <input type="radio" name="would-use-daily" value="Ne">
+                <span class="radio-chip__label">Ne</span>
+              </label>
+            </div>
+            <p class="form-error hidden" id="daily-error">Izaberite jednu opciju.</p>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3 class="settings-group__title">Kontakt (opciono)</h3>
+          <div class="card card--flat" style="padding:var(--space-md)">
+            <div class="form-group">
+              <label class="form-label" for="feedback-name">Ime</label>
+              <input type="text" class="form-input" id="feedback-name" placeholder="Vaše ime" autocomplete="name">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label" for="feedback-email">Email</label>
+              <input type="email" class="form-input" id="feedback-email" placeholder="za eventualni odgovor" autocomplete="email">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--block mb-sm" id="feedback-submit">Pošalji feedback</button>
+        <a href="#" class="btn btn--secondary btn--block mb-md" id="feedback-email-btn">Pošalji emailom</a>
+      </form>
+
+      <div id="feedback-success" class="feedback-success hidden" role="status">
+        <div class="card card--gradient-green text-center" style="padding:var(--space-xl)">
+          <p style="font-size:2.5rem;margin-bottom:var(--space-sm)" aria-hidden="true">🎉</p>
+          <p class="card__title">Hvala! Tvoj feedback pomaže Domaćinku da bude bolji.</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-sm)">Možete nastaviti da koristite aplikaciju — svaki predlog nam znači.</p>
+          <a href="home.html" class="btn btn--primary btn--block mt-md">Nazad na početnu</a>
+        </div>
+      </div>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/ui-helpers.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/pages/feedback.js"></script>
+</body>
+</html>

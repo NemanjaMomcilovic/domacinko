@@ -324,22 +324,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = 'onboarding.html';
   });
 
-  document.getElementById('send-feedback').addEventListener('click', () => {
-    const text = document.getElementById('feedback-text').value.trim();
-    if (!text) {
-      showToast('Unesite predlog pre slanja.');
-      return;
-    }
-    addFeedback(text);
-    const payload = `Domaćinko predlog (${new Date().toLocaleDateString('sr-RS')}):\n\n${text}`;
-    navigator.clipboard.writeText(payload).then(() => {
-      showToast('Predlog sačuvan i kopiran u clipboard!');
-    }).catch(() => {
-      showToast('Predlog sačuvan lokalno!');
-    });
-    document.getElementById('feedback-text').value = '';
-  });
-
   document.getElementById('export-data').addEventListener('click', () => {
     const json = exportAllData();
     const blob = new Blob([json], { type: 'application/json' });

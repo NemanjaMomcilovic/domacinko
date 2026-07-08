@@ -1,6 +1,6 @@
 # Domaćinko — Brzi vodič za korisnike
 
-**Verzija 6.5.0** · Srpski · PWA aplikacija za domaćinstvo
+**Verzija 7.0.2** · Srpski · PWA aplikacija za domaćinstvo
 
 ---
 
@@ -122,7 +122,8 @@ Na većini stranica videćete **?** pored naslova — dodirnite za objašnjenje 
 
 ## Podrška i predlozi
 
-- **Podešavanja → Pošalji predlog** — vaš komentar se čuva lokalno i kopira u clipboard
+- **Beta feedback** — Podešavanja → 💬 Beta feedback (ili baner na početnoj): ocenite app, recite šta vam se sviđa i šta poboljšati
+- **Pošalji emailom** — ako server nije dostupan, feedback se šalje preko vašeg email klijenta
 - **GitHub:** [github.com/NemanjaMomcilovic/domacinko](https://github.com/NemanjaMomcilovic/domacinko)
 
 ---

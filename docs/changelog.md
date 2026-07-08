@@ -1,5 +1,18 @@
 # Domaćinko — Changelog
 
+## [7.0.2] — 2026-07-08
+
+### Dodato
+- **Beta feedback** — nova stranica `pages/feedback.html` sa ocenom (1–5 zvezda), komentarima i dnevnom upotrebom
+- **Čuvanje feedbacka** — lokalno u `domacinko_feedback`; opciono Supabase tabela `feedback`
+- **Početna** — jednokratni baner „Testirate Domaćinko? Ostavite feedback!"
+- **Podešavanja** — link „💬 Beta feedback — pomozite nam"
+- **mailto fallback** — „Pošalji emailom" sa popunjenim sadržajem
+- **docs/supabase-setup.md** — SQL za `feedback` tabelu i RLS politike
+
+### Poboljšano
+- Service Worker v7.0.2 — keš za feedback modul
+
 ## [7.0.1] — 2026-07-08
 
 ### Dodato
