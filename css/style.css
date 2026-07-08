@@ -730,7 +730,85 @@ body {
 }
 
 
-/* Meal plan */
+/* Meal plan — drag and drop */
+.meal-plan-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.meal-day--draggable {
+  display: block;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.meal-day--draggable:active {
+  cursor: grabbing;
+}
+
+.meal-day--dragging {
+  opacity: 0.65;
+  transform: scale(0.98);
+  box-shadow: var(--shadow-md);
+}
+
+.meal-day--over {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light, rgba(45, 143, 92, 0.08));
+}
+
+.meal-day__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.meal-day__dropzone {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.meal-day__meal {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.meal-day__meal--empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.filter-row .form-select,
+.filter-row .form-input {
+  flex: 1;
+  min-width: 100px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Meal plan legacy */
 .meal-day {
   display: flex;
   align-items: center;

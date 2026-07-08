@@ -128,7 +128,51 @@ const VoiceMode = (() => {
       return;
     }
 
-    showToast(`Čuo sam: „${text}". Probaj: „koliko sam potrošio", „dodaj mleko".`);
+    if (cmd.includes('lista') || cmd.includes('kupovina')) {
+      const count = getShoppingList().filter(i => !i.bought).length;
+      showToast(count > 0 ? `Na listi ima ${count} stavki.` : 'Lista za kupovinu je prazna.');
+      return;
+    }
+
+    if (cmd.includes('brifing') || cmd.includes('jutro') || cmd.includes('danas')) {
+      if (typeof generateMorningBriefing === 'function') {
+        const b = generateMorningBriefing();
+        const first = b.bullets[0];
+        showToast(first ? first.text : b.greeting, 'info', 4000);
+      }
+      return;
+    }
+
+    if (cmd.includes('održavanje') || cmd.includes('odrzavanje') || cmd.includes('servis')) {
+      const due = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
+      showToast(due.length > 0
+        ? `${due.length} zadatak(a) održavanja na redu.`
+        : 'Svi servisi su na vreme!');
+      return;
+    }
+
+    if (cmd.includes('otvori finansije') || cmd.includes('finansije')) {
+      window.location.href = 'finances.html';
+      return;
+    }
+
+    if (cmd.includes('otvori kupovinu')) {
+      window.location.href = 'shopping.html';
+      return;
+    }
+
+    if (cmd.includes('trošak') || cmd.includes('trosak')) {
+      const amountMatch = cmd.match(/(\d+)/);
+      if (amountMatch) {
+        addExpense({ name: 'Glasovni unos', amount: amountMatch[1], category: 'other', date: new Date().toISOString().split('T')[0] });
+        showToast(`Trošak ${formatCurrency(parseFloat(amountMatch[1]))} dodat.`, 'success');
+      } else {
+        window.location.href = 'add-expense.html';
+      }
+      return;
+    }
+
+    showToast(`Čuo sam: „${text}". Probaj: „koliko sam potrošio", „dodaj mleko", „jutarnji brifing".`);
   }
 
   return { init, toggle, isSupported };

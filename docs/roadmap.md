@@ -35,9 +35,10 @@
 - [x] Email, Google i Facebook prijava
 - [x] Gost režim (localStorage fallback)
 - [ ] **Sledeći korak**: Sinhronizacija domaćinstva između članova porodice
+- [x] Lokalni profili na uređaju (v6.4.0 — priprema za family sync)
 - [x] Pravi AI asistent (OpenAI opcioni ključ)
 - [x] Personalizovani saveti na osnovu podataka
-- [ ] Deljenje domaćinstva sa članovima porodice (zahteva backend)
+- [ ] Deljenje domaćinstva sa članovima porodice (zahteva backend + Supabase)
 
 ## Faza 4 — Moduli i platforma ✅ (v4.0.0)
 
@@ -88,8 +89,19 @@
 - [x] Rođendani u prognozi troškova
 - [x] Facebook OAuth vodič (dokumentacija — setup sutra)
 
-## Faza 8 — Buduće ideje
+## Faza 8 — UX i offline (v6.4.0) ✅
 
+- [x] Kontekstualna pomoć (? tooltips) sa localStorage dismissed state
+- [x] Prošireni proaktivni brifing (digitalni domaćin)
+- [x] Drag-and-drop plan obroka (mobile touch)
+- [x] Lokalni profili na uređaju (priprema za porodični sync)
+- [x] PDF mesečni finansijski izveštaj sa 10KEY brandingom
+- [x] Prošireni offline AI odgovori (struja, gas, grejanje...)
+- [x] `docs/user-quickstart.md`
+
+## Faza 9 — Buduće ideje
+
+- [ ] **Lokalni profili → Supabase family sync** (članovi porodice, deljeni podaci)
 - [ ] AI Učitelj v2 — kvizovi i sertifikati
 - [ ] Skeniranje dokumenata (OCR)
 - [ ] Integracija sa bankama / open banking

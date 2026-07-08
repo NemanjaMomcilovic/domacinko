@@ -67,32 +67,88 @@ function handleReceiptPhoto(input) {
   reader.readAsDataURL(file);
 }
 
-function renderMagazineList(query) {
+function renderMagazineList(query, categoryId) {
   const container = document.getElementById('magazine-list');
   if (!container) return;
-  const items = query ? searchMagazine(query) : getHomeMagazine();
+
+  let items = query ? searchMagazine(query) : getHomeMagazine();
+  if (categoryId) items = items.filter(i => i.category === categoryId);
+
   if (items.length === 0) {
     container.innerHTML = renderEmptyState('🏪', 'Magacin je prazan', 'Dodajte sijalice, boju, šrafove...');
     return;
   }
+
   container.innerHTML = items.map(item => {
     const cat = MAGAZINE_CATEGORIES.find(c => c.id === item.category);
+    const qty = parseFloat(item.quantity);
+    const lowStock = qty <= 2;
     return `
-      <div class="list-item">
+      <div class="list-item${lowStock ? ' list-item--warn' : ''}">
         <div class="list-item__icon">${cat?.icon || '📦'}</div>
         <div class="list-item__content">
           <div class="list-item__title">${item.name}</div>
-          <div class="list-item__subtitle">${cat?.label || 'Ostalo'} · ${item.quantity} ${item.unit}</div>
+          <div class="list-item__subtitle">${cat?.label || 'Ostalo'} · ${item.quantity} ${item.unit}${item.location ? ` · ${item.location}` : ''}</div>
+          ${lowStock ? '<span class="badge badge--warning">Niska zaliha</span>' : ''}
         </div>
         <button class="btn btn--ghost btn--sm del-mag" data-id="${item.id}">✕</button>
       </div>
     `;
   }).join('');
+
   container.querySelectorAll('.del-mag').forEach(btn => {
     btn.addEventListener('click', () => {
       deleteMagazineItem(btn.dataset.id);
-      renderMagazineList(document.getElementById('magazine-search')?.value);
+      renderMagazineList(
+        document.getElementById('magazine-search')?.value,
+        document.getElementById('mag-category-filter')?.value
+      );
+      renderMagazineLowStock();
       showToast('Uklonjeno iz magacina.');
+    });
+  });
+}
+
+function renderMagazineLowStock() {
+  const el = document.getElementById('magazine-low-stock');
+  if (!el || typeof getLowStockMagazine !== 'function') return;
+
+  const low = getLowStockMagazine(2);
+  if (low.length === 0) {
+    el.classList.add('hidden');
+    el.innerHTML = '';
+    return;
+  }
+
+  el.classList.remove('hidden');
+  el.innerHTML = `
+    <div class="reminder-item reminder-item--warn">
+      <span class="reminder-item__icon">⚠️</span>
+      <span><strong>Niska zaliha:</strong> ${low.map(i => `${i.name} (${i.quantity})`).join(', ')}</span>
+    </div>
+  `;
+}
+
+function renderMagazineCategoryFilters() {
+  const container = document.getElementById('magazine-categories');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="fav-chips mb-sm">
+      <button type="button" class="fav-chip mag-cat active" data-cat="">Sve</button>
+      ${MAGAZINE_CATEGORIES.map(c =>
+        `<button type="button" class="fav-chip mag-cat" data-cat="${c.id}">${c.icon} ${c.label}</button>`
+      ).join('')}
+    </div>
+    <input type="hidden" id="mag-category-filter" value="">
+  `;
+
+  container.querySelectorAll('.mag-cat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.mag-cat').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('mag-category-filter').value = btn.dataset.cat;
+      renderMagazineList(document.getElementById('magazine-search')?.value, btn.dataset.cat);
     });
   });
 }
@@ -112,8 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const magCat = document.getElementById('mag-category');
   if (magCat) {
     magCat.innerHTML = MAGAZINE_CATEGORIES.map(c => `<option value="${c.id}">${c.icon} ${c.label}</option>`).join('');
+    renderMagazineCategoryFilters();
     renderMagazineList();
-    document.getElementById('magazine-search')?.addEventListener('input', e => renderMagazineList(e.target.value));
+    renderMagazineLowStock();
+    document.getElementById('magazine-search')?.addEventListener('input', e => {
+      renderMagazineList(e.target.value, document.getElementById('mag-category-filter')?.value);
+    });
     document.getElementById('add-magazine')?.addEventListener('click', () => {
       const name = document.getElementById('mag-name').value.trim();
       if (!name) { showToast('Unesite naziv.'); return; }
@@ -125,7 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
         unit: cat?.unit || 'kom'
       });
       document.getElementById('mag-name').value = '';
-      renderMagazineList();
+      renderMagazineList(
+        document.getElementById('magazine-search')?.value,
+        document.getElementById('mag-category-filter')?.value
+      );
+      renderMagazineLowStock();
       showToast('Dodato u magacin!');
     });
   }

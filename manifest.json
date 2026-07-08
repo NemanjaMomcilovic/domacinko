@@ -54,6 +54,13 @@
       "description": "Otvori listu za kupovinu",
       "url": "./pages/shopping.html",
       "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Savetnik",
+      "short_name": "AI",
+      "description": "Pitaj Domaćinka",
+      "url": "./pages/ai.html",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

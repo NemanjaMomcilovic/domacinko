@@ -173,3 +173,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initPwaInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  if (!banner) return;
+
+  const DISMISS_KEY = 'domacinko_pwa_install_dismissed';
+  if (localStorage.getItem(DISMISS_KEY) === 'true') return;
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.classList.remove('hidden');
+  });
+
+  document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    } else {
+      showToast('iOS: Safari → Podeli → Dodaj na početni ekran', 'info', 4000);
+    }
+    banner.classList.add('hidden');
+    localStorage.setItem(DISMISS_KEY, 'true');
+  });
+
+  document.getElementById('pwa-install-dismiss')?.addEventListener('click', () => {
+    banner.classList.add('hidden');
+    localStorage.setItem(DISMISS_KEY, 'true');
+  });
+
+  if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    setTimeout(() => {
+      if (!window.matchMedia('(display-mode: standalone)').matches && !deferredPrompt) {
+        banner.classList.remove('hidden');
+      }
+    }, 2500);
+  }
+}

@@ -1,5 +1,48 @@
 # Domaćinko — Changelog
 
+## [6.5.0] — 2026-07-08
+
+### Dodato
+- **24 srpska jela** u planu obroka (ćevapi, gibanica, podvarak, karađorđeva…)
+- **Sezonski plan** — proširen checklist za svih 12 meseci (3–4 zadatka/mesec)
+- **Kućni magacin** — filteri po kategoriji, banner niske zalihe
+- **Dnevnik** — tipovi (popravka/servis/farbanje), filteri po datumu i tipu
+- **Baza znanja** — tagovi, filteri po kategoriji, omiljeni (★)
+- **Projekti** — procena troška materijala (min–max RSD) po tipu projekta
+- **Finansijski trener** — dnevni budžet, % prihoda, kategorijski saveti
+- **Glasovni režim** — brifing, održavanje, navigacija, glasovni trošak
+- **PWA** — manifest prečica AI Savetnik; install banner (popravljen `initPwaInstallBanner`)
+- **Help tooltips** — prošireno na sve module (shopping, diary, seasonal, garden…)
+
+### Poboljšano
+- Jutarnji brifing — 20+ scenarija (spike, štednja, sezonski mesec)
+- Export/import backup v6.5.0 sa profilima i metapodacima
+- AI HTML encoding (ćirilica, emoji), household quick actions
+- Meal-plan drag-and-drop CSS, help popover stilovi
+- Service Worker v6.5.0 (ui-helpers + help-tooltips u kešu)
+
+## [6.4.0] — 2026-07-08
+
+### Dodato
+- **Kontekstualna pomoć** (`js/help-tooltips.js`) — ? ikone sa srpskim objašnjenjima, dismissed tips u localStorage
+- **Prošireni jutarnji brifing** — 15+ scenarija (računi, štednja, rođendani, projekti, spike potrošnje, prvi u mesecu)
+- **Drag-and-drop plan obroka** — prevlačenje jela između dana, touch podrška, srpski presets
+- **Lokalni profili** — „Članovi aplikacije" u Podešavanjima (prefixed localStorage)
+- **Mesečni PDF izveštaj** — 10KEY branding, kategorije, health score, trener uvid
+- **docs/user-quickstart.md** — vodič za krajnjeg korisnika na srpskom
+
+### Poboljšano
+- Offline AI: ključne reči struja, gas, grejanje, kirija, kredit, frižider, veš mašina, bojler, klima
+- AI koristi pun kontekst (profil kuće, alati, magacin, troškovi)
+- OpenAI API UX u Podešavanjima + link na platform.openai.com
+- Supabase sekcija: 3 koraka inline + Facebook napomena
+- „Štampaj izveštaj" istaknut na Finansijama
+- Lazy loading i dimenzije logotipa
+
+### Tehnički
+- Service Worker v6.4.0
+- `listLocalProfiles`, `switchLocalProfile`, `addLocalProfile`, `deleteLocalProfile`
+
 ## [6.3.0] — 2026-07-07
 
 ### Dodato

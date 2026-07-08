@@ -13,21 +13,29 @@
   <div class="app-container">
     <header class="page-header" id="page-header"></header>
     <main class="main-content">
-      <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)">
+      <p class="text-muted text-center mb-md" style="font-size:var(--font-size-sm)" data-help="diary">
         Zabeležite popravke, servise, farbanje — istorija vašeg doma.
       </p>
+      <div id="diary-filters" class="mb-md"></div>
       <div class="card card--flat" id="diary-list"></div>
       <div class="section mt-md">
         <h2 class="section__title">Novi unos</h2>
         <div class="card card--flat" style="padding:var(--space-md)">
           <div class="form-group">
+            <label class="form-label" for="diary-title">Naslov</label>
             <input type="text" class="form-input" id="diary-title" placeholder="npr. Servis bojlera, farbanje dnevne">
           </div>
           <div class="form-group">
+            <label class="form-label" for="diary-type">Tip događaja</label>
+            <select class="form-select" id="diary-type"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="diary-date">Datum</label>
             <input type="date" class="form-input" id="diary-date">
           </div>
           <div class="form-group">
-            <textarea class="form-textarea" id="diary-notes" rows="3" placeholder="Napomene..."></textarea>
+            <label class="form-label" for="diary-notes">Napomene</label>
+            <textarea class="form-textarea" id="diary-notes" rows="3" placeholder="Detalji, majstor, trošak..."></textarea>
           </div>
           <div class="form-group">
             <label class="form-label" for="diary-photo">Fotografija (opciono, max 500 KB)</label>
@@ -48,6 +56,7 @@
   <script src="../js/ui-helpers.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/navigation.js"></script>
+  <script src="../js/help-tooltips.js"></script>
   <script src="../js/pages/diary.js"></script>
 </body>
 </html>

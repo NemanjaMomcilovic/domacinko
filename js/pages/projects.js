@@ -25,10 +25,13 @@ function showProjectDetail(id) {
   const project = getProjects().find(p => p.id === id);
   if (!project) return;
 
+  const generated = generateProjectMaterials(project.name, project.dimensions);
   let materials = project.materials;
-  if (!materials || materials.length === 0) {
-    materials = generateProjectMaterials(project.name, project.dimensions);
-    updateProject(id, { materials });
+  let estimatedCost = project.estimatedCost;
+  if (!materials || materials.length === 0 || !estimatedCost) {
+    materials = generated.materials;
+    estimatedCost = generated.estimatedCost;
+    updateProject(id, { materials, estimatedCost, materialTotal: generated.materialTotal });
   }
 
   const workOrder = project.workOrder?.length ? project.workOrder : [
@@ -48,11 +51,13 @@ function showProjectDetail(id) {
       </div>
       <div class="card card--flat" style="padding:var(--space-md)">
         <p><strong>Budžet:</strong> ${formatCurrency(project.budget)}</p>
+        ${estimatedCost ? `<p class="mt-sm"><strong>Procena materijala:</strong> ${formatCurrency(estimatedCost.min)} – ${formatCurrency(estimatedCost.max)}</p>
+        <p class="text-muted" style="font-size:var(--font-size-xs)">${estimatedCost.note}</p>` : ''}
         ${project.dimensions ? `<p><strong>Dimenzije:</strong> ${project.dimensions}</p>` : ''}
-        ${(project.photos?.[0] || project.photo) ? `<img src="${project.photos?.[0] || project.photo}" alt="${project.name}" loading="lazy" style="max-width:100%;border-radius:8px;margin-top:8px">` : ''}
-        <h3 class="mt-md mb-sm">Lista materijala (AI)</h3>
+        ${(project.photos?.[0] || project.photo) ? `<img src="${project.photos?.[0] || project.photo}" alt="${project.name}" loading="lazy" class="diary-entry__photo">` : ''}
+        <h3 class="mt-md mb-sm">Lista materijala</h3>
         <ul class="project-materials">
-          ${materials.map(m => `<li>${m.name} — ${m.qty}${m.note ? ` (${m.note})` : ''}</li>`).join('')}
+          ${materials.map(m => `<li>${m.name} — ${m.qty}${m.unitPrice ? ` (~${formatCurrency(m.unitPrice)})` : ''}${m.note ? ` (${m.note})` : ''}</li>`).join('')}
         </ul>
         <h3 class="mt-md mb-sm">Redosled radova</h3>
         <ol class="project-workorder">
@@ -102,12 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast(getErrorMessage('required'), 'warning');
       return;
     }
+    const generated = generateProjectMaterials(name, document.getElementById('proj-dims').value.trim());
     const project = addProject({
       name,
       budget: document.getElementById('proj-budget').value,
       dimensions: document.getElementById('proj-dims').value.trim(),
       photos: pendingProjectPhoto ? [pendingProjectPhoto] : [],
-      materials: generateProjectMaterials(name, document.getElementById('proj-dims').value.trim())
+      materials: generated.materials,
+      estimatedCost: generated.estimatedCost,
+      materialTotal: generated.materialTotal
     });
     document.getElementById('proj-name').value = '';
     document.getElementById('proj-budget').value = '';
