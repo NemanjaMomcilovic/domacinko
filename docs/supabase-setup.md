@@ -30,7 +30,7 @@ Ključevi se **nikada ne šalju na GitHub** — `config.js` je u `.gitignore`, a
 1. U Supabase dashboardu: **Project Settings** → **API**.
 2. Kopirajte:
    - **Project URL** (npr. `https://abcdefgh.supabase.co`)
-   - **anon public** ključ (počinje sa `eyJ...`)
+   - **anon public** ključ (`eyJ...`) ili novi **publishable** ključ (`sb_publishable_...`)
 
 3. U folderu Domaćinko kopirajte primer konfiguracije:
 
@@ -175,6 +175,160 @@ CREATE POLICY "Korisnik ažurira svoje podatke"
   ON user_data FOR UPDATE
   USING (auth.uid() = user_id);
 ```
+
+### 3b. Porodična sinhronizacija (v7.0.0)
+
+Pokrenite dodatni SQL za deljenje domaćinstva između članova porodice:
+
+```sql
+-- =============================================
+-- Domaćinko v7.0 — Porodična sinhronizacija
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS households (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL DEFAULT 'Moje domaćinstvo',
+  invite_code TEXT UNIQUE NOT NULL,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS household_members (
+  household_id UUID NOT NULL REFERENCES households(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner', 'member')),
+  joined_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (household_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS household_data (
+  household_id UUID PRIMARY KEY REFERENCES households(id) ON DELETE CASCADE,
+  data JSONB DEFAULT '{}',
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_household_members_user ON household_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_households_invite ON households(invite_code);
+
+ALTER TABLE households ENABLE ROW LEVEL SECURITY;
+ALTER TABLE household_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE household_data ENABLE ROW LEVEL SECURITY;
+
+-- Households: članovi vide svoje domaćinstvo
+CREATE POLICY "Član vidi domaćinstvo"
+  ON households FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members
+      WHERE household_members.household_id = households.id
+        AND household_members.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Korisnik kreira domaćinstvo"
+  ON households FOR INSERT
+  WITH CHECK (auth.uid() = created_by);
+
+CREATE POLICY "Vlasnik menja domaćinstvo"
+  ON households FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members
+      WHERE household_members.household_id = households.id
+        AND household_members.user_id = auth.uid()
+        AND household_members.role = 'owner'
+    )
+  );
+
+CREATE POLICY "Vlasnik briše domaćinstvo"
+  ON households FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members
+      WHERE household_members.household_id = households.id
+        AND household_members.user_id = auth.uid()
+        AND household_members.role = 'owner'
+    )
+  );
+
+-- Članovi: svi vide članove svog domaćinstva
+CREATE POLICY "Član vidi članove"
+  ON household_members FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members hm
+      WHERE hm.household_id = household_members.household_id
+        AND hm.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Korisnik se pridružuje"
+  ON household_members FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Član napušta domaćinstvo"
+  ON household_members FOR DELETE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Vlasnik menja uloge"
+  ON household_members FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members hm
+      WHERE hm.household_id = household_members.household_id
+        AND hm.user_id = auth.uid()
+        AND hm.role = 'owner'
+    )
+  );
+
+-- Zajednički podaci
+CREATE POLICY "Član čita podatke domaćinstva"
+  ON household_data FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members
+      WHERE household_members.household_id = household_data.household_id
+        AND household_members.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Član čuva podatke domaćinstva"
+  ON household_data FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM household_members
+      WHERE household_members.household_id = household_data.household_id
+        AND household_members.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Član ažurira podatke domaćinstva"
+  ON household_data FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM household_members
+      WHERE household_members.household_id = household_data.household_id
+        AND household_members.user_id = auth.uid()
+    )
+  );
+
+-- Profili: članovi vide imena drugih članova domaćinstva
+CREATE POLICY "Član vidi profile članova domaćinstva"
+  ON profiles FOR SELECT
+  USING (
+    auth.uid() = user_id
+    OR EXISTS (
+      SELECT 1 FROM household_members hm1
+      JOIN household_members hm2 ON hm1.household_id = hm2.household_id
+      WHERE hm1.user_id = auth.uid() AND hm2.user_id = profiles.user_id
+    )
+  );
+```
+
+**Pozivni kod:** 6 karaktera (A–Z, 2–9, bez O/0/I/1). Generiše se u aplikaciji pri kreiranju domaćinstva.
+
+**Sinhronizovani podaci:** troškovi, kupovina, domaćinstvo, plan obroka, održavanje, inventar, zadaci.
 
 ---
 
@@ -329,8 +483,16 @@ Ako Supabase nije podešen (nema `config.js` ni ključeva u podešavanjima), apl
 | Ime, primanja, štednja, ciljevi | `profiles` tabela |
 | Frižider, računi, auto (onboarding) | `household_items` + lokalno u `household` |
 | Troškovi, kupovina, održavanje, inventar | `user_data.data` JSONB + localStorage keš |
+| **Porodična sinhronizacija (v7.0)** | `household_data` JSONB — deljeno među članovima domaćinstva |
 
 Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
+
+### Porodična sinhronizacija
+
+1. Oba korisnika moraju imati Supabase nalog
+2. Vlasnik: **Podešavanja → Pozovi porodicu** → kreira domaćinstvo
+3. Članovi: unesu 6-cifreni pozivni kod
+4. Podaci se automatski sinhronizuju pri izmeni (debounce 1.5s)
 
 ---
 
@@ -338,7 +500,8 @@ Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
 
 | Problem | Rešenje |
 |---------|---------|
-| „Supabase nije podešen" | Unesite ključeve u Podešavanjima ili proverite `config.js` |
+| „Supabase nije podešen" i posle čuvanja u Podešavanjima | Osvežite stranicu; proverite da URL završava na `.supabase.co` i ključ je `eyJ...` ili `sb_publishable_...` |
+| `config.js` sa placeholder vrednostima | Zamenite u config.js ili sačuvajte ključeve u Podešavanjima (localStorage ima prioritet nad neispravnim config.js) |
 | Google/Facebook ne radi | Proverite Redirect URLs u Supabase i provider dashboardu |
 | Facebook — samo ja mogu da se prijavim | Meta app je u Development modu — dodajte test korisnike ili prebacite u Live |
 | „Profil nije učitan" | Pokrenite SQL šemu iz koraka 3 |
@@ -348,4 +511,4 @@ Pri prijavi, ako postoje gost podaci na uređaju, aplikacija nudi uvoz u nalog.
 
 ---
 
-**Domaćinko v6.1.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)
+**Domaćinko v7.0.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)

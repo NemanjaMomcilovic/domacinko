@@ -12,14 +12,21 @@
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
   font-family: var(--font-family);
   background: var(--color-surface);
   color: var(--color-text);
-  line-height: 1.5;
+  line-height: var(--line-height-normal);
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img, video, svg {
+  max-width: 100%;
+  height: auto;
 }
 
 .app-container {
@@ -29,6 +36,7 @@ body {
   background: var(--color-bg);
   position: relative;
   box-shadow: var(--shadow-lg);
+  overflow-x: hidden;
 }
 
 .main-content {
@@ -640,6 +648,17 @@ body {
   margin-bottom: var(--space-lg);
   font-size: var(--font-size-sm);
   text-align: center;
+}
+
+.auth-config-success {
+  background: rgba(45, 143, 92, 0.12);
+  border: 1px solid rgba(45, 143, 92, 0.35);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  color: var(--color-primary);
 }
 
 .auth-config-warning__link {

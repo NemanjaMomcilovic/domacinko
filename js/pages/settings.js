@@ -110,11 +110,19 @@ function renderSupabaseConfigSection() {
     keyEl.readOnly = true;
     document.getElementById('save-supabase-config')?.classList.add('hidden');
     document.getElementById('clear-supabase-config')?.classList.add('hidden');
+    document.getElementById('test-supabase-config')?.classList.add('hidden');
   } else {
     document.getElementById('save-supabase-config')?.classList.remove('hidden');
     document.getElementById('clear-supabase-config')?.classList.remove('hidden');
+    document.getElementById('test-supabase-config')?.classList.remove('hidden');
     if (source === 'localStorage') {
       statusEl.innerHTML = '✓ Aktivno iz <strong>ovog uređaja</strong> (localStorage). Prijava i sinhronizacija su omogućeni.';
+      urlEl.value = cfg.SUPABASE_URL || '';
+      keyEl.value = cfg.SUPABASE_ANON_KEY || '';
+      urlEl.readOnly = false;
+      keyEl.readOnly = false;
+    } else if (source === 'config.js-invalid') {
+      statusEl.innerHTML = '⚠️ <strong>config.js</strong> ima neispravne vrednosti — unesite ključeve ispod (čuvaju se u ovom uređaju).';
       urlEl.value = cfg.SUPABASE_URL || '';
       keyEl.value = cfg.SUPABASE_ANON_KEY || '';
       urlEl.readOnly = false;
@@ -131,6 +139,9 @@ function renderSupabaseConfigSection() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth?.();
+  if (typeof initHouseholdSync === 'function' && isLoggedIn?.()) {
+    await initHouseholdSync().catch(() => {});
+  }
   initNavigation('settings', { title: 'Podešavanja' });
 
   const settings = getSettings();
@@ -169,15 +180,41 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('save-supabase-config')?.addEventListener('click', () => {
     const url = document.getElementById('supabase-url').value.trim();
     const key = document.getElementById('supabase-anon-key').value.trim();
-    if (!url || !key || url.includes('your-project') || key.includes('your-anon')) {
-      showToast('Unesite ispravan Supabase URL i anon ključ.');
-      return;
-    }
-    if (typeof saveSupabaseConfig === 'function') {
+    if (typeof saveSupabaseConfig !== 'function') return;
+    try {
       saveSupabaseConfig(url, key);
       showToast('Supabase ključevi sačuvani! Možete se prijaviti.');
       renderSupabaseConfigSection();
       renderAccountSection();
+    } catch (err) {
+      showToast(err.message || 'Čuvanje nije uspelo.', 'error');
+    }
+  });
+
+  document.getElementById('test-supabase-config')?.addEventListener('click', async () => {
+    const url = document.getElementById('supabase-url').value.trim();
+    const key = document.getElementById('supabase-anon-key').value.trim();
+    const btn = document.getElementById('test-supabase-config');
+    if (typeof testSupabaseConnection !== 'function') {
+      showToast('Test veze nije dostupan.');
+      return;
+    }
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Testiram...';
+    try {
+      const result = await testSupabaseConnection(url, key);
+      showToast(result.message, result.ok ? 'success' : 'error');
+      if (result.ok && url && key && typeof saveSupabaseConfig === 'function') {
+        try {
+          saveSupabaseConfig(url, key);
+          renderSupabaseConfigSection();
+          renderAccountSection();
+        } catch { /* već testirano */ }
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
     }
   });
 
@@ -368,7 +405,9 @@ function renderAccountSection() {
     const profile = getCurrentProfile();
     nameEl.textContent = getAuthDisplayName();
     emailEl.textContent = user?.email || profile?.email || '';
-    modeEl.textContent = '✓ Sinhronizovano sa Supabase';
+    modeEl.textContent = isInHousehold?.()
+      ? '✓ Sinhronizovano — porodično domaćinstvo'
+      : '✓ Sinhronizovano sa Supabase';
     logoutBtn.classList.remove('hidden');
     loginLink.classList.add('hidden');
 

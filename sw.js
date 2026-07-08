@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v6.5.0';
+const CACHE_NAME = 'domacinko-v6.5.1';
 
 const ASSETS = [
   './',
@@ -14,6 +14,7 @@ const ASSETS = [
   './js/storage.js',
   './js/supabase-client.js',
   './js/auth.js',
+  './js/household-sync.js',
   './js/ui-helpers.js',
   './js/help-tooltips.js',
   './js/app.js',
@@ -49,6 +50,8 @@ const ASSETS = [
   './js/pages/garden.js',
   './js/pages/craftsmen.js',
   './js/pages/safety.js',
+  './js/pages/household-share.js',
+  './pages/household-share.html',
   './pages/home.html',
   './pages/auth.html',
   './pages/finances.html',

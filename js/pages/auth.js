@@ -43,6 +43,15 @@ function showForgotPassword() {
   switchTab('forgot');
 }
 
+function updateSupabaseConfigUI() {
+  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
+  const warning = document.getElementById('config-warning');
+  const success = document.getElementById('config-success');
+  warning?.classList.toggle('hidden', configured);
+  success?.classList.toggle('hidden', !configured);
+  return configured;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await initAuth();
 
@@ -51,11 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const configured = isSupabaseConfigured();
-  const warning = document.getElementById('config-warning');
-  if (!configured) {
-    warning?.classList.remove('hidden');
-  }
+  const configured = updateSupabaseConfigUI();
 
   const googleBtn = document.getElementById('google-btn');
   const facebookBtn = document.getElementById('facebook-btn');

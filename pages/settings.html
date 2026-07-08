@@ -56,14 +56,15 @@
               <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
             </div>
             <div class="form-group">
-              <label class="form-label" for="supabase-anon-key">Anon ključ (public)</label>
-              <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
+              <label class="form-label" for="supabase-anon-key">Anon / publishable ključ</label>
+              <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ... ili sb_publishable_..." autocomplete="off">
             </div>
             <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">
-              Ključevi se čuvaju samo na ovom uređaju. Za razvoj možete koristiti i <code>config.js</code> — on ima prioritet.
+              Ključevi se čuvaju samo na ovom uređaju (<code>domacinko_supabase_config</code>). Za razvoj možete koristiti i <code>config.js</code> — važeći config.js ima prioritet.
             </p>
             <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
               <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj ključeve</button>
+              <button type="button" class="btn btn--secondary" id="test-supabase-config">Test veze</button>
               <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
             </div>
             <a href="https://github.com/NemanjaMomcilovic/domacinko/blob/main/docs/supabase-setup.md" target="_blank" rel="noopener" class="btn btn--secondary btn--block mt-sm">
@@ -75,10 +76,18 @@
           </div>
         </div>
 
+        <div class="settings-group" id="household-sync-group">
+          <h3 class="settings-group__title">Porodična sinhronizacija</h3>
+          <p class="text-muted mb-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
+            Delite troškove, kupovinu i domaćinstvo sa članovima porodice preko Supabase.
+          </p>
+          <a href="household-share.html" class="btn btn--primary btn--block">👨‍👩‍👧‍👦 Pozovi porodicu / Pridruži se</a>
+        </div>
+
         <div class="settings-group" id="local-profiles-group">
           <h3 class="settings-group__title">Članovi aplikacije</h3>
           <p class="text-muted mb-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
-            Lokalni profili na istom uređaju — svaki ima svoje podatke. Priprema za buduću porodičnu sinhronizaciju.
+            Lokalni profili na istom uređaju — svaki ima svoje podatke. Za deljenje između uređaja koristite porodičnu sinhronizaciju iznad.
           </p>
           <div class="card card--flat" style="padding:var(--space-md)" id="local-profiles-card">
             <div id="local-profiles-list"></div>
@@ -414,6 +423,7 @@
   <script src="../js/storage.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/auth.js"></script>
+  <script src="../js/household-sync.js"></script>
   <script src="../js/ui-helpers.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/notifications.js"></script>
