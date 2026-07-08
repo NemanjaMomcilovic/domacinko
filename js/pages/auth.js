@@ -46,9 +46,7 @@ function showForgotPassword() {
 function updateSupabaseConfigUI() {
   const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
   const warning = document.getElementById('config-warning');
-  const success = document.getElementById('config-success');
   warning?.classList.toggle('hidden', configured);
-  success?.classList.toggle('hidden', !configured);
   return configured;
 }
 
@@ -79,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('login-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!configured) {
-      showAuthMessage('Supabase nije podešen. Unesite ključeve u Podešavanjima ili koristite gost režim.', true);
+      showAuthMessage('Prijava trenutno nije dostupna. Koristite gost režim.', true);
       return;
     }
     const btn = document.getElementById('login-btn');
@@ -101,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('register-form').addEventListener('submit', async e => {
     e.preventDefault();
     if (!configured) {
-      showAuthMessage('Supabase nije podešen. Unesite ključeve u Podešavanjima ili koristite gost režim.', true);
+      showAuthMessage('Prijava trenutno nije dostupna. Koristite gost režim.', true);
       return;
     }
     const password = document.getElementById('register-password').value;
@@ -133,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('forgot-form')?.addEventListener('submit', async e => {
     e.preventDefault();
     if (!configured) {
-      showAuthMessage('Supabase nije podešen. Unesite ključeve u Podešavanjima.', true);
+      showAuthMessage('Prijava trenutno nije dostupna.', true);
       return;
     }
     const email = document.getElementById('forgot-email').value.trim();

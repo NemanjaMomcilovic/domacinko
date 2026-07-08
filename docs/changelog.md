@@ -1,5 +1,27 @@
 # Domaćinko — Changelog
 
+## [7.0.4] — 2026-07-08
+
+### Poboljšano
+- **Sakriven Supabase setup za korisnike** — `config.js` automatski povezuje sve; nema više „Poveži nalog" sekcije
+- **Nalog kartica** — zelena linija „☁️ Nalog sinhronizovan" kada je nalog aktivan
+- **Auth stranica** — bez tehničkih poruka i linkova kada je sinhronizacija već podešena
+- **Za developere** — minimalna konfiguracija samo u sklopljenom `<details>` na dnu Podešavanja (edge case)
+- Service Worker v7.0.4
+
+## [7.0.4] — 2026-07-08
+
+### Dodato
+- **`pages/modules.html`** — svi moduli organizovani po kategorijama (Finansije, AI, Kuća, Kupovina)
+- **Brze akcije** na podešavanjima — Porodica, Beta feedback, Moj profil, Svi moduli
+
+### Poboljšano
+- **Redizajn podešavanja (Više tab)** — čistiji raspored: Nalog, Brze akcije, Podešavanja, Napredno (sklopljeno), O aplikaciji
+- **Supabase config** — sakriven kada `config.js` radi; zeleni baner „Cloud povezan ✓"
+- **Napredno podešavanje** — Supabase, AI ključ, lokalni profili, budžet, računi, export/import u `<details>` sekciji
+- Uklonjeni duplikati (Profil, Aplikacija, 18+ modul kartice), veliki logo na vrhu
+- Service Worker v7.0.4 — keš za modules stranicu
+
 ## [7.0.3] — 2026-07-08
 
 ### Dodato

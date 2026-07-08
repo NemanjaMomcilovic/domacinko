@@ -93,7 +93,26 @@ function saveCategoryBudgetsFromForm() {
   saveCategoryBudgets(budgets);
 }
 
+function showSupabaseConnectedBanner() {
+  const banner = document.getElementById('supabase-connected-banner');
+  const group = document.getElementById('supabase-config-group');
+  const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
+  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
+
+  if (source === 'config.js' && configured) {
+    banner?.classList.remove('hidden');
+    group?.classList.add('hidden');
+    return true;
+  }
+
+  banner?.classList.add('hidden');
+  group?.classList.remove('hidden');
+  return false;
+}
+
 function renderSupabaseConfigSection() {
+  if (showSupabaseConnectedBanner()) return;
+
   const statusEl = document.getElementById('supabase-config-status');
   const urlEl = document.getElementById('supabase-url');
   const keyEl = document.getElementById('supabase-anon-key');
@@ -102,39 +121,29 @@ function renderSupabaseConfigSection() {
   const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
   const cfg = typeof getDomacinkoConfig === 'function' ? getDomacinkoConfig() : {};
 
-  if (source === 'config.js') {
-    statusEl.innerHTML = '✓ Aktivno iz <strong>config.js</strong> — polja ispod su samo za pregled.';
+  if (source === 'localStorage') {
+    statusEl.textContent = 'Lokalno sačuvani ključevi.';
     urlEl.value = cfg.SUPABASE_URL || '';
-    keyEl.value = cfg.SUPABASE_ANON_KEY ? '••••••••••••' : '';
-    urlEl.readOnly = true;
-    keyEl.readOnly = true;
-    document.getElementById('save-supabase-config')?.classList.add('hidden');
-    document.getElementById('clear-supabase-config')?.classList.add('hidden');
-    document.getElementById('test-supabase-config')?.classList.add('hidden');
+    keyEl.value = cfg.SUPABASE_ANON_KEY || '';
+    urlEl.readOnly = false;
+    keyEl.readOnly = false;
+  } else if (source === 'config.js-invalid') {
+    statusEl.textContent = 'Neispravna konfiguracija — unesite ključeve ispod.';
+    urlEl.value = cfg.SUPABASE_URL || '';
+    keyEl.value = cfg.SUPABASE_ANON_KEY || '';
+    urlEl.readOnly = false;
+    keyEl.readOnly = false;
   } else {
-    document.getElementById('save-supabase-config')?.classList.remove('hidden');
-    document.getElementById('clear-supabase-config')?.classList.remove('hidden');
-    document.getElementById('test-supabase-config')?.classList.remove('hidden');
-    if (source === 'localStorage') {
-      statusEl.innerHTML = '✓ Aktivno iz <strong>ovog uređaja</strong> (localStorage). Prijava i sinhronizacija su omogućeni.';
-      urlEl.value = cfg.SUPABASE_URL || '';
-      keyEl.value = cfg.SUPABASE_ANON_KEY || '';
-      urlEl.readOnly = false;
-      keyEl.readOnly = false;
-    } else if (source === 'config.js-invalid') {
-      statusEl.innerHTML = '⚠️ <strong>config.js</strong> ima neispravne vrednosti — unesite ključeve ispod (čuvaju se u ovom uređaju).';
-      urlEl.value = cfg.SUPABASE_URL || '';
-      keyEl.value = cfg.SUPABASE_ANON_KEY || '';
-      urlEl.readOnly = false;
-      keyEl.readOnly = false;
-    } else {
-      statusEl.textContent = '⚠️ Supabase nije podešen — unesite ključeve za prijavu i sinhronizaciju.';
-      urlEl.value = '';
-      keyEl.value = '';
-      urlEl.readOnly = false;
-      keyEl.readOnly = false;
-    }
+    statusEl.textContent = 'Sinhronizacija nije podešena.';
+    urlEl.value = '';
+    keyEl.value = '';
+    urlEl.readOnly = false;
+    keyEl.readOnly = false;
   }
+
+  document.getElementById('save-supabase-config')?.classList.remove('hidden');
+  document.getElementById('clear-supabase-config')?.classList.remove('hidden');
+  document.getElementById('test-supabase-config')?.classList.remove('hidden');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -147,8 +156,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const settings = getSettings();
   const profile = getCurrentProfile?.();
 
-  document.getElementById('user-first-name').value = settings.firstName || profile?.first_name || '';
-  document.getElementById('user-last-name').value = settings.lastName || profile?.last_name || '';
   document.getElementById('currency').value = settings.currency || 'RSD';
   document.getElementById('monthly-income').value = settings.monthlyIncome || profile?.monthly_income || 0;
   document.getElementById('current-savings').value = settings.currentSavings || profile?.current_savings || 0;
@@ -302,12 +309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('settings-form').addEventListener('submit', e => {
     e.preventDefault();
-    const firstName = document.getElementById('user-first-name').value.trim();
-    const lastName = document.getElementById('user-last-name').value.trim();
     saveSettings({
-      firstName,
-      lastName,
-      userName: [firstName, lastName].filter(Boolean).join(' '),
       currency: document.getElementById('currency').value,
       monthlyIncome: parseFloat(document.getElementById('monthly-income').value) || 0,
       currentSavings: parseFloat(document.getElementById('current-savings').value) || 0,
@@ -374,13 +376,22 @@ function renderAccountSection() {
   const nameEl = document.getElementById('account-name');
   const emailEl = document.getElementById('account-email');
   const modeEl = document.getElementById('account-mode');
+  const avatarEl = document.getElementById('account-avatar');
   const logoutBtn = document.getElementById('logout-btn');
   const loginLink = document.getElementById('login-link');
+  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
+  const settings = getSettings();
+
+  if (avatarEl && typeof getUserAvatarContent === 'function') {
+    const avatarContent = getUserAvatarContent(settings);
+    avatarEl.textContent = avatarContent;
+    avatarEl.classList.toggle('user-avatar--initial', avatarContent.length === 1);
+  }
 
   if (isGuestMode?.()) {
-    nameEl.textContent = getSettings().userName || 'Gost';
+    nameEl.textContent = settings.userName || 'Gost';
     emailEl.textContent = '';
-    modeEl.textContent = '⚠️ Gost režim — podaci samo na ovom uređaju';
+    modeEl.textContent = 'Gost režim — podaci samo na ovom uređaju';
     logoutBtn.classList.add('hidden');
     loginLink.classList.remove('hidden');
     return;
@@ -391,9 +402,9 @@ function renderAccountSection() {
     const profile = getCurrentProfile();
     nameEl.textContent = getAuthDisplayName();
     emailEl.textContent = user?.email || profile?.email || '';
-    modeEl.textContent = isInHousehold?.()
-      ? '✓ Sinhronizovano — porodično domaćinstvo'
-      : '✓ Sinhronizovano sa Supabase';
+    modeEl.textContent = configured
+      ? (isInHousehold?.() ? '✓ Porodično domaćinstvo' : '✓ Sinhronizovano')
+      : '';
     logoutBtn.classList.remove('hidden');
     loginLink.classList.add('hidden');
 
@@ -408,9 +419,9 @@ function renderAccountSection() {
 
   nameEl.textContent = 'Niste prijavljeni';
   emailEl.textContent = '';
-  modeEl.textContent = isSupabaseConfigured?.()
+  modeEl.textContent = configured
     ? 'Prijavite se za sinhronizaciju između uređaja'
-    : 'Unesite Supabase ključeve u Podešavanjima ili koristite gost režim';
+    : 'Prijavite se ili koristite gost režim';
   logoutBtn.classList.add('hidden');
   loginLink.classList.remove('hidden');
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v7.0.3';
+const CACHE_NAME = 'domacinko-v7.0.4';
 
 const ASSETS = [
   './',
@@ -53,8 +53,10 @@ const ASSETS = [
   './js/pages/safety.js',
   './js/pages/household-share.js',
   './js/pages/feedback.js',
+  './js/pages/modules.js',
   './pages/household-share.html',
   './pages/feedback.html',
+  './pages/modules.html',
   './pages/home.html',
   './pages/auth.html',
   './pages/finances.html',

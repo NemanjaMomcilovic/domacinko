@@ -924,6 +924,173 @@ img, video, svg {
   color: var(--color-primary);
 }
 
+/* Settings redesign v7.0.4 */
+.main-content--settings .settings-group {
+  margin-bottom: var(--space-lg);
+}
+
+.main-content--settings .settings-group--footer {
+  margin-top: var(--space-xl);
+}
+
+.settings-group--nested {
+  margin-bottom: var(--space-md);
+}
+
+.settings-group__subtitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.settings-account-card {
+  padding: var(--space-md);
+}
+
+.settings-account-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.settings-account-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-account__email {
+  font-size: var(--font-size-sm);
+  margin-top: 2px;
+}
+
+.settings-account__mode {
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-xs);
+}
+
+.settings-item--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-xs);
+}
+
+.settings-item__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.settings-item__link {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  text-decoration: none;
+  padding-left: var(--space-md);
+}
+
+.settings-item__link:hover {
+  text-decoration: underline;
+}
+
+.settings-appearance {
+  border-top: 1px solid var(--color-border);
+}
+
+.settings-item--summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.settings-item--summary::-webkit-details-marker {
+  display: none;
+}
+
+.settings-appearance__body .settings-item {
+  background: var(--color-surface);
+}
+
+.settings-advanced {
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.settings-advanced__summary {
+  padding: var(--space-md);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  list-style: none;
+  color: var(--color-text-muted);
+  user-select: none;
+}
+
+.settings-advanced__summary::-webkit-details-marker {
+  display: none;
+}
+
+.settings-advanced__summary::before {
+  content: '▸ ';
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.settings-advanced[open] .settings-advanced__summary::before {
+  transform: rotate(90deg);
+}
+
+.settings-advanced__content {
+  padding: 0 var(--space-md) var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.cloud-connected-banner {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-md);
+}
+
+.settings-about {
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.settings-about__logo {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--space-sm);
+  border-radius: var(--radius-md);
+}
+
+.settings-about__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.settings-about__version {
+  font-size: var(--font-size-xs);
+}
+
+/* Modules page */
+.modules-section {
+  margin-bottom: var(--space-xl);
+}
+
+.modules-section__title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  color: var(--color-text);
+}
 
 /* Meal plan — drag and drop */
 .meal-plan-grid {

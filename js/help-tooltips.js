@@ -111,7 +111,7 @@ const PAGE_HELP_MAP = {
   'tools.html': ['tools'],
   'household.html': ['household'],
   'house-profile.html': ['house-profile'],
-  'settings.html': ['supabase', 'openai', 'backup']
+  'settings.html': ['openai', 'backup']
 };
 
 function getDismissedTips() {
@@ -201,17 +201,11 @@ function initHelpTooltips() {
 
     if (page === 'settings.html') {
       const selectors = {
-        supabase: '#supabase-config-group .settings-group__title',
         openai: '#api-key',
         backup: '#export-data'
       };
       const sel = selectors[tipId];
-      if (tipId === 'supabase') {
-        const title = document.querySelector(sel);
-        if (title && !title.querySelector('.help-tooltip')) {
-          title.insertAdjacentHTML('beforeend', ` ${createHelpButton(tipId)}`);
-        }
-      } else if (tipId === 'openai') {
+      if (tipId === 'openai') {
         const label = document.querySelector('label[for="api-key"]');
         if (label && !label.querySelector('.help-tooltip')) {
           label.insertAdjacentHTML('beforeend', ` ${createHelpButton(tipId)}`);
