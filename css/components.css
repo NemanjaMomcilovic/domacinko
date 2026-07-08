@@ -1411,6 +1411,12 @@
   flex-shrink: 0;
 }
 
+.help-tooltip:hover,
+.help-tooltip:focus-visible {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 .help-popover {
   position: fixed;
   z-index: 1000;
@@ -1436,6 +1442,8 @@
   font-size: 1rem;
   color: var(--color-text-muted);
   padding: var(--space-xs);
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .help-popover__text {
@@ -1523,42 +1531,6 @@
 .help-tooltip:focus-visible {
   border-color: var(--color-primary);
   color: var(--color-primary);
-}
-
-.help-popover {
-  position: fixed;
-  z-index: 1000;
-  max-width: min(320px, calc(100vw - 16px));
-  padding: var(--space-md);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  animation: fadeIn 0.15s ease;
-}
-
-.help-popover__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-sm);
-}
-
-.help-popover__close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: var(--font-size-md);
-  color: var(--color-text-muted);
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.help-popover__text {
-  font-size: var(--font-size-sm);
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-sm);
 }
 
 .fav-chip--sm {
