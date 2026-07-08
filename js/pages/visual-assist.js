@@ -2,20 +2,31 @@ let currentImageData = null;
 
 const VISUAL_RULES = [
   { keywords: ['curenje', 'kap', 'voda', 'poplava'], response: '💧 **Curenje vode**: Odmah zatvorite glavni ventil! Stavite posudu ispod curenja. Za slavinu — zamena gumice (~200 RSD). Za cev — zategnite spoj ili zovite vodoinstalatera hitno.' },
-  { keywords: ['plavina', 'mold', 'muc', 'gljiv'], response: '🦠 **Plavina/muc**: Uzrok je vlaga. Proverite curenje i provetravanje. Očistite belim sirćetom (1:1 sa vodom). Za veće površine — sredstvo protiv plavine i maska. Ako se vraća — pozovite stručnjaka.' },
-  { keywords: ['bolest', 'pegor', 'insekt', 'crven'], response: '🌱 **Bolest biljke**: Izolujte zaraženu biljku. Orezujte oštećene delove. Za pečurke — fungicid. Za insekte — sapunski rastvor. Proverite zalivanje i svetlost.' },
-  { keywords: ['ventil', 'slavina', 'curenje', 'kap'], response: '🔧 **Ventil/slavina**: Zatvorite glavni ventil vode. Proverite gumicu (sedlo) ili zaptivač. Za zamenu sedla treba ključ za slavinu i nova gumica (~200-500 RSD). Ako curi iz čaure — pozovite vodoinstalatera.' },
-  { keywords: ['osigurač', 'fuse', 'struja', 'iskra'], response: '⚡ **Osigurač**: Isključite glavni prekidač. Proverite koji osigurač je pao. Uklonite uređaje sa te grane i ponovo uključite. Ako opet pada — kratki spoj, ne dirajte sami, zovite električara.' },
-  { keywords: ['fleka', 'mrlja', 'zid', 'boja'], response: '🎨 **Fleka na zidu**: Odredite uzrok (vlaga, voda, dim). Za masne fleke — deterdžent i topla voda. Za vodene — prvo rešite curenje, pa akrilna boja. Testirajte na malom delu.' },
-  { keywords: ['biljka', 'list', 'žuto', 'uvođen'], response: '🌿 **Biljka**: Žuti listovi — prekomerno zalivanje ili manjak svetlosti. Proverite vlažnost zemlje prstom. Orezujte suve delove. Đubrite sezonski.' },
-  { keywords: ['frižider', 'hladnjak', 'hladi'], response: '❄️ **Frižider**: Proverite termostat (3-5°C). Očistite odledjivač i zadnju rešetku. Ako motor radi non-stop — proverite brtve na vratima.' },
-  { keywords: ['veš', 'mašina', 'pranje'], response: '🫧 **Veš mašina**: Ne pere — proverite filter i doziranje deterdženta. Curenje — proverite brtve i crevo. Vibracije — nivelišite noge.' }
+  { keywords: ['plavina', 'mold', 'muc', 'gljiv'], response: '🦠 **Plavina/muc**: Uzrok je vlaga. Proverite curenje i provetravanje. Očistite belim sirćetom (1:1 sa vodom). Za veće površine — sredstvo protiv plavine i maska.' },
+  { keywords: ['bolest', 'pegor', 'insekt', 'crven'], response: '🌱 **Bolest biljke**: Izolujte zaraženu biljku. Orezujte oštećene delove. Za pečurke — fungicid. Za insekte — sapunski rastvor.' },
+  { keywords: ['ventil', 'slavina'], response: '🔧 **Ventil/slavina**: Zatvorite glavni ventil. Proverite gumicu ili zaptivač. Zamena sedla ~200–500 RSD.' },
+  { keywords: ['osigurač', 'fuse', 'struja', 'iskra', 'struju'], response: '⚡ **Struja/osigurač**: Isključite glavni prekidač. Uklonite uređaje sa grane i ponovo uključite. Ako pada — kratki spoj, zovite električara.' },
+  { keywords: ['gas', 'miris'], response: '🔥 **Gas**: Provetravajte, ne palite svetlo. Zatvorite ventil. Ako miris ostaje — napolje i hitna pomoć.' },
+  { keywords: ['grejanje', 'radijator', 'kotao'], response: '🌡️ **Grejanje**: Proverite termostat, odzračivanje radijatora, pritisak. Sezonski servis kotla obavezan.' },
+  { keywords: ['bojler'], response: '🔥 **Bojler**: Isključite struju. Proverite sigurnosni ventil i brtve. Curenje — majstor. Palite planski, ne 24/7.' },
+  { keywords: ['klima', 'klimu'], response: '❄️ **Klima**: Filter, spoljna jedinica, 24–25°C. Servis pre leta. Ne hladite sa otvorenim prozorom.' },
+  { keywords: ['fleka', 'mrlja', 'zid', 'boja'], response: '🎨 **Fleka na zidu**: Odredite uzrok (vlaga, voda). Za vodene — prvo rešite curenje, pa boja.' },
+  { keywords: ['biljka', 'list', 'žuto', 'uvođen'], response: '🌿 **Biljka**: Žuti listovi — prekomerno zalivanje ili manjak svetlosti. Orezujte suve delove.' },
+  { keywords: ['frižider', 'frizider', 'hladnjak', 'hladi'], response: '❄️ **Frižider**: Termostat 3–5°C. Očistite odledjivač i zadnju rešetku. Proverite brtve na vratima.' },
+  { keywords: ['veš', 'ves', 'mašina', 'masina', 'pranje'], response: '🫧 **Veš mašina**: Filter, brtva, crevo. Nivelišite noge. Eco program i puna mašina štede vodu.' },
+  { keywords: ['kirija', 'kredit'], response: '💰 **Trošak**: Evidentirajte u Finansijama kao račun. Ponavljajuće stavite u Podešavanjima za podsetnik.' },
+  { keywords: ['popust', 'akcija'], response: '🛒 **Kupovina**: Popust vredi samo za stvari koje ionako kupujete. Proverite magacin pre odlaska u prodavnicu.' }
 ];
 
 function getRuleBasedResponse(note) {
   const text = (note || '').toLowerCase();
   for (const rule of VISUAL_RULES) {
     if (rule.keywords.some(k => text.includes(k))) return rule.response;
+  }
+
+  const ctx = typeof buildFullAIContext === 'function' ? buildFullAIContext() : null;
+  if (ctx?.houseProfile?.heatingType) {
+    return `🏠 **Opšti savet** (grejanje: ${ctx.houseProfile.heatingType}): Opisite problem detaljnije ili koristite AI Majstor. Za gas i struju uvek pozovite stručnjaka ako niste sigurni.`;
   }
   return '🏠 **Opšti savet**: Opisite problem detaljnije ili koristite AI Majstor za korak-po-korak uputstvo. Ako je bezbednosno pitanje (gas, struja) — uvek pozovite stručnjaka.';
 }

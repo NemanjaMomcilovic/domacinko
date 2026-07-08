@@ -165,9 +165,9 @@ const MODULE_SUGGESTED_QUESTIONS = {
   savetnik: [
     'Gde najviše trošim?',
     'Koliko mi je ostalo?',
-    'Šta da kupim?',
-    'Kako da uštedim?',
-    'Šta je na redu za održavanje?'
+    'Kako da uštedim na struji?',
+    'Šta je na redu za održavanje?',
+    'Savet za grejanje'
   ],
   majstor: [
     'Curi slavina u kupatilu',

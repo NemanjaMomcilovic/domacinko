@@ -283,12 +283,23 @@ function exportFinancesPdf() {
   const score = getFinancialHealthScore();
   const byCategory = getSpendingByCategory(now.getFullYear(), now.getMonth());
   const monthName = now.toLocaleDateString('sr-RS', { month: 'long', year: 'numeric' });
+  const healthTitle = getHealthTitle(score);
+  const insights = getFinancialTrainerInsights();
+  const comparison = getMonthComparison();
+  const savings = getSavingsProgress();
 
   const rows = Object.entries(byCategory)
     .filter(([, amt]) => amt > 0)
     .sort((a, b) => b[1] - a[1])
-    .map(([id, amt]) => `<tr><td>${getCategoryIcon(id)} ${getCategoryLabel(id)}</td><td style="text-align:right">${formatCurrency(amt)}</td></tr>`)
+    .map(([id, amt]) => {
+      const pct = spent > 0 ? Math.round((amt / spent) * 100) : 0;
+      return `<tr><td>${getCategoryIcon(id)} ${getCategoryLabel(id)}</td><td style="text-align:right">${formatCurrency(amt)}</td><td style="text-align:right;color:#666">${pct}%</td></tr>`;
+    })
     .join('');
+
+  const trainerHtml = insights.slice(0, 3).map(i =>
+    `<li style="margin-bottom:8px"><strong>${i.label}:</strong> ${i.message}</li>`
+  ).join('');
 
   const printWin = window.open('', '_blank');
   if (!printWin) {
@@ -296,27 +307,66 @@ function exportFinancesPdf() {
     return;
   }
 
-  printWin.document.write(`<!DOCTYPE html><html lang="sr"><head><meta charset="UTF-8"><title>Domaćinko — Finansije ${monthName}</title>
-    <style>body{font-family:Segoe UI,sans-serif;padding:24px;max-width:600px;margin:0 auto}
-    h1{color:#2d8f5c}table{width:100%;border-collapse:collapse;margin:16px 0}
-    td{padding:8px;border-bottom:1px solid #eee}.summary{background:#e8f5ee;padding:16px;border-radius:8px;margin:16px 0}
-  </style></head><body>
-    <h1>🏡 Domaćinko — Finansijski pregled</h1>
-    <p>${monthName}</p>
-    <div class="summary">
-      <p><strong>Budžet:</strong> ${formatCurrency(budget)}</p>
-      <p><strong>Potrošeno:</strong> ${formatCurrency(spent)}</p>
-      <p><strong>Preostalo:</strong> ${formatCurrency(budget - spent)}</p>
-      <p><strong>Finansijsko zdravlje:</strong> ${score}/100</p>
+  printWin.document.write(`<!DOCTYPE html><html lang="sr"><head><meta charset="UTF-8"><title>Domaćinko — Izveštaj ${monthName}</title>
+    <style>
+      *{box-sizing:border-box}
+      body{font-family:'Segoe UI',system-ui,sans-serif;padding:32px;max-width:720px;margin:0 auto;color:#1a2e24;line-height:1.5}
+      .brand{display:flex;align-items:center;gap:12px;border-bottom:3px solid #2d8f5c;padding-bottom:16px;margin-bottom:24px}
+      .brand h1{margin:0;font-size:1.5rem;color:#2d8f5c}
+      .brand span{font-size:0.75rem;color:#666}
+      .score-box{background:linear-gradient(135deg,#e8f5ee,#d4ede0);padding:20px;border-radius:12px;margin:20px 0;text-align:center}
+      .score-box .num{font-size:2.5rem;font-weight:700;color:#2d8f5c}
+      .summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+      .summary div{background:#f5f9f7;padding:14px;border-radius:8px}
+      .summary strong{display:block;font-size:0.75rem;color:#666;text-transform:uppercase}
+      table{width:100%;border-collapse:collapse;margin:16px 0}
+      th,td{padding:10px 8px;border-bottom:1px solid #e0e8e4;text-align:left}
+      th{background:#f5f9f7;font-size:0.8rem;color:#666}
+      .trainer{background:#fffbeb;border-left:4px solid #e6a817;padding:16px;border-radius:0 8px 8px 0;margin:20px 0}
+      .footer{margin-top:40px;padding-top:16px;border-top:1px solid #e0e8e4;font-size:11px;color:#888;text-align:center}
+      @media print{body{padding:16px}}
+    </style></head><body>
+    <div class="brand">
+      <div>
+        <h1>🏡 Domaćinko</h1>
+        <span>Powered by <strong style="color:#2d8f5c">10KEY</strong> · Mesečni finansijski izveštaj</span>
+      </div>
     </div>
-    <h2>Po kategorijama</h2>
-    <table>${rows || '<tr><td colspan="2">Nema troškova</td></tr>'}</table>
-    <p style="color:#888;font-size:12px;margin-top:32px">Generisano iz Domaćinko aplikacije · ${new Date().toLocaleString('sr-RS')}</p>
+    <p style="font-size:1.1rem;margin:0"><strong>${monthName}</strong>${settings.userName ? ` · ${settings.userName}` : ''}</p>
+
+    <div class="score-box">
+      <div class="num">${score}/100</div>
+      <div>${healthTitle}</div>
+      ${comparison ? `<div style="font-size:0.85rem;margin-top:8px;color:#555">${comparison.text}</div>` : ''}
+    </div>
+
+    <div class="summary">
+      <div><strong>Budžet</strong>${formatCurrency(budget)}</div>
+      <div><strong>Potrošeno</strong>${formatCurrency(spent)}</div>
+      <div><strong>Preostalo</strong>${formatCurrency(budget - spent)}</div>
+      <div><strong>Cilj štednje</strong>${savings.goal > 0 ? `${savings.pct}% · ${savings.goalName}` : '—'}</div>
+    </div>
+
+    <h2 style="font-size:1rem;color:#2d8f5c">Troškovi po kategorijama</h2>
+    <table>
+      <thead><tr><th>Kategorija</th><th style="text-align:right">Iznos</th><th style="text-align:right">Udeo</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="3">Nema troškova ovog meseca</td></tr>'}</tbody>
+    </table>
+
+    <div class="trainer">
+      <h2 style="font-size:1rem;margin:0 0 12px;color:#b8860b">💪 Uvid finansijskog trenera</h2>
+      <ul style="margin:0;padding-left:20px;font-size:0.9rem">${trainerHtml || '<li>Dodajte troškove za personalizovane savete.</li>'}</ul>
+    </div>
+
+    <div class="footer">
+      Generisano iz Domaćinko aplikacije · ${new Date().toLocaleString('sr-RS')}<br>
+      10KEY platforma · domacinko
+    </div>
   </body></html>`);
   printWin.document.close();
   printWin.focus();
-  setTimeout(() => printWin.print(), 400);
-  showToast('PDF pregled spreman za štampu.', 'success');
+  setTimeout(() => printWin.print(), 500);
+  showToast('Izveštaj spreman za štampu.', 'success');
 }
 
 function renderFinancialTrainer() {

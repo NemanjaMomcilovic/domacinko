@@ -113,10 +113,37 @@ function getRuleBasedRepairAdvice(category, problem) {
   const template = REPAIR_TEMPLATES[category] || REPAIR_TEMPLATES.alati;
   const catLabel = getRepairCategoryLabel(category);
   const problemLower = (problem || '').toLowerCase();
+  const ctx = typeof buildFullAIContext === 'function' ? buildFullAIContext() : null;
+  const tools = ctx?.tools?.tools || (typeof getTools === 'function' ? getTools().map(t => t.name) : []);
+  const magazine = ctx?.magazine?.items || (typeof getHomeMagazine === 'function' ? getHomeMagazine().map(i => i.name) : []);
+  const profile = ctx?.houseProfile || (typeof getHouseProfile === 'function' ? getHouseProfile() : {});
 
   let extraStep = '';
-  if (problemLower.includes('curen') || problemLower.includes('kap')) {
-    extraStep = 'Fokus: locirajte tačno mesto curenja pre popravke.';
+  let keywordAdvice = '';
+
+  if (problemLower.includes('struj') || problemLower.includes('osigurač') || problemLower.includes('osigurac') || problemLower.includes('iskr')) {
+    keywordAdvice = '⚡ Struja: isključite osigurač, testerom proverite napon. Ne dirajte mokrim rukama. Ako osigurač opet pada — električar.';
+    if (category !== 'elektrika') extraStep = keywordAdvice;
+  } else if (problemLower.includes('gas')) {
+    keywordAdvice = '🔥 Gas: provetravajte, ne palite svetlo. Zatvorite ventil, zovite hitnu ako miris ostaje. DIY samo za sitne spojeve — inače majstor.';
+    extraStep = keywordAdvice;
+  } else if (problemLower.includes('grejan') || problemLower.includes('radijator') || problemLower.includes('kotao')) {
+    keywordAdvice = `🌡️ Grejanje (${profile.heatingType || 'nepoznato'}): proverite termostat, odvod vazduha iz radijatora, pritisak u sistemu.`;
+    extraStep = keywordAdvice;
+  } else if (problemLower.includes('bojler')) {
+    keywordAdvice = '🔥 Bojler: isključite struju pre rada. Proverite sigurnosni ventil i brtve. Curenje — vodoinstalater.';
+    extraStep = keywordAdvice;
+  } else if (problemLower.includes('klima') || problemLower.includes('hladi') || problemLower.includes('hladno')) {
+    keywordAdvice = '❄️ Klima: proverite filter, da li je spoljna jedinica čista, i podešavanje temperature. Servis godišnje.';
+    extraStep = keywordAdvice;
+  } else if (problemLower.includes('frižider') || problemLower.includes('frizider') || problemLower.includes('hladnjak')) {
+    keywordAdvice = '❄️ Frižider: proverite termostat, brtve na vratima, odledjivač. Motor non-stop — serviser.';
+    extraStep = keywordAdvice;
+  } else if (problemLower.includes('veš') || problemLower.includes('ves') || problemLower.includes('mašina') || problemLower.includes('masina')) {
+    keywordAdvice = '🫧 Veš mašina: filter, brtva vrata, crevo za odvod. Nivelišite noge ako skače.';
+    extraStep = keywordAdvice;
+  } else if (problemLower.includes('curen') || problemLower.includes('kap')) {
+    extraStep = 'Fokus: locirajte tačno mesto curenja, zatvorite ventil vode.';
   } else if (problemLower.includes('puk') || problemLower.includes('pukotin')) {
     extraStep = 'Fokus: stabilizujte pukotinu pre punjenja ili lepljenja.';
   } else if (problemLower.includes('ne radi') || problemLower.includes('ne pali')) {
@@ -126,12 +153,32 @@ function getRuleBasedRepairAdvice(category, problem) {
   const steps = [...template.steps];
   if (extraStep) steps.unshift(extraStep);
 
+  let toolsList = [...template.tools];
+  if (tools.length > 0) {
+    const owned = tools.filter(t => template.tools.some(tt => t.toLowerCase().includes(tt.toLowerCase().split(' ')[0])));
+    if (owned.length) {
+      steps.push(`Imate u inventaru alata: ${owned.slice(0, 4).join(', ')}.`);
+    }
+  }
+  if (magazine.length > 0 && (category === 'elektrika' || problemLower.includes('sijalic'))) {
+    const bulbs = magazine.filter(m => m.toLowerCase().includes('sijal'));
+    if (bulbs.length) steps.push(`U magacinu: ${bulbs.join(', ')} — proverite pre kupovine.`);
+  }
+
+  const toolCheck = typeof checkToolsAvailability === 'function'
+    ? checkToolsAvailability(template.tools)
+    : { missing: [], canDoIt: true };
+  let diyNote = template.diyVsPro;
+  if (toolCheck.missing.length > 0) {
+    diyNote += ` Nedostaju alati: ${toolCheck.missing.join(', ')}.`;
+  }
+
   return {
-    summary: `Za problem u kategoriji ${catLabel}: "${problem}". Evo korak-po-korak saveta:`,
+    summary: `Za problem u kategoriji ${catLabel}: „${problem}". Evo korak-po-korak saveta:`,
     steps,
     difficulty: template.difficulty,
-    tools: template.tools,
-    diyVsPro: template.diyVsPro,
+    tools: toolsList,
+    diyVsPro: diyNote,
     costEstimate: template.costEstimate
   };
 }

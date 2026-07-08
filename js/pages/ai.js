@@ -86,11 +86,26 @@ function buildHouseholdContext() {
 
 function getSmartResponse(message) {
   const lower = message.toLowerCase().trim();
-  const ctx = buildHouseholdContext();
-  const name = ctx.settings?.userName || ctx.name || 'prijatelju';
+  const ctx = typeof buildFullAIContext === 'function' ? buildFullAIContext() : null;
+  const advisor = ctx ? {
+    settings: ctx.finance?.settings || getSettings(),
+    spent: ctx.finance?.spent ?? getTotalSpent(new Date().getFullYear(), new Date().getMonth()),
+    budget: ctx.finance?.budget ?? getSettings().monthlyBudget,
+    remaining: ctx.finance?.remaining ?? 0,
+    score: ctx.finance?.score ?? getFinancialHealthScore(),
+    houseProfile: ctx.houseProfile,
+    tools: ctx.tools,
+    magazine: ctx.magazine
+  } : buildHouseholdContext();
+  const name = advisor.settings?.userName || advisor.name || 'prijatelju';
+  const profile = advisor.houseProfile || (typeof getHouseProfile === 'function' ? getHouseProfile() : {});
+  const heating = profile.heatingType || 'nepoznato';
+  const sqm = profile.squareMeters || 0;
 
   if (lower.includes('zdravo') || lower.includes('ćao') || lower.includes('cao') || lower.includes('pozdrav') || lower.includes('hej')) {
-    return `${getGreeting()}, ${name}! Ja sam Domaćinko 💚 Ovog meseca ste potrošili ${formatCurrency(ctx.spent)} od ${formatCurrency(ctx.budget)}. Kako mogu da pomognem?`;
+    let extra = '';
+    if (sqm > 0) extra = ` Kuća ${sqm}m², grejanje: ${heating}.`;
+    return `${getGreeting()}, ${name}! 💚 Potrošeno ${formatCurrency(advisor.spent)} od ${formatCurrency(advisor.budget)}.${extra} Kako mogu da pomognem?`;
   }
 
   if (lower.includes('gde najviše') || lower.includes('najviše troš') || lower.includes('najvise tros')) {
@@ -100,39 +115,82 @@ function getSmartResponse(message) {
       return 'Još nema troškova ovog meseca — odličan početak! 💚';
     }
     const [catId, amount] = top[0];
-    const pct = ctx.spent > 0 ? Math.round((amount / ctx.spent) * 100) : 0;
+    const pct = advisor.spent > 0 ? Math.round((amount / advisor.spent) * 100) : 0;
     return `Najviše trošite na ${getCategoryLabel(catId).toLowerCase()} — ${formatCurrency(amount)} (${pct}% budžeta). 💚`;
   }
 
   if (lower.includes('koliko') && (lower.includes('potro') || lower.includes('tros'))) {
-    return `Do sada imaš evidentirano ukupno ${formatCurrency(ctx.spent)} troškova ovog meseca.`;
+    return `Do sada imaš evidentirano ukupno ${formatCurrency(advisor.spent)} troškova ovog meseca. Finansijsko zdravlje: ${advisor.score}/100.`;
   }
 
-  if (lower.includes('ušted') || lower.includes('usted')) {
-    return 'Prvo pogledaj hranu, gorivo, kafiće i impulzivne kupovine. Tu ljudi najčešće izgube najviše novca.';
+  if (lower.includes('ušted') || lower.includes('usted') || lower.includes('popust')) {
+    const insights = typeof getFinancialTrainerInsights === 'function' ? getFinancialTrainerInsights() : [];
+    if (insights[0]?.savings) return insights[0].savings;
+    return 'Prvo pogledaj hranu, gorivo, kafiće i impulzivne kupovine. Koristite akcije samo za stvari koje ionako kupujete — popust nije ušteda ako ne trebate proizvod.';
   }
 
-  if (lower.includes('struj')) {
-    return 'Za manji račun za struju: koristi LED sijalice, isključi uređaje iz utičnice, bojler pali planski i proveri stare uređaje.';
+  if (lower.includes('struj') || lower.includes('elektr')) {
+    const toolCount = ctx?.tools?.count || (typeof getTools === 'function' ? getTools().length : 0);
+    let tip = 'Za manji račun: LED sijalice, isključite standby, bojler planski, klima 24–25°C leti.';
+    if (heating === 'electric' || heating === 'struja') tip += ' Električno grejanje — spuštajte termostat noću za 2°C.';
+    if (toolCount > 0) tip += ` Imate ${toolCount} alata — DIY manje troši od majstora za sitnice.`;
+    return tip;
   }
 
-  if (lower.includes('voda') || lower.includes('vodu')) {
-    return 'Za manji račun za vodu: popravi slavine koje kaplju, skrati tuširanje i koristi mašinu za veš kad je puna.';
+  if (lower.includes('gas')) {
+    return 'Gas: proverite ventil i curenje sapunskom vodom. Redovan servis kotla je obavezan. Ako osećate miris gasa — odmah provetravajte i zovite hitnu, ne palite svetlo.';
+  }
+
+  if (lower.includes('grejan') || lower.includes('grejanje') || lower.includes('kirija')) {
+    if (lower.includes('kirija')) {
+      return 'Kirija je obično najveći fiksni trošak. Evidentirajte je kao račun u Podešavanjima i pratite u prognozi troškova.';
+    }
+    const season = [10, 11, 0, 1, 2].includes(new Date().getMonth());
+    return `Grejanje (${heating}): termostat max 21°C, prozori zaptiveni.${season ? ' Sezona grejanja — proverite kotao i odvod kondenzata.' : ''} Ušteda do 15% sa dobrim navikama.`;
+  }
+
+  if (lower.includes('kredit')) {
+    return 'Krediti idu u kategoriju Računi ili Ostalo. Pratite ratu mesečno — Domaćinko može podsetiti kroz ponavljajuće troškove u Podešavanjima.';
+  }
+
+  if (lower.includes('voda') || lower.includes('vodu') || lower.includes('bojler')) {
+    if (lower.includes('bojler')) {
+      const due = (typeof getDueMaintenance === 'function' ? getDueMaintenance() : []).find(t => t.id === 'boiler' || t.name.toLowerCase().includes('bojler'));
+      if (due) return `Bojler: ${due.overdue ? 'servis kasni!' : `servis za ${due.daysUntil} dana.`} Palite 1h pre tuširanja, ne 24/7 — štedi struju i produžava vek.`;
+      return 'Bojler: servis godišnje, palite planski (1h pre tuša), proverite sigurnosni ventil. Curi — zovite majstora.';
+    }
+    return 'Za manji račun za vodu: popravite slavine, skratite tuš, mašina za veš kad je puna.';
+  }
+
+  if (lower.includes('klima')) {
+    const due = (typeof getDueMaintenance === 'function' ? getDueMaintenance() : []).find(t => t.id === 'ac' || t.name.toLowerCase().includes('klim'));
+    const maint = due ? (due.overdue ? ' Servis klime kasni!' : ` Čišćenje klime za ${due.daysUntil} dana.`) : '';
+    return `Klima: 24–25°C leti, filter čistite mesečno, zatvarajte prozore.${maint}`;
+  }
+
+  if (lower.includes('frižider') || lower.includes('frizider') || lower.includes('hladnjak')) {
+    const appliances = profile.appliances || [];
+    const hasFridge = appliances.some(a => (a.name || '').toLowerCase().includes('friž') || (a.name || '').toLowerCase().includes('friz'));
+    return `Frižider: termostat 3–5°C, odmrzavajte redovno, ne stavljajte toplo hranu.${hasFridge ? ' Imate ga u profilu kuće — proverite starost (stariji troši više).' : ''}`;
+  }
+
+  if (lower.includes('veš') || lower.includes('ves') || lower.includes('mašina') || lower.includes('masina')) {
+    return 'Veš mašina: punite do kraja, eco program, čistite filter. Curenje — proverite brtve i crevo. Vibracije — nivelišite noge.';
   }
 
   if (lower.includes('auto') || lower.includes('gorivo')) {
-    return 'Kod auta najviše pomažu redovan servis, pravilan pritisak u gumama i mirnija vožnja. To može smanjiti potrošnju goriva.';
+    return 'Kod auta najviše pomažu redovan servis, pritisak u gumama i mirnija vožnja. Evidentirajte registraciju u Domaćinstvu za prognozu.';
   }
 
   if (lower.includes('račun') || lower.includes('racun')) {
-    return 'Račune možeš skenirati kamerom u sekciji Slikaj račun, ili ručno uneti trošak.';
+    return 'Račune skenirajte u Slikaj račun ili unesite ručno. Ponavljajuće stavite u Podešavanja → Mesečni računi.';
   }
 
   if (lower.includes('koliko') && (lower.includes('ostalo') || lower.includes('preostalo') || lower.includes('ima'))) {
-    if (ctx.remaining >= 0) {
-      return `Od budžeta od ${formatCurrency(ctx.budget)} ostalo vam je još ${formatCurrency(ctx.remaining)}. Nastavite ovako! 💚`;
+    if (advisor.remaining >= 0) {
+      return `Od budžeta od ${formatCurrency(advisor.budget)} ostalo vam je još ${formatCurrency(advisor.remaining)}. Nastavite ovako! 💚`;
     }
-    return `Budžet je prekoračen za ${formatCurrency(Math.abs(ctx.remaining))}. Sledeći mesec je nova prilika! 💚`;
+    return `Budžet je prekoračen za ${formatCurrency(Math.abs(advisor.remaining))}. Sledeći mesec je nova prilika! 💚`;
   }
 
   if (lower.includes('šta da kupim') || lower.includes('sta da kupim') || lower.includes('lista') || lower.includes('kupovin')) {
@@ -156,7 +214,13 @@ function getSmartResponse(message) {
   if (lower.includes('magacin') || lower.includes('sijalic') || lower.includes('inventar')) {
     const mag = typeof getHomeMagazine === 'function' ? getHomeMagazine() : [];
     if (mag.length === 0) return 'Kućni magacin je prazan. Dodajte sijalice, boju i šrafove u Inventar → Magacin.';
-    return `U magacinu imate: ${mag.slice(0, 6).map(i => i.name).join(', ')}. Proverite pre kupovine! 📦`;
+    return `U magacinu: ${mag.slice(0, 6).map(i => i.name).join(', ')}. Proverite pre kupovine! 📦`;
+  }
+
+  if (lower.includes('alat') || lower.includes('alati')) {
+    const tools = typeof getTools === 'function' ? getTools() : [];
+    if (tools.length === 0) return 'Nemate evidentiranih alata — dodajte u sekciju Alati za bolje DIY savete.';
+    return `Vaši alati: ${tools.slice(0, 8).map(t => t.name).join(', ')}. Majstor proverava šta imate pre saveta.`;
   }
 
   if (lower.includes('ostav') || lower.includes('namirnic')) {
@@ -167,7 +231,14 @@ function getSmartResponse(message) {
     return `U ostavi: ${pantry.slice(0, 8).map(p => p.name).join(', ')}.`;
   }
 
-  return `Razumem! Na ${formatCurrency(ctx.spent)} od ${formatCurrency(ctx.budget)} budžeta. Pitajte o finansijama, kupovini, održavanju ili popravkama! 💚`;
+  if (lower.includes('prognoz') || lower.includes('predstoje')) {
+    const costs = typeof getUpcomingCosts === 'function' ? getUpcomingCosts() : [];
+    if (costs.length === 0) return 'Nema evidentiranih predstojećih troškova — dodajte račune u Domaćinstvu ili Podešavanjima.';
+    const total = costs.reduce((s, c) => s + (c.amount || 0), 0);
+    return `Ovog meseca ~${formatCurrency(total)} predstojećih troškova. Prvo: ${costs.slice(0, 3).map(c => c.name).join(', ')}.`;
+  }
+
+  return `Razumem! Na ${formatCurrency(advisor.spent)} od ${formatCurrency(advisor.budget)} budžeta (zdravlje ${advisor.score}/100). Pitajte o struji, grejanju, kupovini ili popravkama! 💚`;
 }
 
 async function getAIResponse(message) {
