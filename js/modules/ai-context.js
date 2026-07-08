@@ -163,12 +163,14 @@ function getAdvisorContext() {
 
 const MODULE_SUGGESTED_QUESTIONS = {
   savetnik: [
+    'Koliko sam potrošio danas?',
     'Koliko sam potrošio?',
     'Šta da kuvam danas?',
     'Šta kasni u kući?',
     'Gde najviše trošim?',
     'Koliko mi je ostalo?',
-    'Šta je na listi za kupovinu?'
+    'Šta je na listi za kupovinu?',
+    'Pregled dana'
   ],
   majstor: [
     'Curi slavina u kupatilu',
@@ -197,6 +199,20 @@ const MODULE_SUGGESTED_QUESTIONS = {
 };
 
 function getSuggestedQuestions(module = 'savetnik') {
+  if (module === 'savetnik' && typeof buildFullAIContext === 'function') {
+    const ctx = buildFullAIContext();
+    const dynamic = [];
+    const due = ctx.maintenance?.overdueCount || 0;
+    if (due > 0) dynamic.push('Šta kasni u kući?');
+    const shopping = ctx.shopping?.pendingCount || 0;
+    if (shopping > 0) dynamic.push('Šta je na listi za kupovinu?');
+    const todayMeal = ctx.shopping?.mealPlan;
+    const dayKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()];
+    if (todayMeal?.[dayKey]?.trim()) dynamic.push('Šta da kuvam danas?');
+    const base = MODULE_SUGGESTED_QUESTIONS.savetnik;
+    const merged = [...new Set([...dynamic, ...base])];
+    return merged.slice(0, 8);
+  }
   return MODULE_SUGGESTED_QUESTIONS[module] || MODULE_SUGGESTED_QUESTIONS.savetnik;
 }
 

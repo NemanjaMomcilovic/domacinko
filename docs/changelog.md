@@ -1,5 +1,16 @@
 # Domaćinko — Changelog
 
+## [7.2.1] — 2026-07-08
+
+### 10KEY Savetnik — primarni proizvod (Opcija 1)
+- **Status bedž** — 🧠 „10KEY Savetnik" po defaultu; GPT samo kao „Napredni režim" dodatak
+- **Jači lokalni engine** — namera „danas" i „poslednji troškovi"; dinamički brzi chipovi iz podataka
+- **Akcije** — linkovi ka Finansijama, Planu obroka, Dodaj trošak
+- **Proaktivni welcome** — kućni asistent od 10KEY, bez naglašavanja OpenAI
+- **Podešavanja** — vidljiva sekcija 10KEY Savetnik; OpenAI u sklopljenom Napredni režim
+- `docs/10key-savetnik-roadmap.md` — Opcija 1 / 2 / 3 (Ollama budućnost)
+- Service Worker v7.2.1
+
 ## [7.2.0-beta] — 2026-07-08
 
 ### Beta režim — pojednostavljen UI

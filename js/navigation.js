@@ -13,7 +13,7 @@ const NAV_ITEMS_FULL = [
   { id: 'home', href: 'home.html', icon: '🏠', label: 'Početna' },
   { id: 'finances', href: 'finances.html', icon: '💰', label: 'Troškovi' },
   { id: 'meals', href: 'meal-plan.html', icon: '🍽️', label: 'Obroci' },
-  { id: 'ai', href: 'ai.html', icon: '💬', label: '10KEY Savetnik' },
+  { id: 'ai', href: 'ai.html', icon: '🧠', label: 'Savetnik' },
   { id: 'shopping', href: 'shopping.html', icon: '🛒', label: 'Kupovina' },
   { id: 'settings', href: 'settings.html', icon: '⚙️', label: 'Više' }
 ];

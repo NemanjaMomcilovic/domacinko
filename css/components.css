@@ -448,6 +448,11 @@
   color: var(--color-primary-dark, #1f6b42);
 }
 
+.ai-status__addon {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
 .ai-status__link {
   color: var(--color-primary);
   text-decoration: none;

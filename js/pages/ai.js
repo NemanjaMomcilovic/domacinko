@@ -1,5 +1,5 @@
 /**
- * Domaćinko AI Savetnik — lokalni intent engine + GPT-4o streaming
+ * Domaćinko — 10KEY Savetnik (lokalni intent engine) + opcioni GPT-4o
  */
 
 const OPENAI_MODEL = 'gpt-4o';
@@ -8,7 +8,9 @@ const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const AI_INTENTS = [
   { id: 'greeting', score: (t) => /^(zdravo|ćao|cao|pozdrav|hej|dobro|dobar|čao)\b/.test(t) ? 3 : 0 },
   { id: 'spending_top', score: (t) => /gde\s+najviše|najviše\s+troš|najvise\s+tros|top\s+kategorij/.test(t) ? 4 : 0 },
-  { id: 'spending_total', score: (t) => /koliko\s+(sam\s+)?(potro|tros)|ukupn.*trošk|potrošeno\s+ovog/.test(t) ? 4 : 0 },
+  { id: 'spending_today', score: (t) => /koliko\s+(sam\s+)?(potro|tros).*(danas|danasnj)|danas.*(potro|tros)|trošk.*danas/.test(t) ? 5 : 0 },
+  { id: 'recent_expenses', score: (t) => /poslednj|nedavn|skorašnj|skorasnj.*trošk|lista\s+trošk/.test(t) ? 4 : 0 },
+  { id: 'spending_total', score: (t) => (/koliko\s+(sam\s+)?(potro|tros)|ukupn.*trošk|potrošeno\s+ovog/.test(t) && !/danas/.test(t)) ? 4 : 0 },
   { id: 'budget_remaining', score: (t) => /koliko\s+(mi\s+)?(je\s+)?(ostalo|preostalo|ima)|preostali\s+budžet/.test(t) ? 4 : 0 },
   { id: 'budget_categories', score: (t) => /budžet|budzet|kategorij|prekorač/.test(t) ? 3 : 0 },
   { id: 'savings', score: (t) => /ušted|usted|šted|sted|cilj\s+šted/.test(t) ? 3 : 0 },
@@ -139,7 +141,7 @@ function buildRichContextBlock() {
 
 function buildOpenAISystemPrompt() {
   const context = buildRichContextBlock();
-  return `Ti si Domaćinko AI — vrhunski srpski savetnik za domaćinstvo, budžet, kuvanje, održavanje i popravke.
+  return `Ti si 10KEY Savetnik — proaktivni asistent za domaćinstvo u aplikaciji Domaćinko.
 Govoriš toplo, jasno i praktično na srpskom (latinica). Kratki odgovori (2-5 rečenica) osim ako korisnik traži detalje.
 Koristi podatke korisnika ispod — ne izmišljaj brojeve. Ako nema podataka, predloži šta da unese u app.
 Za opasne situacije (gas, struja, voda) uvek naglasi bezbednost i kada zvati majstora.
@@ -185,13 +187,15 @@ function getProactiveWelcome() {
     tips.push(`Budžet prekoračen za ${formatCurrency(Math.abs(remaining))}`);
   }
 
-  const mode = hasOpenAIKey() ? `✨ GPT-4o je spreman` : `🧠 Lokalni savetnik (offline)`;
-  let welcome = `${getGreeting()}, ${name}! ${mode}.\n${budgetLine}.`;
+  const mode = hasOpenAIKey()
+    ? `Napredni režim (GPT-4o) je uključen`
+    : `🧠 10KEY Savetnik — besplatno, radi odmah i offline`;
+  let welcome = `${getGreeting()}, ${name}! Ja sam **10KEY Savetnik**, vaš kućni asistent.\n${mode}.\n${budgetLine}.`;
 
   if (tips.length > 0) {
     welcome += '\n\n' + tips.map(t => `• ${t}`).join('\n');
   } else {
-    welcome += '\n\nPitajte me o budžetu, kuvanju, kupovini ili održavanju!';
+    welcome += '\n\nPitajte o budžetu, današnjim troškovima, kuvanju, kupovini ili održavanju — odgovaram iz vaših podataka.';
   }
 
   return welcome;
@@ -203,21 +207,21 @@ function renderAIStatus() {
 
   if (hasOpenAIKey()) {
     el.className = 'ai-status ai-status--openai';
-    el.innerHTML = `<span>✨ <strong>GPT-4o povezan</strong> — pametni odgovori uživo</span>`;
+    el.innerHTML = `<span>🧠 <strong>10KEY Savetnik</strong> + <span class="ai-status__addon">Napredni režim (GPT-4o)</span></span>`;
     return;
   }
 
   el.className = 'ai-status ai-status--local';
-  el.innerHTML = `<span>🧠 <strong>Lokalni savetnik</strong> — koristi vaše podatke, radi offline</span><a href="settings.html#advanced-settings" class="ai-status__link">Više → Napredno →</a>`;
+  el.innerHTML = `<span>🧠 <strong>10KEY Savetnik</strong> — besplatno, koristi vaše podatke, radi offline</span>`;
 }
 
 function parseOpenAIError(response, error) {
-  if (!navigator.onLine) return 'Nema internet konekcije. Koristim lokalni savetnik.';
-  if (response?.status === 401) return 'Neispravan OpenAI ključ. Proverite u Više → Napredno → AI asistent.';
+  if (!navigator.onLine) return 'Nema internet konekcije. Koristim 10KEY Savetnik.';
+  if (response?.status === 401) return 'Neispravan OpenAI ključ. Proverite u Više → Napredno → Napredni režim.';
   if (response?.status === 429) return 'Previše zahteva. Sačekajte minut i pokušajte ponovo.';
   if (response?.status === 403) return 'OpenAI odbio zahtev — proverite kredit na nalogu.';
-  if (error?.message?.includes('Failed to fetch')) return 'Mreža nedostupna. Koristim lokalni savetnik.';
-  return 'OpenAI trenutno nedostupan. Koristim lokalni savetnik.';
+  if (error?.message?.includes('Failed to fetch')) return 'Mreža nedostupna. Koristim 10KEY Savetnik.';
+  return 'OpenAI trenutno nedostupan. Koristim 10KEY Savetnik.';
 }
 
 function parseShoppingAction(message) {
@@ -244,7 +248,16 @@ function extractSuggestedActions(message, response) {
   if (/lista\s+za\s+kupovinu|kupovin/i.test(response)) {
     actions.push({ type: 'link', label: 'Otvori Kupovinu', href: 'shopping.html' });
   }
-  return actions.slice(0, 2);
+  if (/finansij|budžet|budzet|trošk/i.test(response)) {
+    actions.push({ type: 'link', label: 'Otvori Finansije', href: 'finances.html' });
+  }
+  if (/plan\s+obroka|obrok|kuvam/i.test(response)) {
+    actions.push({ type: 'link', label: 'Plan obroka', href: 'meal-plan.html' });
+  }
+  if (/trošak|dodaj\s+trošak/i.test(response)) {
+    actions.push({ type: 'link', label: 'Dodaj trošak', href: 'add-expense.html' });
+  }
+  return actions.slice(0, 3);
 }
 
 function renderActionBar(actions) {
@@ -348,6 +361,19 @@ function getSmartResponse(message) {
       const pct = advisor.spent > 0 ? Math.round((amount / advisor.spent) * 100) : 0;
       const rest = top.slice(1, 3).map(([id, amt]) => `${getCategoryLabel(id).toLowerCase()} ${formatCurrency(amt)}`).join(', ');
       return `Najviše trošite na **${getCategoryLabel(catId).toLowerCase()}** — ${formatCurrency(amount)} (${pct}%).${rest ? ` Zatim: ${rest}.` : ''}`;
+    }
+    case 'spending_today': {
+      const todaySpent = typeof getTodaySpending === 'function' ? getTodaySpending() : 0;
+      const today = new Date().toISOString().split('T')[0];
+      const todayItems = getExpenses().filter(e => e.date === today);
+      if (!todayItems.length) return `Danas još nema unetih troškova. 💚 Mesečno: ${formatCurrency(advisor.spent)} od ${formatCurrency(advisor.budget)}.`;
+      const list = todayItems.slice(0, 5).map(e => `${e.name} ${formatCurrency(e.amount)}`).join(', ');
+      return `Danas ste potrošili **${formatCurrency(todaySpent)}**: ${list}.${todayItems.length > 5 ? ` (+${todayItems.length - 5} još)` : ''}`;
+    }
+    case 'recent_expenses': {
+      const recent = getExpenses().slice(0, 6);
+      if (!recent.length) return 'Nema unetih troškova — dodajte prvi u Finansijama.';
+      return `Poslednji troškovi:\n${recent.map(e => `• ${e.name} — ${formatCurrency(e.amount)} (${e.date})`).join('\n')}`;
     }
     case 'spending_total':
       return `Ovog meseca: **${formatCurrency(advisor.spent)}** troškova. Finansijsko zdravlje: **${advisor.score}/100**.`;
@@ -468,7 +494,7 @@ function getSmartResponse(message) {
     return `Imate ${ctx.maintenance.overdueCount} zakašnjelih servisa: ${(ctx.maintenance.overdue || []).slice(0, 3).join(', ')}. Šta kasni u kući? — pitajte eksplicitno!`;
   }
 
-  return `Razumem pitanje o „${message.slice(0, 40)}${message.length > 40 ? '…' : ''}". Budžet: ${formatCurrency(advisor.spent)}/${formatCurrency(advisor.budget)} (zdravlje ${advisor.score}/100).\n\nProbajte: „Koliko sam potrošio?", „Šta da kuvam danas?", „Šta kasni u kući?"${hasOpenAIKey() ? '' : ' — ili dodajte OpenAI ključ za GPT odgovore.'}`;
+  return `Razumem pitanje o „${message.slice(0, 40)}${message.length > 40 ? '…' : ''}". Budžet: ${formatCurrency(advisor.spent)}/${formatCurrency(advisor.budget)} (zdravlje ${advisor.score}/100).\n\nProbajte: „Koliko sam potrošio danas?", „Šta da kuvam danas?", „Šta kasni u kući?"`;
 }
 
 function buildHouseholdContext() {
@@ -599,7 +625,7 @@ function renderChat(options = {}) {
     const actions = streamActions ? renderActionBar(streamActions) : '';
     html += `<div class="chat-bubble chat-bubble--ai chat-bubble--streaming" id="streaming-bubble">${formatChatText(streamText)}</div>${actions}`;
   } else if (typing) {
-    html += '<div class="chat-bubble chat-bubble--ai chat-bubble--typing"><span class="typing-dots">Domaćinko razmišlja</span></div>';
+    html += '<div class="chat-bubble chat-bubble--ai chat-bubble--typing"><span class="typing-dots">10KEY Savetnik razmišlja</span></div>';
   }
 
   container.innerHTML = html;
