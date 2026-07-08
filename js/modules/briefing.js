@@ -92,7 +92,6 @@ function generateMorningBriefing() {
   const bullets = [];
   const now = new Date();
   const hour = now.getHours();
-  const dayOfMonth = now.getDate();
   const greeting = getHomemakerGreeting(name, hour);
 
   const todaySpent = typeof getTodaySpending === 'function' ? getTodaySpending() : 0;

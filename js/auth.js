@@ -62,7 +62,7 @@ function applyProfileToLocalSettings(profile, skipSave) {
     monthlyBudget: profile.monthly_budget ?? 80000,
     monthlyIncome: profile.monthly_income ?? 0,
     currentSavings: profile.current_savings ?? 0,
-    savingsGoal: profile.savings_goal ?? 10000,
+    savingsGoal: profile.savings_goal ?? 0,
     savingsGoalName: profile.savings_goal_name || '',
     currency: profile.currency || 'RSD'
   };

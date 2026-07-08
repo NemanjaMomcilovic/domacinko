@@ -13,7 +13,7 @@ function refreshHomeDashboard() {
   const tasks = getTasks();
   const shopping = getShoppingList().filter(i => !i.bought);
 
-  ensureMaintenanceInitialized?.();
+
   const maintenanceDue = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
 
   if (typeof renderQuickStatsRow === 'function') {

@@ -8,6 +8,15 @@
 - **Za developere** — sakriveno za beta korisnike kada `config.js` radi (Supabase, AI ključ, export/import, lokalni profili)
 - **Uklonjeno iz Naprednog** — duplikat finansija (već u Moj profil), beta email (već u Pomoć), visok kontrast premešten u Izgled
 - **Početna** — brze akcije smanjene na 5 osnovnih modula (bez Bašte, Domaćinstva, Vizuelnog)
+
+### Ispravljeno
+- **Pregled dana (brifing)** — više ne prikazuje demo/placeholder sadržaj za nove korisnike
+- Uklonjeni hardkodirani sezonski saveti i generički podsetnici na početku meseca
+- Sezonski poslovi u brifingu samo ako korisnik koristi sezonski modul
+- Održavanje se ne auto-seeduje — podsetnici samo za zadatke sa datumom ili ručno dodate
+- Cilj štednje u brifingu samo ako korisnik unese naziv i iznos
+- Prazno stanje: „Dodajte trošak, račun ili cilj…" sa linkovima umesto lažnih stavki
+- Uklonjeni demo zadaci iz podrazumevanih podataka (Plati struju, Kupi mleko…)
 - Service Worker v7.0.6
 
 ## [7.0.5] — 2026-07-08

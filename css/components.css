@@ -1272,6 +1272,39 @@
 .briefing-card__item--warn { color: #ffe4a0; }
 .briefing-card__item--tip { color: #d4e8ff; }
 
+.briefing-card__empty {
+  padding: var(--space-sm) 0;
+}
+
+.briefing-card__empty-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+
+.briefing-card__empty-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.briefing-card__empty-link {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  transition: background var(--transition);
+}
+
+.briefing-card__empty-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* Quick stats row */
 .quick-stats {
   display: grid;

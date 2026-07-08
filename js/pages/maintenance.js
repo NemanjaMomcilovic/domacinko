@@ -14,7 +14,18 @@ function renderMaintenanceList() {
 
   const tasks = getAllMaintenanceTasks();
   if (tasks.length === 0) {
-    container.innerHTML = renderEmptyState('🏠', 'Nema zadataka', 'Dodajte zadatak održavanja ispod.');
+    container.innerHTML = `
+      ${renderEmptyState('🏠', 'Nema zadataka', 'Dodajte zadatak ispod ili učitajte uobičajene servise.')}
+      <button type="button" class="btn btn--secondary btn--block mt-md" id="seed-maintenance-btn">
+        Dodaj uobičajene zadatke (bojler, klima…)
+      </button>
+    `;
+    document.getElementById('seed-maintenance-btn')?.addEventListener('click', () => {
+      if (typeof seedPredefinedMaintenance === 'function' && seedPredefinedMaintenance()) {
+        showToast('Zadaci dodati — označite „Poslednji put" za svaki servis.');
+        renderMaintenanceList();
+      }
+    });
     return;
   }
 
