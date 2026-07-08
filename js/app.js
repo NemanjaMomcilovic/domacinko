@@ -19,11 +19,21 @@ function initApp() {
   initAccessibility?.();
   initPageTransition?.();
   initOfflineBanner?.();
+  loadHelpTooltipsScript();
   registerServiceWorker();
   initAuthGuard();
   if (typeof checkAndSendNotifications === 'function') {
     setTimeout(() => checkAndSendNotifications(), 2000);
   }
+}
+
+function loadHelpTooltipsScript() {
+  if (document.querySelector('script[src*="help-tooltips"]')) return;
+  const base = getAssetBase();
+  const script = document.createElement('script');
+  script.src = `${base}/js/help-tooltips.js`;
+  script.defer = true;
+  document.body.appendChild(script);
 }
 
 async function initAuthGuard() {
