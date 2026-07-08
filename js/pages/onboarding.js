@@ -1,7 +1,5 @@
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 3;
 let currentScreen = 1;
-const pantryItems = [];
-const billItems = [];
 
 function showScreen(n) {
   currentScreen = n;
@@ -18,68 +16,24 @@ function showScreen(n) {
   const skipBtn = document.getElementById('skip-step-btn');
   const nextBtn = document.getElementById('next-btn');
 
-  if (n >= 2 && n <= 4) {
+  if (n === 2) {
     skipBtn.classList.remove('hidden');
   } else {
     skipBtn.classList.add('hidden');
   }
 
-  if (n === 5) {
-    nextBtn.textContent = 'Kreni u Domaćinko 🏡';
+  if (n === 3) {
+    nextBtn.textContent = 'Dodaj prvi trošak →';
     const firstName = document.getElementById('onb-first-name').value.trim() || 'prijatelju';
     document.getElementById('onb-welcome-name').textContent = firstName;
-  } else if (n === 1) {
-    nextBtn.textContent = 'Nastavi';
   } else {
-    nextBtn.textContent = 'Sačuvaj i nastavi';
+    nextBtn.textContent = 'Nastavi';
   }
-}
-
-function renderPantryList() {
-  const list = document.getElementById('onb-pantry-list');
-  if (!list) return;
-  if (pantryItems.length === 0) {
-    list.innerHTML = '<li class="onboarding__item-list__empty">Još nema namirnica — dodaj ili preskoči</li>';
-    return;
-  }
-  list.innerHTML = pantryItems.map((item, i) => `
-    <li class="onboarding__item-list__item">
-      <span>🥫 ${item}</span>
-      <button type="button" class="btn btn--ghost btn--sm" data-remove-pantry="${i}">✕</button>
-    </li>
-  `).join('');
-  list.querySelectorAll('[data-remove-pantry]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      pantryItems.splice(parseInt(btn.dataset.removePantry, 10), 1);
-      renderPantryList();
-    });
-  });
-}
-
-function renderBillsList() {
-  const list = document.getElementById('onb-bills-list');
-  if (!list) return;
-  if (billItems.length === 0) {
-    list.innerHTML = '<li class="onboarding__item-list__empty">Još nema računa — dodaj ili preskoči</li>';
-    return;
-  }
-  list.innerHTML = billItems.map((bill, i) => `
-    <li class="onboarding__item-list__item">
-      <span>📄 ${bill.name} — ${formatCurrency(bill.amount)} · ${bill.dayOfMonth}. u mesecu</span>
-      <button type="button" class="btn btn--ghost btn--sm" data-remove-bill="${i}">✕</button>
-    </li>
-  `).join('');
-  list.querySelectorAll('[data-remove-bill]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      billItems.splice(parseInt(btn.dataset.removeBill, 10), 1);
-      renderBillsList();
-    });
-  });
 }
 
 function saveStep1Data() {
   const firstName = document.getElementById('onb-first-name').value.trim();
-  const lastName = document.getElementById('onb-last-name').value.trim();
+  const householdSize = parseInt(document.getElementById('onb-household-size').value, 10) || 1;
 
   if (!firstName) {
     showToast('Unesite ime.');
@@ -88,69 +42,40 @@ function saveStep1Data() {
 
   saveSettings({
     firstName,
-    lastName,
-    userName: [firstName, lastName].filter(Boolean).join(' '),
-    monthlyIncome: parseFloat(document.getElementById('onb-income').value) || 0,
-    currentSavings: parseFloat(document.getElementById('onb-savings').value) || 0,
-    monthlyBudget: parseFloat(document.getElementById('onb-budget').value) || 80000,
-    savingsGoalName: document.getElementById('onb-goal-name').value.trim(),
-    savingsGoal: parseFloat(document.getElementById('onb-goal-amount').value) || 0
+    userName: firstName,
+    householdSize
   });
+
+  const data = getData();
+  const existing = data.household?.familyMembers?.length || 0;
+  if (existing < householdSize) {
+    for (let i = existing; i < householdSize; i++) {
+      addHouseholdItem('familyMembers', {
+        name: i === 0 ? firstName : `Član ${i + 1}`,
+        type: i === 0 ? 'Odrasla osoba' : 'Odrasla osoba'
+      });
+    }
+  }
+
   return true;
 }
 
 function saveStep2Data() {
-  pantryItems.forEach(name => {
-    addHouseholdItem('pantry', { name, quantity: '', expiry: '' });
-  });
-}
-
-function saveStep3Data() {
-  billItems.forEach(bill => {
-    addRecurringExpense({
-      name: bill.name,
-      amount: bill.amount,
-      category: 'bills',
-      dayOfMonth: bill.dayOfMonth
-    });
-    addHouseholdItem('bills', {
-      name: bill.name,
-      amount: bill.amount,
-      dueDay: bill.dayOfMonth
-    });
-  });
-}
-
-function saveStep4Data() {
-  const brand = document.getElementById('onb-car-brand').value.trim();
-  const model = document.getElementById('onb-car-model').value.trim();
-  const plate = document.getElementById('onb-car-plate').value.trim();
-  const expiry = document.getElementById('onb-car-expiry').value;
-
-  if (brand || model || plate) {
-    addHouseholdItem('cars', {
-      brand,
-      model,
-      plate,
-      registrationExpiry: expiry,
-      note: ''
-    });
-  }
+  const budget = parseFloat(document.getElementById('onb-budget').value) || 80000;
+  saveSettings({ monthlyBudget: budget });
 }
 
 async function finishOnboarding() {
   setOnboardingComplete();
 
+  const firstName = document.getElementById('onb-first-name').value.trim();
+  const budget = parseFloat(document.getElementById('onb-budget').value) || 80000;
+
   if (isLoggedIn()) {
     try {
       await saveProfile({
-        first_name: document.getElementById('onb-first-name').value.trim(),
-        last_name: document.getElementById('onb-last-name').value.trim(),
-        monthly_income: parseFloat(document.getElementById('onb-income').value) || 0,
-        current_savings: parseFloat(document.getElementById('onb-savings').value) || 0,
-        monthly_budget: parseFloat(document.getElementById('onb-budget').value) || 80000,
-        savings_goal: parseFloat(document.getElementById('onb-goal-amount').value) || 0,
-        savings_goal_name: document.getElementById('onb-goal-name').value.trim(),
+        first_name: firstName,
+        monthly_budget: budget,
         onboarding_complete: true
       });
       if (typeof pushUserDataToCloud === 'function') {
@@ -161,12 +86,14 @@ async function finishOnboarding() {
     }
   }
 
+  const goToExpenses = () => {
+    window.location.href = 'add-expense.html';
+  };
+
   if (canUseNotifications()) {
-    enableNotifications().finally(() => {
-      window.location.href = 'home.html';
-    });
+    enableNotifications().finally(goToExpenses);
   } else {
-    window.location.href = 'home.html';
+    goToExpenses();
   }
 }
 
@@ -177,20 +104,14 @@ function goNext() {
   } else if (currentScreen === 2) {
     saveStep2Data();
     showScreen(3);
-  } else if (currentScreen === 3) {
-    saveStep3Data();
-    showScreen(4);
-  } else if (currentScreen === 4) {
-    saveStep4Data();
-    showScreen(5);
   } else {
     finishOnboarding();
   }
 }
 
 function skipOptionalStep() {
-  if (currentScreen >= 2 && currentScreen <= 4) {
-    showScreen(currentScreen + 1);
+  if (currentScreen === 2) {
+    showScreen(3);
   }
 }
 
@@ -207,46 +128,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const settings = getSettings();
   if (settings.firstName) document.getElementById('onb-first-name').value = settings.firstName;
-  if (settings.lastName) document.getElementById('onb-last-name').value = settings.lastName;
-  if (settings.monthlyIncome) document.getElementById('onb-income').value = settings.monthlyIncome;
-  if (settings.currentSavings) document.getElementById('onb-savings').value = settings.currentSavings;
+  if (settings.householdSize) {
+    document.getElementById('onb-household-size').value = String(Math.min(6, settings.householdSize));
+  }
   if (settings.monthlyBudget) document.getElementById('onb-budget').value = settings.monthlyBudget;
-  if (settings.savingsGoalName) document.getElementById('onb-goal-name').value = settings.savingsGoalName;
-  if (settings.savingsGoal) document.getElementById('onb-goal-amount').value = settings.savingsGoal;
 
-  renderPantryList();
-  renderBillsList();
   showScreen(1);
-
-  document.getElementById('onb-pantry-add').addEventListener('click', () => {
-    const input = document.getElementById('onb-pantry-input');
-    const val = input.value.trim();
-    if (!val) return;
-    pantryItems.push(val);
-    input.value = '';
-    renderPantryList();
-  });
-
-  document.getElementById('onb-pantry-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('onb-pantry-add').click();
-    }
-  });
-
-  document.getElementById('onb-bill-add').addEventListener('click', () => {
-    const name = document.getElementById('onb-bill-name').value.trim();
-    const amount = parseFloat(document.getElementById('onb-bill-amount').value);
-    const dayOfMonth = parseInt(document.getElementById('onb-bill-day').value, 10) || 1;
-    if (!name || !amount) {
-      showToast('Unesite naziv i iznos računa.');
-      return;
-    }
-    billItems.push({ name, amount, dayOfMonth });
-    document.getElementById('onb-bill-name').value = '';
-    document.getElementById('onb-bill-amount').value = '';
-    renderBillsList();
-  });
 
   document.getElementById('next-btn').addEventListener('click', goNext);
   document.getElementById('skip-step-btn').addEventListener('click', skipOptionalStep);

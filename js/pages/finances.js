@@ -108,7 +108,12 @@ function renderExpensesList() {
   const list = document.getElementById('expenses-list');
 
   if (expenses.length === 0) {
-    list.innerHTML = renderEmptyState('📝', 'Nema troškova', 'Podesite filtere ili dodajte novi trošak.');
+    list.innerHTML = renderEmptyState(
+      '📝',
+      'Nema troškova',
+      'Dodajte prvi trošak i pratite budžet ovog meseca.',
+      { href: 'add-expense.html', label: 'Dodaj trošak' }
+    );
     return;
   }
 
@@ -403,7 +408,7 @@ function refreshFinances() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation('finances', { title: 'Finansije' });
+  initNavigation('finances', { title: 'Troškovi' });
 
   const expensesList = document.getElementById('expenses-list');
   if (expensesList) expensesList.innerHTML = renderSkeleton(4, 'list');

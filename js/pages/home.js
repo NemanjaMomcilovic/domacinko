@@ -3,6 +3,7 @@ function refreshHomeDashboard() {
     renderMorningBriefing('morning-briefing');
   }
 
+  const beta = typeof isBetaMode === 'function' && isBetaMode();
   const settings = getSettings();
   const now = new Date();
   const spent = getTotalSpent(now.getFullYear(), now.getMonth());
@@ -13,15 +14,17 @@ function refreshHomeDashboard() {
   const tasks = getTasks();
   const shopping = getShoppingList().filter(i => !i.bought);
 
-
   const maintenanceDue = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
 
   if (typeof renderQuickStatsRow === 'function') {
-    renderQuickStatsRow('quick-stats', [
+    const stats = [
       { icon: '💸', label: 'Danas', value: formatCurrency(getTodaySpending?.() || 0), link: 'add-expense.html' },
-      { icon: '🛒', label: 'Kupovina', value: String(shopping.length), link: 'shopping.html' },
-      { icon: '🔧', label: 'Održavanje', value: String(maintenanceDue.length), link: 'maintenance.html' }
-    ]);
+      { icon: '🛒', label: 'Kupovina', value: String(shopping.length), link: 'shopping.html' }
+    ];
+    if (!beta) {
+      stats.push({ icon: '🔧', label: 'Održavanje', value: String(maintenanceDue.length), link: 'maintenance.html' });
+    }
+    renderQuickStatsRow('quick-stats', stats);
   }
 
   const tipsEl = document.getElementById('personalized-tips');
@@ -67,27 +70,38 @@ function refreshHomeDashboard() {
   }
 
   const tasksEl = document.getElementById('tasks-list');
+  const tasksSection = document.getElementById('tasks-section');
   const todayTasks = tasks.filter(t => !t.done).slice(0, 5);
-  if (todayTasks.length === 0) {
-    tasksEl.innerHTML = renderEmptyState('✅', 'Svi zadaci su završeni!', 'Uživajte u slobodnom danu.');
+  if (beta) {
+    tasksSection?.classList.add('hidden');
   } else {
-    tasksEl.innerHTML = todayTasks.map(t => `
-      <div class="task-item animate-slide-in">
-        <input type="checkbox" class="task-checkbox" data-id="${t.id}" ${t.done ? 'checked' : ''} aria-label="Označi zadatak: ${t.text}">
-        <span>${t.text}</span>
-      </div>
-    `).join('');
-    tasksEl.querySelectorAll('.task-checkbox').forEach(cb => {
-      cb.addEventListener('change', () => {
-        toggleTask(cb.dataset.id);
-        location.reload();
+    tasksSection?.classList.remove('hidden');
+    if (todayTasks.length === 0) {
+      tasksEl.innerHTML = renderEmptyState('✅', 'Svi zadaci su završeni!', 'Uživajte u slobodnom danu.');
+    } else {
+      tasksEl.innerHTML = todayTasks.map(t => `
+        <div class="task-item animate-slide-in">
+          <input type="checkbox" class="task-checkbox" data-id="${t.id}" ${t.done ? 'checked' : ''} aria-label="Označi zadatak: ${t.text}">
+          <span>${t.text}</span>
+        </div>
+      `).join('');
+      tasksEl.querySelectorAll('.task-checkbox').forEach(cb => {
+        cb.addEventListener('change', () => {
+          toggleTask(cb.dataset.id);
+          location.reload();
+        });
       });
-    });
+    }
   }
 
   const expensesEl = document.getElementById('latest-expenses');
   if (expenses.length === 0) {
-    expensesEl.innerHTML = renderEmptyState('💸', 'Još nema troškova', 'Dodajte prvi trošak i pratite budžet!');
+    expensesEl.innerHTML = renderEmptyState(
+      '💸',
+      'Još nema troškova',
+      'Dodajte prvi trošak i pratite budžet!',
+      { href: 'add-expense.html', label: 'Dodaj trošak' }
+    );
   } else {
     expensesEl.innerHTML = expenses.map(e => `
       <div class="list-item list-item--new">
@@ -118,7 +132,7 @@ function refreshHomeDashboard() {
     `).join('');
   }
 
-  if (maintenanceDue.length > 0) {
+  if (maintenanceDue.length > 0 && !beta) {
     document.getElementById('maintenance-section').classList.remove('hidden');
     document.getElementById('maintenance-due').innerHTML = maintenanceDue.slice(0, 5).map(t => `
       <div class="reminder-item ${t.overdue ? 'reminder-item--danger' : ''}">
@@ -129,7 +143,7 @@ function refreshHomeDashboard() {
   }
 
   const expiringWarranties = getExpiringWarranties(30);
-  if (expiringWarranties.length > 0) {
+  if (expiringWarranties.length > 0 && !beta) {
     document.getElementById('warranty-section').classList.remove('hidden');
     document.getElementById('warranty-expiring').innerHTML = expiringWarranties.slice(0, 5).map(item => {
       const daysLeft = Math.ceil((new Date(item.warrantyEnd) - new Date()) / (1000 * 60 * 60 * 24));
@@ -141,6 +155,34 @@ function refreshHomeDashboard() {
       `;
     }).join('');
   }
+}
+
+const QUICK_ACTIONS_BETA = [
+  { href: 'add-expense.html', icon: '💸', label: 'Dodaj trošak' },
+  { href: 'meal-plan.html', icon: '🍽️', label: 'Plan obroka' },
+  { href: 'ai.html', icon: '💬', label: '10KEY Savetnik' },
+  { href: 'shopping.html', icon: '🛒', label: 'Lista kupovine' }
+];
+
+const QUICK_ACTIONS_FULL = [
+  ...QUICK_ACTIONS_BETA,
+  { href: 'ai.html#majstor', icon: '🔧', label: 'AI Majstor' },
+  { href: 'maintenance.html', icon: '🏠', label: 'Održavanje' },
+  { href: 'inventory.html', icon: '📦', label: 'Inventar' }
+];
+
+function renderQuickActions() {
+  const container = document.getElementById('quick-actions');
+  if (!container) return;
+  const actions = (typeof isBetaMode === 'function' && isBetaMode())
+    ? QUICK_ACTIONS_BETA
+    : QUICK_ACTIONS_FULL;
+  container.innerHTML = actions.map(a => `
+    <a href="${a.href}" class="quick-action">
+      <span class="quick-action__icon">${a.icon}</span>
+      ${a.label}
+    </a>
+  `).join('');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -166,6 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     : 'Domaćinko prati tvoje domaćinstvo.';
   document.getElementById('household-status').textContent = statusText;
 
+  renderQuickActions();
   refreshHomeDashboard();
   initPullToRefresh?.(() => {
     refreshHomeDashboard();

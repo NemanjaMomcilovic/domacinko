@@ -194,7 +194,9 @@ const DEFAULT_DATA = {
     apiKey: '',
     apiUrl: 'https://api.openai.com/v1/chat/completions',
     notificationsEnabled: false,
-    contactEmail: ''
+    contactEmail: '',
+    betaMode: true,
+    householdSize: 1
   },
   expenses: [],
   recurringExpenses: [],
@@ -351,6 +353,11 @@ async function pullUserDataFromCloud() {
 
 function getSettings() {
   return getData().settings;
+}
+
+function isBetaMode() {
+  const settings = getSettings();
+  return settings.betaMode !== false;
 }
 
 function saveSettings(settings, options = {}) {
@@ -741,7 +748,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '7.0.0',
+    version: '7.2.0',
     app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
     profileId: getActiveProfileId(),

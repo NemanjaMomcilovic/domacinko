@@ -883,7 +883,7 @@ function renderSuggestedChips(containerId, module = 'savetnik') {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation('ai', { title: 'AI' });
+  initNavigation('ai', { title: '10KEY Savetnik' });
 
   const hash = window.location.hash.replace('#', '');
   const initialTab = ['savetnik', 'majstor', 'ucitelj'].includes(hash) ? hash : 'savetnik';

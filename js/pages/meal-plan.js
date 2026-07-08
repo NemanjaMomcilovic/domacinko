@@ -28,6 +28,7 @@ function renderMealDays() {
   bindMealDragDrop();
   bindMealInputs();
   bindMealClear();
+  renderMealPlanEmptyHint();
 }
 
 function bindMealInputs() {
@@ -220,6 +221,24 @@ function renderCookSuggestions() {
   `;
 }
 
+function renderMealPlanEmptyHint() {
+  const plan = getMealPlan();
+  const hasMeals = Object.values(plan).some(m => (m || '').trim());
+  const hint = document.getElementById('meal-empty-hint');
+  if (!hint) return;
+  if (!hasMeals) {
+    hint.classList.remove('hidden');
+    hint.innerHTML = renderEmptyState(
+      '🍽️',
+      'Plan obroka je prazan',
+      'Izaberite jelo ispod ili prevucite predloge na dane u nedelji.'
+    );
+  } else {
+    hint.classList.add('hidden');
+    hint.innerHTML = '';
+  }
+}
+
 function renderMealPresets() {
   const container = document.getElementById('meal-presets');
   if (!container || typeof SERBIAN_MEAL_PRESETS === 'undefined') return;
@@ -239,15 +258,17 @@ function renderMealPresets() {
       }
       setMealForDay(emptyDay.id, btn.dataset.name);
       renderMealDays();
+      renderMealPlanEmptyHint();
       showToast(`${btn.dataset.name} → ${emptyDay.label}`, 'success');
     });
   });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation('', { title: 'Plan obroka', showBack: true, backHref: 'home.html' });
+  initNavigation('meals', { title: 'Obroci' });
   renderMealPresets();
   renderMealDays();
+  renderMealPlanEmptyHint();
   renderCookSuggestions();
 
   document.getElementById('generate-shopping').addEventListener('click', () => {

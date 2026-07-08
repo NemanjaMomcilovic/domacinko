@@ -117,7 +117,7 @@ function registerCoreModules() {
   });
 
   ModuleRegistry.register('ai-advisor', {
-    name: 'AI Savetnik',
+    name: '10KEY Savetnik',
     icon: '💬',
     description: 'Finansijski i domaći saveti',
     path: 'ai.html',

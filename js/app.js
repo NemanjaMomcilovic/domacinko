@@ -193,12 +193,16 @@ function populateCategorySelect(selectId, includeAll = false) {
   ).join('');
 }
 
-function renderEmptyState(icon, title, subtitle) {
+function renderEmptyState(icon, title, subtitle, cta) {
+  const ctaHtml = cta
+    ? `<a href="${cta.href}" class="btn btn--primary btn--sm empty-state__cta">${cta.label}</a>`
+    : '';
   return `
     <div class="empty-state animate-fade-in">
       <div class="empty-state__icon">${icon}</div>
       <p class="empty-state__title">${title}</p>
       ${subtitle ? `<p class="empty-state__subtitle">${subtitle}</p>` : ''}
+      ${ctaHtml}
     </div>
   `;
 }

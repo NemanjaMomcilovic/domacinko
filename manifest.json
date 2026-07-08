@@ -56,9 +56,9 @@
       "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "AI Savetnik",
-      "short_name": "AI",
-      "description": "Pitaj Domaćinka",
+      "name": "10KEY Savetnik",
+      "short_name": "Savetnik",
+      "description": "Besplatan savetnik za domaćinstvo",
       "url": "./pages/ai.html",
       "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
     }

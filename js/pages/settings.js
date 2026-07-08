@@ -264,6 +264,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     showToast(on ? 'Visok kontrast uključen.' : 'Visok kontrast isključen.', 'info');
   });
 
+  const showAllToggle = document.getElementById('show-all-modules-toggle');
+  if (showAllToggle) {
+    if (!isBetaMode()) showAllToggle.classList.add('toggle--on');
+    showAllToggle.addEventListener('click', () => {
+      const showAll = !showAllToggle.classList.contains('toggle--on');
+      showAllToggle.classList.toggle('toggle--on', showAll);
+      saveSettings({ betaMode: !showAll });
+      showToast(
+        showAll ? 'Puni prikaz uključen — osvežavam...' : 'Beta režim uključen — osvežavam...',
+        'info'
+      );
+      setTimeout(() => location.reload(), 600);
+    });
+  }
+
   const notifToggle = document.getElementById('notifications-toggle');
   if (settings.notificationsEnabled) notifToggle.classList.add('toggle--on');
 

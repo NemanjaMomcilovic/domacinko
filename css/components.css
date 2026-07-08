@@ -644,10 +644,15 @@
 }
 
 .empty-state__subtitle {
+  color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
   max-width: 280px;
-  margin: 0 auto;
+  margin: 0 auto var(--space-sm);
+}
+
+.empty-state__cta {
+  margin-top: var(--space-md);
 }
 
 /* Invite code */

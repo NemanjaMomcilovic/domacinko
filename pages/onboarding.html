@@ -13,120 +13,59 @@
 </head>
 <body>
   <div class="app-container onboarding">
-    <div class="onboarding__progress" id="progress-label">Korak 1 od 5</div>
+    <div class="onboarding__progress" id="progress-label">Korak 1 od 3</div>
 
     <main class="onboarding__content" id="onboarding-content">
-      <!-- Korak 1: O tebi (obavezno) -->
+      <!-- Korak 1: Ime + veličina domaćinstva -->
       <div class="onboarding__screen" data-screen="1">
         <div class="onboarding__emoji">👋</div>
         <h1 class="onboarding__title">Hajde da se upoznamo!</h1>
         <p class="onboarding__text">
-          Ovi podaci pomažu Domaćinku da personalizuje savete za vaše domaćinstvo.
-          Sve možete promeniti kasnije u podešavanjima.
+          Kratko podešavanje — za 1 minut ste spremni. Sve možete promeniti kasnije u Više → Moj profil.
         </p>
         <div class="form-group">
           <label class="form-label" for="onb-first-name">Ime *</label>
           <input type="text" class="form-input" id="onb-first-name" placeholder="npr. Ana" required>
         </div>
         <div class="form-group">
-          <label class="form-label" for="onb-last-name">Prezime *</label>
-          <input type="text" class="form-input" id="onb-last-name" placeholder="npr. Jovanovic" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-income">Mesečna primanja (RSD)</label>
-          <input type="number" class="form-input" id="onb-income" min="0" step="1000" placeholder="npr. 120000">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-savings">Koliko imaš uštedeno (RSD)</label>
-          <input type="number" class="form-input" id="onb-savings" min="0" step="1000" placeholder="npr. 50000">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-budget">Mesečni budžet za domaćinstvo (RSD)</label>
-          <input type="number" class="form-input" id="onb-budget" min="0" step="1000" value="80000">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-goal-name">Cilj štednje (naziv)</label>
-          <input type="text" class="form-input" id="onb-goal-name" placeholder="npr. Odmor, Novi auto">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-goal-amount">Cilj štednje (iznos RSD)</label>
-          <input type="number" class="form-input" id="onb-goal-amount" min="0" step="1000" placeholder="npr. 200000">
+          <label class="form-label" for="onb-household-size">Koliko vas živi u domaćinstvu?</label>
+          <select class="form-select" id="onb-household-size">
+            <option value="1">1 osoba</option>
+            <option value="2">2 osobe</option>
+            <option value="3">3 osobe</option>
+            <option value="4" selected>4 osobe</option>
+            <option value="5">5 osoba</option>
+            <option value="6">6+ osoba</option>
+          </select>
         </div>
       </div>
 
-      <!-- Korak 2: Frižider (opciono) -->
+      <!-- Korak 2: Budžet (opciono) -->
       <div class="onboarding__screen hidden" data-screen="2">
-        <div class="onboarding__emoji">🧊</div>
-        <h1 class="onboarding__title">Šta imaš u frižideru?</h1>
+        <div class="onboarding__emoji">💰</div>
+        <h1 class="onboarding__title">Mesečni budžet</h1>
         <p class="onboarding__text">
-          Brzo dodaj namirnice koje već imaš kod kuće — Domaćinko će predlagati obroke
-          na osnovu toga. Možeš preskočiti i dodati kasnije.
+          Koliko planirate da trošite na domaćinstvo mesečno? Ovo pomaže Domaćinku da prati potrošnju.
+          Možete preskočiti i podesiti kasnije.
         </p>
-        <div class="onboarding__add-row">
-          <input type="text" class="form-input" id="onb-pantry-input" placeholder="npr. Mleko, Jaja, Sir...">
-          <button type="button" class="btn btn--secondary" id="onb-pantry-add">+ Dodaj</button>
+        <div class="form-group">
+          <label class="form-label" for="onb-budget">Mesečni budžet (RSD)</label>
+          <input type="number" class="form-input" id="onb-budget" min="0" step="1000" value="80000" placeholder="npr. 80000">
         </div>
-        <ul class="onboarding__item-list" id="onb-pantry-list"></ul>
       </div>
 
-      <!-- Korak 3: Računi (opciono) -->
+      <!-- Korak 3: Gotovo -->
       <div class="onboarding__screen hidden" data-screen="3">
-        <div class="onboarding__emoji">📄</div>
-        <h1 class="onboarding__title">Mesečni računi</h1>
-        <p class="onboarding__text">
-          Dodaj redovne račune da te Domaćinko podseti na vreme. Možeš preskočiti
-          i dodati ih kasnije u podešavanjima.
-        </p>
-        <div class="form-group">
-          <input type="text" class="form-input" id="onb-bill-name" placeholder="Naziv (npr. Struja)">
-        </div>
-        <div style="display:flex;gap:var(--space-sm)">
-          <input type="number" class="form-input" id="onb-bill-amount" placeholder="Iznos" min="1" style="flex:1">
-          <input type="number" class="form-input" id="onb-bill-day" placeholder="Dan" min="1" max="31" value="1" style="width:80px">
-        </div>
-        <button type="button" class="btn btn--secondary btn--block mt-sm" id="onb-bill-add">+ Dodaj račun</button>
-        <ul class="onboarding__item-list" id="onb-bills-list"></ul>
-      </div>
-
-      <!-- Korak 4: Automobil (opciono) -->
-      <div class="onboarding__screen hidden" data-screen="4">
-        <div class="onboarding__emoji">🚗</div>
-        <h1 class="onboarding__title">Imaš automobil?</h1>
-        <p class="onboarding__text">
-          Unesi podatke o vozilu za podsetnike na registraciju i servis.
-          Možeš preskočiti ako nemaš auto.
-        </p>
-        <div class="form-group">
-          <label class="form-label" for="onb-car-brand">Marka</label>
-          <input type="text" class="form-input" id="onb-car-brand" placeholder="npr. Volkswagen">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-car-model">Model</label>
-          <input type="text" class="form-input" id="onb-car-model" placeholder="npr. Golf">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-car-plate">Registracija</label>
-          <input type="text" class="form-input" id="onb-car-plate" placeholder="npr. BG-123-AB">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="onb-car-expiry">Datum isteka registracije</label>
-          <input type="date" class="form-input" id="onb-car-expiry">
-        </div>
-      </div>
-
-      <!-- Korak 5: Gotovo -->
-      <div class="onboarding__screen hidden" data-screen="5">
         <div class="onboarding__emoji">🎉</div>
-        <h1 class="onboarding__title">Sve je spremno!</h1>
+        <h1 class="onboarding__title">Spremni ste!</h1>
         <p class="onboarding__text">
-          Odlično, <span id="onb-welcome-name">prijatelju</span>! Domaćinko je spreman da ti pomogne
-          sa budžetom, kupovinom, održavanjem i svim svakodnevnim poslovima.
+          Odlično, <span id="onb-welcome-name">prijatelju</span>! Počnite sa jednim troškom —
+          Domaćinko će odmah pokazati koliko vam je ostalo od budžeta.
         </p>
         <ul class="onboarding__features">
-          <li>💰 Prati troškove i štednju</li>
-          <li>🛒 Lista za kupovinu i plan obroka</li>
-          <li>🏠 Domaćinstvo, računi i auto</li>
-          <li>🤖 AI saveti prilagodeni tebi</li>
+          <li>💰 Prati troškove i budžet</li>
+          <li>🍽️ Plan obroka i lista za kupovinu</li>
+          <li>💬 10KEY Savetnik za pitanja o domu</li>
         </ul>
       </div>
     </main>
@@ -136,8 +75,6 @@
         <span class="onboarding__dot onboarding__dot--active" data-dot="1"></span>
         <span class="onboarding__dot" data-dot="2"></span>
         <span class="onboarding__dot" data-dot="3"></span>
-        <span class="onboarding__dot" data-dot="4"></span>
-        <span class="onboarding__dot" data-dot="5"></span>
       </div>
       <button type="button" class="btn btn--ghost btn--block onboarding__skip-step hidden" id="skip-step-btn">
         Preskoči za sada

@@ -120,10 +120,38 @@
           </div>
         </div>
 
+        <!-- Alati za dom -->
+        <div class="settings-group">
+          <h3 class="settings-group__title">Više alata</h3>
+          <div class="card card--flat settings-section-card">
+            <p class="settings-section-card__subtitle text-muted">
+              Održavanje, bašta, projekti, inventar i ostali moduli za napredne korisnike.
+            </p>
+            <a href="modules.html" class="btn btn--secondary btn--block">Alati za dom</a>
+          </div>
+        </div>
+
         <!-- Napredno (sklopljeno) -->
         <details class="settings-advanced" id="advanced-settings">
           <summary class="settings-advanced__summary">Napredno podešavanje</summary>
           <div class="settings-advanced__content">
+            <div class="settings-group settings-group--nested">
+              <h4 class="settings-group__subtitle">Beta režim</h4>
+              <div class="card card--flat" style="padding:0;overflow:hidden">
+                <div class="settings-item">
+                  <div>
+                    <span class="settings-item__label">Prikaži sve module</span>
+                    <p class="text-muted" style="font-size:var(--font-size-xs);margin-top:2px">
+                      Isključite pojednostavljeni beta prikaz i otključajte punu navigaciju.
+                    </p>
+                  </div>
+                  <button type="button" class="toggle" id="show-all-modules-toggle" aria-label="Prikaži sve module">
+                    <span class="toggle__knob"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="settings-group settings-group--nested">
               <h4 class="settings-group__subtitle">Mesečni računi</h4>
               <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">Podsetnici za struju, internet i druge redovne troškove.</p>
@@ -164,7 +192,7 @@
             </div>
 
             <div class="settings-group settings-group--nested" id="ai-key-settings">
-              <h4 class="settings-group__subtitle">AI asistent</h4>
+              <h4 class="settings-group__subtitle">10KEY Savetnik</h4>
               <div class="card card--flat" style="padding:var(--space-md)">
                 <div class="form-group" style="margin-bottom:0">
                   <label class="form-label" for="api-key">OpenAI API ključ (opciono)</label>
@@ -254,7 +282,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.1.0</p>
+          <p class="text-muted settings-about__version">Verzija 7.2.0-beta</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>

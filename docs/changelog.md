@@ -1,5 +1,18 @@
 # Domaćinko — Changelog
 
+## [7.2.0-beta] — 2026-07-08
+
+### Beta režim — pojednostavljen UI
+- **`settings.betaMode: true`** po podrazumevanju — novi korisnici vide fokusiranu aplikaciju
+- **Donja navigacija (4 taba)** — Početna · Troškovi · Obroci · Više (pun prikaz: + 10KEY Savetnik · Kupovina)
+- **Početna** — max 4 brze akcije (trošak, obroci, Savetnik, kupovina); sakriveni zadaci, održavanje, garancije u beta režimu
+- **Uvod (3 koraka)** — ime + veličina domaćinstva → budžet (preskoči) → CTA „Dodaj prvi trošak"
+- **Više → Alati za dom** — link ka `modules.html` za napredne module (bašta, dnevnik, projekti…)
+- **Napredno → Prikaži sve module** — isključuje beta režim za power korisnike
+- **10KEY Savetnik** — brending umesto „AI" u navigaciji i modulima
+- **Prazna stanja** — CTA dugmad na troškovima i planu obroka
+- Service Worker v7.2.0-beta
+
 ## [7.1.0] — 2026-07-08
 
 ### AI Savetnik — napredna verzija
