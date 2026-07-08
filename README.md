@@ -1,9 +1,9 @@
-# Domaćinko v7.0
+# Domaćinko v7.0.3
 
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-7.0.0-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-7.0.3-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
 [![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84)](docs/android-build.md)
 
@@ -41,8 +41,10 @@ Aplikacija je podešena za deploy na GitHub Pages — sve putanje koriste relati
 
 Za sinhronizaciju naloga i **porodičnog deljenja**, pogledajte [docs/supabase-setup.md](docs/supabase-setup.md).
 
+**Beta launch:** korak-po-korak vodič → [docs/SETUP-KORAK-PO-KORAK.md](docs/SETUP-KORAK-PO-KORAK.md) (SQL: [supabase-ALL-IN-ONE.sql](docs/supabase-ALL-IN-ONE.sql))
+
 1. Kreirajte Supabase projekat
-2. Pokrenite SQL šemu (osnovnu + §3b porodična sinhronizacija)
+2. Pokrenite SQL šemu (`docs/supabase-ALL-IN-ONE.sql` — sve u jednom)
 3. Unesite ključeve u **Podešavanja → Poveži nalog**
 4. **Podešavanja → Pozovi porodicu** — kreirajte domaćinstvo i podelite 6-cifreni kod
 
@@ -62,7 +64,7 @@ Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v7.0.0)
+- Offline keširanje (Service Worker v7.0.3)
 - Prečice: Dodaj trošak, Lista za kupovinu, AI Savetnik
 - Push podsetnici za račune, budžet i održavanje
 
@@ -86,6 +88,7 @@ domacinko/
 
 ## 📖 Dokumentacija
 
+- **[Beta launch — korak po korak](docs/SETUP-KORAK-PO-KORAK.md)** ← počni ovde za friend beta
 - [Vizija proizvoda](docs/vision.md)
 - [Changelog](docs/changelog.md)
 - [Brzi vodič za korisnike](docs/user-quickstart.md)

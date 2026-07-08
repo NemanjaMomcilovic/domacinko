@@ -11,5 +11,6 @@
  */
 window.DOMACINKO_CONFIG = {
   SUPABASE_URL: 'https://rymphibbelkzdxchhfsm.supabase.co',
-  SUPABASE_ANON_KEY: 'sb_publishable_S1XpiibKFcadugcShiWgMQ_M3GclzDQ'
+  SUPABASE_ANON_KEY: 'sb_publishable_S1XpiibKFcadugcShiWgMQ_M3GclzDQ',
+  CONTACT_EMAIL: 'feedback@10key.app'
 };

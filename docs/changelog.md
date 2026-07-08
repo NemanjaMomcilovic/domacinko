@@ -1,5 +1,20 @@
 # Domaćinko — Changelog
 
+## [7.0.3] — 2026-07-08
+
+### Dodato
+- **Beta launch paket** — `docs/SETUP-KORAK-PO-KORAK.md` vodič (TI RADIŠ / VEĆ GOTOWO)
+- **`docs/supabase-ALL-IN-ONE.sql`** — jedan SQL za profiles, user_data, households i feedback
+- **Politika privatnosti** — `pages/privacy.html` (srpski, za Meta/Facebook)
+- **Konfigurabilan feedback email** — `settings.contactEmail` ili `config.js CONTACT_EMAIL`
+- **Landing footer** — linkovi Privatnost, Feedback, GitHub
+
+### Poboljšano
+- **Beta baner na početnoj** — jasniji CTA „Ostavi feedback →", dugme „Ne sada"
+- **Podešavanja** — polje za email feedbacka, link na politiku privatnosti
+- **README** — link na SETUP-KORAK-PO-KORAK.md
+- Service Worker v7.0.3 — keš za privacy stranicu
+
 ## [7.0.2] — 2026-07-08
 
 ### Dodato

@@ -15,5 +15,6 @@
  */
 window.DOMACINKO_CONFIG = {
   SUPABASE_URL: 'https://your-project-id.supabase.co',
-  SUPABASE_ANON_KEY: 'your-anon-key-here'
+  SUPABASE_ANON_KEY: 'your-anon-key-here',
+  CONTACT_EMAIL: 'feedback@10key.app'
 };

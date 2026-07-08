@@ -3,7 +3,19 @@
  */
 
 const FEEDBACK_STORAGE_KEY = 'domacinko_feedback';
-const FEEDBACK_EMAIL = 'feedback@10key.app';
+const DEFAULT_FEEDBACK_EMAIL = 'feedback@10key.app';
+
+function getFeedbackContactEmail() {
+  const settings = typeof getSettings === 'function' ? getSettings() : {};
+  const fromSettings = (settings.contactEmail || '').trim();
+  if (fromSettings) return fromSettings;
+
+  const cfg = typeof getDomacinkoConfig === 'function' ? getDomacinkoConfig() : {};
+  const fromConfig = (cfg.CONTACT_EMAIL || '').trim();
+  if (fromConfig) return fromConfig;
+
+  return DEFAULT_FEEDBACK_EMAIL;
+}
 
 const RATING_LABELS = {
   1: 'Može bolje',
@@ -97,7 +109,7 @@ function buildFeedbackEmailBody(data) {
 function buildMailtoLink(data) {
   const subject = encodeURIComponent(`Domaćinko beta feedback — ${data.rating}/5 zvezda`);
   const body = encodeURIComponent(buildFeedbackEmailBody(data));
-  return `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+  return `mailto:${getFeedbackContactEmail()}?subject=${subject}&body=${body}`;
 }
 
 async function submitFeedbackToSupabase(data) {

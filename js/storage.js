@@ -193,7 +193,8 @@ const DEFAULT_DATA = {
     highContrast: false,
     apiKey: '',
     apiUrl: 'https://api.openai.com/v1/chat/completions',
-    notificationsEnabled: false
+    notificationsEnabled: false,
+    contactEmail: ''
   },
   expenses: [],
   recurringExpenses: [],

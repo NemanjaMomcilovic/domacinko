@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="description" content="Politika privatnosti — Domaćinko aplikacija, 10KEY platforma.">
+  <title>Domaćinko — Politika privatnosti</title>
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header">
+      <a href="../landing.html" class="page-header__back" aria-label="Nazad">←</a>
+      <h1 class="page-header__title">Politika privatnosti</h1>
+    </header>
+
+    <main class="main-content">
+      <div class="card card--flat mb-md" style="padding:var(--space-lg)">
+        <p class="text-muted" style="font-size:var(--font-size-xs);margin-bottom:var(--space-md)">
+          Poslednje ažuriranje: jul 2026 · Domaćinko v7.0.3
+        </p>
+
+        <h2 class="card__title" style="font-size:var(--font-size-lg)">1. Ko smo mi</h2>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary)">
+          <strong>Domaćinko</strong> je aplikacija za upravljanje domaćinstvom, deo platforme
+          <strong>10KEY</strong>. Ovu politiku vodi tim iza Domaćinka / 10KEY projekta.
+        </p>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">2. Koje podatke prikupljamo</h2>
+        <ul style="font-size:var(--font-size-sm);line-height:1.8;color:var(--color-text-secondary);padding-left:var(--space-lg)">
+          <li><strong>Email i nalog</strong> — ako se registrujete (Supabase autentifikacija)</li>
+          <li><strong>Profil</strong> — ime, finansijski ciljevi, valuta (opciono)</li>
+          <li><strong>Podaci domaćinstva</strong> — troškovi, kupovina, članovi porodice, održavanje i slično</li>
+          <li><strong>Beta feedback</strong> — ocena, komentari, opcioni kontakt email</li>
+          <li><strong>localStorage</strong> — podaci na vašem uređaju dok ne prijavite nalog</li>
+          <li><strong>OpenAI API ključ</strong> — samo ako ga sami unesete u Podešavanjima (čuva se lokalno na uređaju)</li>
+        </ul>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">3. Gde se podaci čuvaju</h2>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary)">
+          Ako koristite nalog, podaci se sinhronizuju preko <strong>Supabase</strong> (hosting u EU regionu,
+          npr. Frankfurt). Supabase primenjuje Row Level Security — svaki korisnik vidi samo svoje podatke
+          (ili deljeno domaćinstvo ako ste se pridružili porodici).
+        </p>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary);margin-top:var(--space-sm)">
+          U <strong>gost režimu</strong> podaci ostaju isključivo u pregledaču na vašem uređaju (localStorage).
+        </p>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">4. Kako koristimo podatke</h2>
+        <ul style="font-size:var(--font-size-sm);line-height:1.8;color:var(--color-text-secondary);padding-left:var(--space-lg)">
+          <li>Pružanje funkcija aplikacije (budžet, sinhronizacija, AI saveti)</li>
+          <li>Poboljšanje proizvoda na osnovu beta feedbacka</li>
+          <li>Tehnička podrška ako nas kontaktirate</li>
+        </ul>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary);margin-top:var(--space-sm)">
+          <strong>Ne prodajemo</strong> vaše podatke trećim stranama.
+        </p>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">5. Treće strane</h2>
+        <ul style="font-size:var(--font-size-sm);line-height:1.8;color:var(--color-text-secondary);padding-left:var(--space-lg)">
+          <li><strong>Supabase</strong> — autentifikacija i baza podataka</li>
+          <li><strong>Google / Facebook</strong> — samo ako izaberete prijavu preko društvenih mreža</li>
+          <li><strong>OpenAI</strong> — samo ako unesete svoj API ključ za napredni AI</li>
+          <li><strong>GitHub Pages</strong> — hosting statičkih fajlova aplikacije</li>
+        </ul>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">6. Vaša prava</h2>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary)">
+          Možete izvesti podatke (Podešavanja → Izvezi JSON), obrisati nalog (Profil → Obriši nalog)
+          ili resetovati lokalne podatke. Za zahteve u vezi privatnosti pišite na kontakt ispod.
+        </p>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">7. Bezbednost</h2>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary)">
+          Koristimo HTTPS, RLS u bazi i javni (anon) Supabase ključ u frontendu — nikad service_role tajnu.
+          Vi ste odgovorni za čuvanje lozinke i uređaja na kojem koristite aplikaciju.
+        </p>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">8. Beta period</h2>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary)">
+          Tokom beta testiranja aplikacija može menjati funkcije. Feedback koji pošaljete može biti
+          pregledan u Supabase Table Editoru radi poboljšanja proizvoda.
+        </p>
+
+        <h2 class="card__title mt-md" style="font-size:var(--font-size-lg)">9. Kontakt</h2>
+        <p style="font-size:var(--font-size-sm);line-height:1.7;color:var(--color-text-secondary)">
+          Pitanja o privatnosti i podacima:
+        </p>
+        <p style="font-size:var(--font-size-sm);margin-top:var(--space-sm)">
+          <a href="mailto:feedback@10key.app">feedback@10key.app</a>
+          · Nemanja (10KEY)
+        </p>
+      </div>
+
+      <a href="../landing.html" class="btn btn--secondary btn--block">Nazad na početnu</a>
+      <a href="settings.html" class="btn btn--ghost btn--block mt-sm">Podešavanja</a>
+    </main>
+  </div>
+</body>
+</html>

@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('savings-goal').value = settings.savingsGoal || 10000;
   document.getElementById('savings-goal-name').value = settings.savingsGoalName || '';
   document.getElementById('api-key').value = settings.apiKey || '';
+  document.getElementById('contact-email').value = settings.contactEmail || '';
 
   renderAccountSection();
   renderSupabaseConfigSection();
@@ -313,7 +314,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       monthlyBudget: parseFloat(document.getElementById('monthly-budget').value) || 80000,
       savingsGoal: parseFloat(document.getElementById('savings-goal').value) || 10000,
       savingsGoalName: document.getElementById('savings-goal-name').value.trim(),
-      apiKey: document.getElementById('api-key').value.trim()
+      apiKey: document.getElementById('api-key').value.trim(),
+      contactEmail: document.getElementById('contact-email').value.trim()
     });
     saveCategoryBudgetsFromForm();
     showToast('Podešavanja sačuvana!');
