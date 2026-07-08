@@ -93,19 +93,24 @@ function saveCategoryBudgetsFromForm() {
   saveCategoryBudgets(budgets);
 }
 
+function isConfigJsSupabase() {
+  const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
+  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
+  return source === 'config.js' && configured;
+}
+
 function renderSupabaseConfigSection() {
-  const devSection = document.getElementById('supabase-dev-section');
+  const group = document.getElementById('supabase-config-group');
   const statusEl = document.getElementById('supabase-config-status');
   const urlEl = document.getElementById('supabase-url');
   const keyEl = document.getElementById('supabase-anon-key');
-  const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
 
-  if (configured) {
-    devSection?.classList.add('hidden');
+  if (isConfigJsSupabase()) {
+    group?.classList.add('hidden');
     return;
   }
 
-  devSection?.classList.remove('hidden');
+  group?.classList.remove('hidden');
   if (!statusEl || !urlEl || !keyEl) return;
 
   const source = typeof getSupabaseConfigSource === 'function' ? getSupabaseConfigSource() : 'none';
@@ -137,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (typeof initHouseholdSync === 'function' && isLoggedIn?.()) {
     await initHouseholdSync().catch(() => {});
   }
-  initNavigation('settings', { title: 'Podešavanja' });
+  initNavigation('settings', { title: 'Više' });
 
   const settings = getSettings();
   const profile = getCurrentProfile?.();
@@ -152,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('contact-email').value = settings.contactEmail || '';
 
   renderAccountSection();
+  renderHouseholdSection();
   renderSupabaseConfigSection();
   renderLocalProfiles();
 
@@ -358,11 +364,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
+function renderHouseholdSection() {
+  const subtitle = document.getElementById('household-subtitle');
+  if (!subtitle) return;
+
+  if (isInHousehold?.()) {
+    const household = getCurrentHousehold?.();
+    const name = household?.name || 'Porodično domaćinstvo';
+    subtitle.textContent = `${name} — delite troškove, kupovinu i podatke sa članovima.`;
+    return;
+  }
+
+  if (isLoggedIn?.() && isConfigJsSupabase()) {
+    subtitle.textContent = 'Kreirajte domaćinstvo ili se pridružite pozivnim kodom — podaci se sinhronizuju.';
+    return;
+  }
+
+  subtitle.textContent = 'Podelite troškove i kupovinu sa porodicom — pozivni kodovi i sinhronizacija.';
+}
+
 function renderAccountSection() {
   const nameEl = document.getElementById('account-name');
   const emailEl = document.getElementById('account-email');
   const modeEl = document.getElementById('account-mode');
-  const syncEl = document.getElementById('account-sync-status');
+  const syncBadge = document.getElementById('account-sync-badge');
   const avatarEl = document.getElementById('account-avatar');
   const logoutBtn = document.getElementById('logout-btn');
   const loginLink = document.getElementById('login-link');
@@ -375,11 +400,13 @@ function renderAccountSection() {
     avatarEl.classList.toggle('user-avatar--initial', avatarContent.length === 1);
   }
 
+  const showSyncBadge = isConfigJsSupabase() && isLoggedIn?.() && !isGuestMode?.();
+  syncBadge?.classList.toggle('hidden', !showSyncBadge);
+
   if (isGuestMode?.()) {
     nameEl.textContent = settings.userName || 'Gost';
     emailEl.textContent = '';
     modeEl.textContent = 'Gost režim — podaci samo na ovom uređaju';
-    syncEl?.classList.add('hidden');
     logoutBtn.classList.add('hidden');
     loginLink.classList.remove('hidden');
     return;
@@ -390,16 +417,7 @@ function renderAccountSection() {
     const profile = getCurrentProfile();
     nameEl.textContent = getAuthDisplayName();
     emailEl.textContent = user?.email || profile?.email || '';
-    if (configured) {
-      modeEl.textContent = isInHousehold?.() ? 'Porodično domaćinstvo' : '';
-      if (syncEl) {
-        syncEl.textContent = '☁️ Nalog sinhronizovan';
-        syncEl.classList.remove('hidden');
-      }
-    } else {
-      modeEl.textContent = '';
-      syncEl?.classList.add('hidden');
-    }
+    modeEl.textContent = isInHousehold?.() ? 'Porodično domaćinstvo' : '';
     logoutBtn.classList.remove('hidden');
     loginLink.classList.add('hidden');
 
@@ -417,7 +435,6 @@ function renderAccountSection() {
   modeEl.textContent = configured
     ? 'Prijavite se za sinhronizaciju između uređaja'
     : 'Prijavite se ili koristite gost režim';
-  syncEl?.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   loginLink.classList.remove('hidden');
 }

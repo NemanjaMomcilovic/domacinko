@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Domaćinko">
-  <title>Domaćinko — Podešavanja</title>
+  <title>Domaćinko — Više</title>
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
@@ -20,9 +20,9 @@
 
     <main class="main-content main-content--settings">
       <form id="settings-form">
-        <!-- Section 1: Nalog -->
+        <!-- 1. Ko sam -->
         <div class="settings-group">
-          <h3 class="settings-group__title">Nalog</h3>
+          <h3 class="settings-group__title">Ko sam</h3>
           <div class="card card--flat settings-account-card" id="account-card">
             <div class="settings-account-card__header">
               <div class="user-avatar user-avatar--initial" id="account-avatar" aria-hidden="true">🏡</div>
@@ -30,7 +30,7 @@
                 <p class="settings-account__name" id="account-name">—</p>
                 <p class="settings-account__email text-muted" id="account-email"></p>
                 <p class="settings-account__mode text-muted" id="account-mode"></p>
-                <p class="settings-account__sync hidden" id="account-sync-status"></p>
+                <p class="settings-sync-badge hidden" id="account-sync-badge" role="status">☁️ Sinhronizovano</p>
               </div>
             </div>
             <button type="button" class="btn btn--secondary btn--block mt-sm hidden" id="logout-btn">Odjavi se</button>
@@ -38,33 +38,39 @@
           </div>
         </div>
 
-        <!-- Section 2: Brze akcije -->
+        <!-- 2. Moj dom -->
         <div class="settings-group">
-          <h3 class="settings-group__title">Brze akcije</h3>
-          <div class="quick-actions">
-            <a href="household-share.html" class="quick-action">
-              <span class="quick-action__icon">👨‍👩‍👧</span>
-              Porodica
-            </a>
-            <a href="feedback.html" class="quick-action">
-              <span class="quick-action__icon">💬</span>
-              Beta feedback
-            </a>
-            <a href="profile.html" class="quick-action">
-              <span class="quick-action__icon">✏️</span>
-              Moj profil
-            </a>
-            <a href="modules.html" class="quick-action">
-              <span class="quick-action__icon">🏠</span>
-              Svi moduli
-            </a>
+          <h3 class="settings-group__title">Moj dom</h3>
+          <div class="card card--flat settings-section-card">
+            <p class="settings-section-card__subtitle text-muted" id="household-subtitle">
+              Podelite troškove i kupovinu sa porodicom — pozivni kodovi i sinhronizacija.
+            </p>
+            <a href="household-share.html" class="btn btn--primary btn--block">Upravljaj domaćinstvom</a>
           </div>
         </div>
 
-        <!-- Section 3: Podešavanja -->
+        <!-- 3. Moj profil -->
         <div class="settings-group">
-          <h3 class="settings-group__title">Podešavanja</h3>
+          <h3 class="settings-group__title">Moj profil</h3>
+          <div class="card card--flat settings-section-card">
+            <p class="settings-section-card__subtitle text-muted">
+              Ciljevi, budžet, ishrana i veličina domaćinstva iz uvoda.
+            </p>
+            <a href="profile.html" class="btn btn--primary btn--block">Uredi profil</a>
+          </div>
+        </div>
+
+        <!-- 4. Kako app radi -->
+        <div class="settings-group">
+          <h3 class="settings-group__title">Kako app radi</h3>
+          <p class="settings-group__desc text-muted">Obaveštenja, valuta i izgled aplikacije.</p>
           <div class="card card--flat" style="padding:0;overflow:hidden">
+            <div class="settings-item">
+              <span class="settings-item__label">Obaveštenja</span>
+              <button type="button" class="toggle" id="notifications-toggle" aria-label="Obaveštenja">
+                <span class="toggle__knob"></span>
+              </button>
+            </div>
             <div class="settings-item">
               <label class="settings-item__label" for="currency">Valuta</label>
               <select class="form-select" id="currency" style="width:100px;border:none;padding:0;text-align:right">
@@ -72,19 +78,6 @@
                 <option value="EUR">EUR</option>
                 <option value="USD">USD</option>
               </select>
-            </div>
-            <div class="settings-item settings-item--stacked">
-              <div class="settings-item__row">
-                <label class="settings-item__label" for="monthly-budget">Mesečni budžet</label>
-                <input type="number" class="form-input" id="monthly-budget" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
-              </div>
-              <a href="profile.html" class="settings-item__link">Više finansija →</a>
-            </div>
-            <div class="settings-item">
-              <span class="settings-item__label">Obaveštenja</span>
-              <button type="button" class="toggle" id="notifications-toggle" aria-label="Obaveštenja">
-                <span class="toggle__knob"></span>
-              </button>
             </div>
             <details class="settings-appearance">
               <summary class="settings-item settings-item--summary">
@@ -107,14 +100,44 @@
               </div>
             </details>
           </div>
+          <button type="submit" class="btn btn--primary btn--block mt-md">Sačuvaj podešavanja</button>
         </div>
 
-        <button type="submit" class="btn btn--primary btn--block mb-md">Sačuvaj podešavanja</button>
+        <!-- 5. Pomoć -->
+        <div class="settings-group">
+          <h3 class="settings-group__title">Pomoć</h3>
+          <div class="card card--flat settings-section-card">
+            <p class="settings-section-card__subtitle text-muted">
+              Testirate beta verziju? Javite nam utiske — svaki komentar pomaže.
+            </p>
+            <a href="feedback.html" class="btn btn--primary btn--block">Ostavi beta feedback</a>
+          </div>
+        </div>
 
-        <!-- Section 4: Napredno (collapsed) -->
+        <!-- Napredno (sklopljeno, edge case) -->
         <details class="settings-advanced" id="advanced-settings">
           <summary class="settings-advanced__summary">Napredno podešavanje</summary>
           <div class="settings-advanced__content">
+            <div class="settings-group settings-group--nested" id="supabase-config-group">
+              <h4 class="settings-group__subtitle">Sinhronizacija (ručno)</h4>
+              <div class="card card--flat" style="padding:var(--space-md)">
+                <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status">Učitavanje...</p>
+                <div class="form-group">
+                  <label class="form-label" for="supabase-url">Supabase URL</label>
+                  <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="supabase-anon-key">Anon ključ</label>
+                  <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
+                </div>
+                <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
+                  <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj</button>
+                  <button type="button" class="btn btn--secondary" id="test-supabase-config">Test</button>
+                  <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
+                </div>
+              </div>
+            </div>
+
             <div class="settings-group settings-group--nested">
               <h4 class="settings-group__subtitle">AI asistent</h4>
               <div class="card card--flat" style="padding:var(--space-md)">
@@ -123,7 +146,6 @@
                   <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off" aria-describedby="api-key-hint">
                   <p class="text-muted mt-xs" id="api-key-hint" style="font-size:var(--font-size-xs)">
                     Bez ključa Domaćinko koristi pametne lokalne odgovore.
-                    <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Nabavite ključ →</a>
                   </p>
                 </div>
               </div>
@@ -132,7 +154,7 @@
             <div class="settings-group settings-group--nested" id="local-profiles-group">
               <h4 class="settings-group__subtitle">Članovi aplikacije</h4>
               <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)">
-                Lokalni profili na istom uređaju. Za deljenje između uređaja koristite porodičnu sinhronizaciju.
+                Lokalni profili na istom uređaju.
               </p>
               <div class="card card--flat" style="padding:var(--space-md)" id="local-profiles-card">
                 <div id="local-profiles-list"></div>
@@ -144,8 +166,12 @@
             </div>
 
             <div class="settings-group settings-group--nested">
-              <h4 class="settings-group__subtitle">Dodatne finansije</h4>
+              <h4 class="settings-group__subtitle">Finansije</h4>
               <div class="card card--flat" style="padding:0;overflow:hidden">
+                <div class="settings-item">
+                  <label class="settings-item__label" for="monthly-budget">Mesečni budžet</label>
+                  <input type="number" class="form-input" id="monthly-budget" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
+                </div>
                 <div class="settings-item">
                   <label class="settings-item__label" for="monthly-income">Mesečna primanja</label>
                   <input type="number" class="form-input" id="monthly-income" min="0" step="1000" style="width:120px;text-align:right;border:none;padding:0">
@@ -239,29 +265,9 @@
         </details>
       </form>
 
-      <details class="settings-group settings-dev hidden" id="supabase-dev-section">
-        <summary class="settings-group__title settings-dev__summary">Za developere</summary>
-        <div class="card card--flat" style="padding:var(--space-md);margin-top:var(--space-sm)">
-          <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status"></p>
-          <div class="form-group">
-            <label class="form-label" for="supabase-url">URL</label>
-            <input type="url" class="form-input" id="supabase-url" placeholder="https://vas-projekat.supabase.co" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="supabase-anon-key">Anon ključ</label>
-            <input type="password" class="form-input" id="supabase-anon-key" placeholder="eyJ..." autocomplete="off">
-          </div>
-          <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
-            <button type="button" class="btn btn--primary" id="save-supabase-config" style="flex:1">Sačuvaj</button>
-            <button type="button" class="btn btn--secondary" id="test-supabase-config">Test</button>
-            <button type="button" class="btn btn--ghost" id="clear-supabase-config">Obriši</button>
-          </div>
-        </div>
-      </details>
-
-      <!-- Section 5: O aplikaciji -->
+      <!-- 6. O app -->
       <div class="settings-group settings-group--footer">
-        <h3 class="settings-group__title">O aplikaciji</h3>
+        <h3 class="settings-group__title">O app</h3>
         <div class="card card--flat settings-about">
           <img src="../assets/logos/domacinko.png" class="settings-about__logo" alt="Domaćinko" width="48" height="48" loading="lazy" decoding="async">
           <p class="settings-about__text">

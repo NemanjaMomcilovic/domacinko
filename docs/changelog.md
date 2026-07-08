@@ -3,10 +3,11 @@
 ## [7.0.5] — 2026-07-08
 
 ### Poboljšano
-- **Supabase potpuno sakriven za korisnike** — nema „Poveži nalog", supabase.com linkova ni uputstava u glavnom prikazu
-- **Nalog kartica** — zelena linija „☁️ Nalog sinhronizovan" kada je prijavljen (config.js automatski)
-- **Za developere** — minimalna ručna konfiguracija samo u sklopljenom `<details>` na dnu (edge case)
-- **Auth** — „Podešavanje ključeva" samo kada sinhronizacija nije dostupna
+- **Više tab (settings)** — 6 jasnih sekcija: Ko sam, Moj dom, Moj profil, Kako app radi, Pomoć, O app
+- **Uklonjeno iz Više** — brze akcije, modul kartice, Supabase dev UI (kada `config.js` radi), tehnički linkovi
+- **Ko sam** — ime, email, odjava, zeleni bedž „☁️ Sinhronizovano" kada je nalog aktivan
+- **Moj dom** — link ka porodičnoj sinhronizaciji i pozivnim kodovima
+- **Napredno** — finansije, export/import, AI ključ i lokalni profili samo u sklopljenom `<details>`
 - Service Worker v7.0.5
 
 ## [7.0.4] — 2026-07-08
