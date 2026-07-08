@@ -19,11 +19,11 @@
 
     <main class="main-content">
       <div class="app-logo">
-        <img src="../assets/logos/domacinko.png" class="app-logo__img" alt="Domaćinko" loading="lazy">
+        <img src="../assets/logos/domacinko.png" class="app-logo__img" alt="Domaćinko" width="120" height="120" loading="lazy" decoding="async">
         <div class="app-logo__tagline">Vaš AI pomoćnik za domaćinstvo</div>
         <div class="app-logo__brand">
           Powered by
-          <img src="../assets/logos/10key.png" class="app-logo__10key" alt="10KEY">
+          <img src="../assets/logos/10key.png" class="app-logo__10key" alt="10KEY" width="64" height="20" loading="lazy" decoding="async">
         </div>
       </div>
 
@@ -42,6 +42,11 @@
         <div class="settings-group" id="supabase-config-group">
           <h3 class="settings-group__title">Poveži nalog (Supabase)</h3>
           <div class="card card--flat" style="padding:var(--space-md)">
+            <ol class="supabase-steps text-muted mb-md" style="font-size:var(--font-size-xs);padding-left:var(--space-lg);line-height:1.7">
+              <li>Napravite besplatan projekat na <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a></li>
+              <li>Kopirajte <strong>Project URL</strong> i <strong>anon public</strong> ključ ispod</li>
+              <li>Sačuvajte i prijavite se — podaci se sinhronizuju između uređaja</li>
+            </ol>
             <p class="text-muted mb-sm" style="font-size:var(--font-size-xs)" id="supabase-config-status">
               Učitavanje...
             </p>
@@ -63,6 +68,23 @@
             <a href="https://github.com/NemanjaMomcilovic/domacinko/blob/main/docs/supabase-setup.md" target="_blank" rel="noopener" class="btn btn--secondary btn--block mt-sm">
               📖 Uputstvo za podešavanje Supabase
             </a>
+            <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">
+              Facebook prijava: podesite u Supabase prema <a href="../docs/supabase-setup.md" target="_blank" rel="noopener">docs/supabase-setup.md</a>
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-group" id="local-profiles-group">
+          <h3 class="settings-group__title">Članovi aplikacije</h3>
+          <p class="text-muted mb-sm" style="font-size:var(--font-size-xs);padding-left:var(--space-sm)">
+            Lokalni profili na istom uređaju — svaki ima svoje podatke. Priprema za buduću porodičnu sinhronizaciju.
+          </p>
+          <div class="card card--flat" style="padding:var(--space-md)" id="local-profiles-card">
+            <div id="local-profiles-list"></div>
+            <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm)">
+              <input type="text" class="form-input" id="new-profile-name" placeholder="npr. Roditelj 1, Mama" style="flex:1" aria-label="Ime novog profila">
+              <button type="button" class="btn btn--secondary" id="add-local-profile">Dodaj</button>
+            </div>
           </div>
         </div>
 
@@ -169,10 +191,14 @@
         <div class="settings-group">
           <h3 class="settings-group__title">AI asistent</h3>
           <div class="card card--flat" style="padding:0;overflow:hidden">
-            <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:var(--space-sm)">
+            <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:var(--space-sm);padding:var(--space-md)">
               <label class="settings-item__label" for="api-key">OpenAI API ključ (opciono)</label>
-              <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off">
-              <p class="text-muted" style="font-size:var(--font-size-xs)">Čuva se samo na vašem uređaju. Bez ključa, Domaćinko koristi pametne lokalne odgovore.</p>
+              <input type="password" class="form-input" id="api-key" placeholder="sk-..." autocomplete="off" aria-describedby="api-key-hint">
+              <p class="text-muted" id="api-key-hint" style="font-size:var(--font-size-xs)">
+                <strong>Kad unesete ključ, AI postaje pametniji</strong> — bolji odgovori, analiza slika i Majstor.
+                Bez ključa Domaćinko koristi pametne lokalne odgovore na srpskom.
+                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">Nabavite ključ na platform.openai.com →</a>
+              </p>
             </div>
           </div>
         </div>
@@ -374,7 +400,7 @@
             AI-pokretan pomoćnik za upravljanje domaćinstvom. Praćenje troškova, lista za kupovinu,
             finansijsko zdravlje i saveti prilagođeni vašem domu.
           </p>
-          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 6.3.0</p>
+          <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Verzija 6.5.0</p>
         </div>
       </div>
     </main>
@@ -391,6 +417,7 @@
   <script src="../js/app.js"></script>
   <script src="../js/notifications.js"></script>
   <script src="../js/navigation.js"></script>
+  <script src="../js/help-tooltips.js"></script>
   <script src="../js/pages/settings.js"></script>
 </body>
 </html>

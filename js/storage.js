@@ -3,6 +3,79 @@
  */
 
 const STORAGE_KEY = 'domacinko_data';
+const PROFILES_META_KEY = 'domacinko_profiles_meta';
+const ACTIVE_PROFILE_KEY = 'domacinko_active_profile';
+
+function getActiveProfileId() {
+  return localStorage.getItem(ACTIVE_PROFILE_KEY) || 'default';
+}
+
+function getStorageKey() {
+  const id = getActiveProfileId();
+  return id === 'default' ? STORAGE_KEY : `${STORAGE_KEY}_${id}`;
+}
+
+function getProfilesMeta() {
+  try {
+    const raw = localStorage.getItem(PROFILES_META_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (!parsed.length) {
+      return [{ id: 'default', name: 'Podrazumevani', createdAt: new Date().toISOString() }];
+    }
+    return parsed;
+  } catch {
+    return [{ id: 'default', name: 'Podrazumevani', createdAt: new Date().toISOString() }];
+  }
+}
+
+function saveProfilesMeta(profiles) {
+  localStorage.setItem(PROFILES_META_KEY, JSON.stringify(profiles));
+}
+
+function getActiveProfileName() {
+  const meta = getProfilesMeta();
+  const active = getActiveProfileId();
+  return meta.find(p => p.id === active)?.name || 'Podrazumevani';
+}
+
+function listLocalProfiles() {
+  return getProfilesMeta();
+}
+
+function addLocalProfile(name) {
+  const trimmed = (name || '').trim();
+  if (!trimmed) return null;
+  const profiles = getProfilesMeta();
+  if (profiles.some(p => p.name.toLowerCase() === trimmed.toLowerCase())) return null;
+
+  const id = generateId();
+  profiles.push({ id, name: trimmed, createdAt: new Date().toISOString() });
+  saveProfilesMeta(profiles);
+  localStorage.setItem(`${STORAGE_KEY}_${id}`, JSON.stringify(structuredClone(DEFAULT_DATA)));
+  return { id, name: trimmed };
+}
+
+function switchLocalProfile(profileId) {
+  const profiles = getProfilesMeta();
+  if (!profiles.some(p => p.id === profileId)) return false;
+
+  localStorage.setItem(ACTIVE_PROFILE_KEY, profileId);
+  return true;
+}
+
+function deleteLocalProfile(profileId) {
+  if (profileId === 'default') return false;
+  const profiles = getProfilesMeta().filter(p => p.id !== profileId);
+  if (profiles.length === getProfilesMeta().length) return false;
+
+  localStorage.removeItem(`${STORAGE_KEY}_${profileId}`);
+  saveProfilesMeta(profiles);
+
+  if (getActiveProfileId() === profileId) {
+    localStorage.setItem(ACTIVE_PROFILE_KEY, 'default');
+  }
+  return true;
+}
 
 const CATEGORIES = [
   { id: 'food', label: 'Hrana', icon: '🍎' },
@@ -161,6 +234,7 @@ const DEFAULT_DATA = {
   },
   homeMagazine: [],
   knowledgeBase: [],
+  knowledgeFavorites: [],
   tools: [],
   diary: [],
   seasonalProgress: {},
@@ -181,7 +255,7 @@ function generateId() {
 
 function getData() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(getStorageKey());
     if (!raw) {
       saveData(DEFAULT_DATA);
       return structuredClone(DEFAULT_DATA);
@@ -201,6 +275,7 @@ function getData() {
     if (!merged.houseProfile) merged.houseProfile = { ...DEFAULT_DATA.houseProfile };
     if (!merged.homeMagazine) merged.homeMagazine = [];
     if (!merged.knowledgeBase) merged.knowledgeBase = [];
+    if (!merged.knowledgeFavorites) merged.knowledgeFavorites = [];
     if (!merged.tools) merged.tools = [];
     if (!merged.diary) merged.diary = [];
     if (!merged.seasonalProgress) merged.seasonalProgress = {};
@@ -215,7 +290,7 @@ function getData() {
 }
 
 function saveData(data, options = {}) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(getStorageKey(), JSON.stringify(data));
   if (!options.skipSync && !_skipCloudSync) {
     scheduleCloudSync();
   }
@@ -264,7 +339,7 @@ async function pullUserDataFromCloud() {
   _skipCloudSync = true;
   const merged = { ...structuredClone(DEFAULT_DATA), ...row.data };
   merged.settings = { ...DEFAULT_DATA.settings, ...(row.data.settings || {}) };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  localStorage.setItem(getStorageKey(), JSON.stringify(merged));
   _skipCloudSync = false;
   return merged;
 }
@@ -631,7 +706,7 @@ function clearChatHistory() {
 }
 
 function resetAllData() {
-  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(getStorageKey());
   localStorage.removeItem(NOTIFICATION_STATE_KEY);
   saveData(DEFAULT_DATA);
 }
@@ -658,22 +733,34 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '6.0.0',
+    version: '6.5.0',
+    app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
+    profileId: getActiveProfileId(),
+    profileName: getActiveProfileName(),
     onboardingComplete: isOnboardingComplete(),
+    splashSeen: isSplashSeen(),
+    profiles: getProfilesMeta(),
     data: getData()
   }, null, 2);
 }
 
-function importAllData(jsonString) {
+function importAllData(jsonString, options = {}) {
   const parsed = JSON.parse(jsonString);
   const payload = parsed.data || parsed;
   if (!payload || typeof payload !== 'object') {
     throw new Error('Neispravan format podataka.');
   }
+  if (parsed.profiles?.length && options.mergeProfiles !== false) {
+    saveProfilesMeta(parsed.profiles);
+  }
   saveData({ ...structuredClone(DEFAULT_DATA), ...payload });
   if (parsed.onboardingComplete) setOnboardingComplete();
-  return true;
+  if (parsed.splashSeen) setSplashSeen();
+  if (parsed.profileId && listLocalProfiles().some(p => p.id === parsed.profileId)) {
+    switchLocalProfile(parsed.profileId);
+  }
+  return { version: parsed.version || 'unknown', profileName: parsed.profileName || getActiveProfileName() };
 }
 
 function addFeedback(text) {
@@ -1184,18 +1271,69 @@ const MAGAZINE_CATEGORIES = [
 ];
 
 const SEASONAL_TASKS = {
-  1: [{ id: 'jan-heating', text: 'Provera grejanja i termostata' }, { id: 'jan-pipes', text: 'Zaštita cevi od smrzavanja' }],
-  2: [{ id: 'feb-filters', text: 'Zamena filtera vazduha' }],
-  3: [{ id: 'mar-garden', text: 'Priprema bašte za proleće' }, { id: 'mar-clean', text: 'Prolećno čišćenje' }],
-  4: [{ id: 'apr-ac', text: 'Provera klime pre leta' }],
-  5: [{ id: 'may-garden', text: 'Sadnja i đubrenje' }],
-  6: [{ id: 'jun-ac', text: 'Servis klime' }],
-  7: [{ id: 'jul-ac', text: 'Čišćenje klime' }, { id: 'jul-garden', text: 'Zalivanje i košenje bašte' }],
-  8: [{ id: 'aug-garden', text: 'Berba i zalivanje' }],
-  9: [{ id: 'sep-gutters', text: 'Čišćenje oluka' }],
-  10: [{ id: 'oct-heating', text: 'Priprema grejanja' }],
-  11: [{ id: 'nov-heating', text: 'Paljenje grejanja' }, { id: 'nov-brooms', text: 'Metlice i lopate spremne' }],
-  12: [{ id: 'dec-safety', text: 'Provera detektora dima i CO' }]
+  1: [
+    { id: 'jan-heating', text: 'Provera grejanja i termostata' },
+    { id: 'jan-pipes', text: 'Zaštita cevi od smrzavanja' },
+    { id: 'jan-windows', text: 'Provera brtvi na prozorima' },
+    { id: 'jan-budget', text: 'Pregled budžeta za novu godinu' }
+  ],
+  2: [
+    { id: 'feb-filters', text: 'Zamena filtera vazduha' },
+    { id: 'feb-boiler', text: 'Provera bojlera i pritiska' },
+    { id: 'feb-pantry', text: 'Inventar špajza i zamrzivača' }
+  ],
+  3: [
+    { id: 'mar-garden', text: 'Priprema bašte za proleće' },
+    { id: 'mar-clean', text: 'Prolećno čišćenje' },
+    { id: 'mar-ac', text: 'Test klime pre sezone' },
+    { id: 'mar-gutters', text: 'Provera oluka posle zime' }
+  ],
+  4: [
+    { id: 'apr-ac', text: 'Provera klime pre leta' },
+    { id: 'apr-garden', text: 'Sadnja ranog povrća' },
+    { id: 'apr-facade', text: 'Pregled fasade i terase' }
+  ],
+  5: [
+    { id: 'may-garden', text: 'Sadnja i đubrenje' },
+    { id: 'may-windows', text: 'Pranje prozora i roletni' },
+    { id: 'may-grill', text: 'Priprema roštilja i dvorišta' }
+  ],
+  6: [
+    { id: 'jun-ac', text: 'Servis klime' },
+    { id: 'jun-garden', text: 'Redovno zalivanje i košenje' },
+    { id: 'jun-car', text: 'Provera klima u autu' }
+  ],
+  7: [
+    { id: 'jul-ac', text: 'Čišćenje filtera klime' },
+    { id: 'jul-garden', text: 'Zalivanje ujutru/uveče' },
+    { id: 'jul-vacation', text: 'Priprema kuće pre odmora' }
+  ],
+  8: [
+    { id: 'aug-garden', text: 'Berba i zalivanje' },
+    { id: 'aug-preserves', text: 'Priprema zimnice (pečenje, ajvar)' },
+    { id: 'aug-roof', text: 'Pregled krova posle grmljavine' }
+  ],
+  9: [
+    { id: 'sep-gutters', text: 'Čišćenje oluka' },
+    { id: 'sep-heating', text: 'Test grejanja pre hladnih dana' },
+    { id: 'sep-garden', text: 'Jesenja sadnja i đubrenje' }
+  ],
+  10: [
+    { id: 'oct-heating', text: 'Priprema grejanja' },
+    { id: 'oct-chimney', text: 'Čišćenje dimnjaka/kamine' },
+    { id: 'oct-car', text: 'Zamena guma na auto' }
+  ],
+  11: [
+    { id: 'nov-heating', text: 'Paljenje grejanja' },
+    { id: 'nov-brooms', text: 'Metlice i lopate spremne' },
+    { id: 'nov-pipes', text: 'Izolacija cevi na otvorenom' }
+  ],
+  12: [
+    { id: 'dec-safety', text: 'Provera detektora dima i CO' },
+    { id: 'dec-fire', text: 'Provera aparata za gašenje' },
+    { id: 'dec-lights', text: 'Provera novogodišnjih instalacija' },
+    { id: 'dec-budget', text: 'Godišnji pregled troškova' }
+  ]
 };
 
 const TOOL_CATEGORIES = ['Ručni alat', 'Električni alat', 'Merenje', 'Vodoinstalaterski', 'Električarski', 'Baštenski', 'Ostalo'];
@@ -1266,8 +1404,20 @@ function searchMagazine(query) {
   if (!q) return getHomeMagazine();
   return getHomeMagazine().filter(i =>
     i.name.toLowerCase().includes(q) ||
-    (MAGAZINE_CATEGORIES.find(c => c.id === i.category)?.label || '').toLowerCase().includes(q)
+    (MAGAZINE_CATEGORIES.find(c => c.id === i.category)?.label || '').toLowerCase().includes(q) ||
+    (i.location || '').toLowerCase().includes(q)
   );
+}
+
+function getLowStockMagazine(threshold = 2) {
+  return getHomeMagazine().filter(i =>
+    i.name && parseFloat(i.quantity) <= threshold
+  );
+}
+
+function filterMagazineByCategory(categoryId) {
+  if (!categoryId) return getHomeMagazine();
+  return getHomeMagazine().filter(i => i.category === categoryId);
 }
 
 function getKnowledgeBase() {
@@ -1295,14 +1445,50 @@ function deleteKnowledgeEntry(id) {
   saveData(data);
 }
 
-function searchKnowledge(query) {
+function searchKnowledge(query, options = {}) {
+  let items = getKnowledgeBase();
+  if (options.category) {
+    items = items.filter(k => k.category === options.category);
+  }
+  if (options.favoritesOnly) {
+    const favs = getKnowledgeFavorites();
+    items = items.filter(k => favs.includes(k.id));
+  }
   const q = (query || '').toLowerCase().trim();
-  if (!q) return getKnowledgeBase();
-  return getKnowledgeBase().filter(k =>
+  if (!q) return items;
+  return items.filter(k =>
     k.title.toLowerCase().includes(q) ||
     k.solution.toLowerCase().includes(q) ||
-    (k.tags || []).some(t => t.toLowerCase().includes(q))
+    (k.tags || []).some(t => t.toLowerCase().includes(q)) ||
+    (KB_CATEGORY_LABELS[k.category] || k.category || '').toLowerCase().includes(q)
   );
+}
+
+const KB_CATEGORY_LABELS = {
+  vodovod: 'Vodovod', elektrika: 'Elektrika', grejanje: 'Grejanje',
+  aparati: 'Aparati', basta: 'Bašta', ostalo: 'Ostalo'
+};
+
+function getKnowledgeFavorites() {
+  return getData().knowledgeFavorites || [];
+}
+
+function toggleKnowledgeFavorite(id) {
+  const data = getData();
+  if (!data.knowledgeFavorites) data.knowledgeFavorites = [];
+  const idx = data.knowledgeFavorites.indexOf(id);
+  if (idx >= 0) {
+    data.knowledgeFavorites.splice(idx, 1);
+  } else {
+    data.knowledgeFavorites.unshift(id);
+    data.knowledgeFavorites = data.knowledgeFavorites.slice(0, 50);
+  }
+  saveData(data);
+  return data.knowledgeFavorites.includes(id);
+}
+
+function isKnowledgeFavorite(id) {
+  return getKnowledgeFavorites().includes(id);
 }
 
 function getTools() {
@@ -1345,6 +1531,7 @@ function addDiaryEntry(entry) {
   const item = {
     id: generateId(),
     title: entry.title,
+    type: entry.type || 'ostalo',
     date: entry.date || new Date().toISOString().split('T')[0],
     notes: entry.notes || '',
     photos: entry.photos || []
@@ -1353,6 +1540,35 @@ function addDiaryEntry(entry) {
   saveData(data);
   return item;
 }
+
+function getDiaryFiltered(filters = {}) {
+  let entries = getDiary();
+  if (filters.type) {
+    entries = entries.filter(e => e.type === filters.type);
+  }
+  if (filters.from) {
+    entries = entries.filter(e => e.date >= filters.from);
+  }
+  if (filters.to) {
+    entries = entries.filter(e => e.date <= filters.to);
+  }
+  if (filters.query) {
+    const q = filters.query.toLowerCase();
+    entries = entries.filter(e =>
+      e.title.toLowerCase().includes(q) ||
+      (e.notes || '').toLowerCase().includes(q)
+    );
+  }
+  return entries;
+}
+
+const DIARY_TYPES = [
+  { id: 'popravka', label: 'Popravka', icon: '🔧' },
+  { id: 'servis', label: 'Servis', icon: '⚙️' },
+  { id: 'farbanje', label: 'Farbanje', icon: '🎨' },
+  { id: 'kupovina', label: 'Kupovina', icon: '🛒' },
+  { id: 'ostalo', label: 'Ostalo', icon: '📔' }
+];
 
 function deleteDiaryEntry(id) {
   const data = getData();
@@ -1420,25 +1636,38 @@ function generateProjectMaterials(projectName, dimensions) {
   const name = (projectName || '').toLowerCase();
   const dims = dimensions || '';
   const materials = [];
+  let estimatedCost = { min: 5000, max: 15000, note: 'Procena za osnovni DIY projekat' };
+
   if (name.includes('farbanje') || name.includes('bojenje') || name.includes('soba')) {
-    materials.push({ name: 'Boja za zidove', qty: '2-3 kesice', note: 'Za ~20m²' });
-    materials.push({ name: 'Valjak i posuda', qty: '1 set', note: '' });
-    materials.push({ name: 'Traka za maskiranje', qty: '2 rolne', note: '' });
-    materials.push({ name: 'Plastična folija', qty: '1 rolna', note: 'Zaštita poda' });
+    materials.push({ name: 'Boja za zidove', qty: '2-3 kesice', note: 'Za ~20m²', unitPrice: 2500 });
+    materials.push({ name: 'Valjak i posuda', qty: '1 set', note: '', unitPrice: 1500 });
+    materials.push({ name: 'Traka za maskiranje', qty: '2 rolne', note: '', unitPrice: 800 });
+    materials.push({ name: 'Plastična folija', qty: '1 rolna', note: 'Zaštita poda', unitPrice: 500 });
+    estimatedCost = { min: 8000, max: 25000, note: 'Zavisi od kvadrature i kvaliteta boje' };
   } else if (name.includes('polica') || name.includes('regal')) {
-    materials.push({ name: 'Drvene daske', qty: '3-5 kom', note: dims || 'Po meri' });
-    materials.push({ name: 'Šrafovi i tiplovi', qty: '1 pakovanje', note: '' });
-    materials.push({ name: 'Lak ili boja', qty: '0.5l', note: 'Opciono' });
+    materials.push({ name: 'Drvene daske', qty: '3-5 kom', note: dims || 'Po meri', unitPrice: 4000 });
+    materials.push({ name: 'Šrafovi i tiplovi', qty: '1 pakovanje', note: '', unitPrice: 600 });
+    materials.push({ name: 'Lak ili boja', qty: '0.5l', note: 'Opciono', unitPrice: 1200 });
+    estimatedCost = { min: 5000, max: 18000, note: 'Drvo i dimenzije utiču na cenu' };
   } else if (name.includes('bašta') || name.includes('ograda')) {
-    materials.push({ name: 'Drveni stubovi', qty: '4-8 kom', note: '' });
-    materials.push({ name: 'Žica ili daske', qty: 'Po meri', note: dims });
-    materials.push({ name: 'Betonski lepak', qty: '2-3 vreće', note: '' });
+    materials.push({ name: 'Drveni stubovi', qty: '4-8 kom', note: '', unitPrice: 8000 });
+    materials.push({ name: 'Žica ili daske', qty: 'Po meri', note: dims, unitPrice: 5000 });
+    materials.push({ name: 'Betonski lepak', qty: '2-3 vreće', note: '', unitPrice: 2000 });
+    estimatedCost = { min: 15000, max: 60000, note: 'Dužina ograde i tip materijala' };
+  } else if (name.includes('keramik') || name.includes('kupatil')) {
+    materials.push({ name: 'Keramičke pločice', qty: 'Po m²', note: dims || 'Izmerite površinu', unitPrice: 3500 });
+    materials.push({ name: 'Lepak za keramiku', qty: '2 vreće', note: '', unitPrice: 2500 });
+    materials.push({ name: 'Fuga', qty: '2 kg', note: '', unitPrice: 800 });
+    estimatedCost = { min: 20000, max: 80000, note: 'Majstor + materijal za kupatilo' };
   } else {
-    materials.push({ name: 'Osnovni materijal', qty: 'Po projektu', note: 'Definišite u napomeni' });
-    materials.push({ name: 'Šrafovi i spojnice', qty: '1 set', note: '' });
-    materials.push({ name: 'Alat (merenje, nivo)', qty: '—', note: 'Proverite inventar alata' });
+    materials.push({ name: 'Osnovni materijal', qty: 'Po projektu', note: 'Definišite u napomeni', unitPrice: 3000 });
+    materials.push({ name: 'Šrafovi i spojnice', qty: '1 set', note: '', unitPrice: 800 });
+    materials.push({ name: 'Alat (merenje, nivo)', qty: '—', note: 'Proverite inventar alata', unitPrice: 0 });
+    estimatedCost = { min: 5000, max: 30000, note: 'Unesite dimenzije za precizniju procenu' };
   }
-  return materials;
+
+  const materialTotal = materials.reduce((s, m) => s + (m.unitPrice || 0), 0);
+  return { materials, estimatedCost, materialTotal };
 }
 
 function getSafety() {
@@ -1609,13 +1838,27 @@ const SERBIAN_MEAL_PRESETS = [
   { name: 'Pasulj', ingredients: ['pasulj', 'luk', 'šargarepa', 'krompir', 'crvena paprika'] },
   { name: 'Sarma', ingredients: ['kupus', 'meso', 'pirinač', 'luk', 'so'] },
   { name: 'Pljeskavica', ingredients: ['mleveno meso', 'luk', 'so', 'biber'] },
+  { name: 'Ćevapi', ingredients: ['mleveno meso', 'luk', 'so', 'lepinja', 'luk'] },
   { name: 'Musaka', ingredients: ['krompir', 'meso', 'jaja', 'mleko', 'luk'] },
   { name: 'Gulaš', ingredients: ['meso', 'luk', 'paprika', 'paradajz', 'brašno'] },
+  { name: 'Teleći gulaš', ingredients: ['teleće meso', 'luk', 'šargarepa', 'paprika', 'paradajz'] },
   { name: 'Prebranac', ingredients: ['pasulj', 'luk', 'brašno', 'ulje'] },
+  { name: 'Podvarak', ingredients: ['kupus', 'meso', 'luk', 'so', 'biber'] },
   { name: 'Punjene paprike', ingredients: ['paprika', 'meso', 'pirinač', 'luk', 'paradajz'] },
+  { name: 'Punjene tikvice', ingredients: ['tikvice', 'meso', 'pirinač', 'luk', 'jaja'] },
+  { name: 'Karađorđeva šnicla', ingredients: ['svinjetina', 'kajmak', 'jaja', 'brašno', 'ulje'] },
+  { name: 'Krmenadla', ingredients: ['svinjetina', 'so', 'biber', 'ulje', 'limun'] },
+  { name: 'Riblja čorba', ingredients: ['riba', 'luk', 'šargarepa', 'paradajz', 'so'] },
   { name: 'Čorba od povrća', ingredients: ['povrće', 'luk', 'šargarepa', 'so'] },
+  { name: 'Kuvano meso', ingredients: ['meso', 'luk', 'šargarepa', 'krompir', 'so'] },
+  { name: 'Gibanica', ingredients: ['jufke', 'sir', 'jaja', 'ulje', 'mleko'] },
+  { name: 'Proja', ingredients: ['kukuruzno brašno', 'jaja', 'mleko', 'ulje', 'so'] },
   { name: 'Palačinke', ingredients: ['brašno', 'jaja', 'mleko', 'šećer', 'ulje'] },
-  { name: 'Šopska salata', ingredients: ['paradajz', 'krastavac', 'sir', 'luk', 'masline'] }
+  { name: 'Šopska salata', ingredients: ['paradajz', 'krastavac', 'sir', 'luk', 'masline'] },
+  { name: 'Tarator', ingredients: ['krastavac', 'jogurt', 'beli luk', 'orasi', 'ulje'] },
+  { name: 'Dinstano povrće', ingredients: ['tikvice', 'patlidžan', 'paprika', 'luk', 'paradajz'] },
+  { name: 'Piletina sa povrćem', ingredients: ['piletina', 'paprika', 'luk', 'šargarepa', 'ulje'] },
+  { name: 'Omlet', ingredients: ['jaja', 'mleko', 'sir', 'šunka', 'so'] }
 ];
 
 function getTodaySpending() {
@@ -1734,13 +1977,30 @@ function getLowStockPantry() {
 
 function getFinancialTrainerInsights() {
   const now = new Date();
+  const settings = getSettings();
   const byCategory = getSpendingByCategory(now.getFullYear(), now.getMonth());
   const insights = [];
+  const totalSpent = getTotalSpent(now.getFullYear(), now.getMonth());
+  const budget = settings.monthlyBudget || 0;
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysLeft = daysInMonth - now.getDate();
+  const dailyBudget = budget > 0 ? Math.round((budget - totalSpent) / Math.max(1, daysLeft)) : 0;
+
+  if (budget > 0 && daysLeft > 0) {
+    insights.push({
+      category: null,
+      label: 'Dnevni budžet',
+      amount: dailyBudget,
+      annual: 0,
+      message: `Do kraja meseca možete trošiti ~${formatCurrency(Math.max(0, dailyBudget))}/dan da ostanete u budžetu.`,
+      savings: daysLeft <= 7 ? 'Poslednja nedelja — prioritet osnovnim troškovima.' : 'Ravnomerna potrošnja je ključ stabilnosti.'
+    });
+  }
 
   const top = Object.entries(byCategory)
     .filter(([, amt]) => amt > 0)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+    .slice(0, 4);
 
   top.forEach(([catId, amount]) => {
     const annual = amount * 12;
@@ -1748,6 +2008,7 @@ function getFinancialTrainerInsights() {
     const prevMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
     const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
     const prevAmount = getSpendingByCategory(prevYear, prevMonth)[catId] || 0;
+    const pctOfTotal = totalSpent > 0 ? Math.round((amount / totalSpent) * 100) : 0;
     let trend = '';
     if (prevAmount > 0) {
       const change = Math.round((amount / prevAmount - 1) * 100);
@@ -1755,15 +2016,47 @@ function getFinancialTrainerInsights() {
       else if (change < -10) trend = ` (${change}% vs prošli mesec — bravo!)`;
     }
     const dailyAvg = Math.round(amount / Math.max(1, now.getDate()));
+    const tips = {
+      food: 'Planirajte obroke nedelju unapred — ušteda do 20% na hrani.',
+      bills: 'Poredite ponude dobavljača struje i interneta jednom godišnje.',
+      car: 'Redovni servis sprečava skupe kvarove — proverite registraciju.',
+      fuel: 'Kombinujte vožnje i proverite pritisak u gumama.',
+      entertainment: 'Postavite mesečni limit za zabavu u podešavanjima.'
+    };
     insights.push({
       category: catId,
       label: getCategoryLabel(catId),
       amount,
       annual,
-      message: `Ovog meseca: ${formatCurrency(amount)} na ${label}${trend}. Prosek: ${formatCurrency(dailyAvg)}/dan.`,
-      savings: `Ušteda od 20% = ${formatCurrency(annual * 0.2)} godišnje. Zameni ${label} jeftinijom alternativom jednom nedeljno.`
+      pctOfTotal,
+      message: `${pctOfTotal}% budžeta ide na ${label}: ${formatCurrency(amount)}${trend}. Prosek: ${formatCurrency(dailyAvg)}/dan.`,
+      savings: `Ušteda 20% = ${formatCurrency(annual * 0.2)}/god. ${tips[catId] || `Smanjite ${label} za jednu kupovinu nedeljno.`}`
     });
   });
+
+  const income = settings.monthlyIncome || 0;
+  if (income > 0 && totalSpent > 0) {
+    const savingsRate = Math.round(((income - totalSpent) / income) * 100);
+    if (savingsRate >= 20) {
+      insights.push({
+        category: null,
+        label: 'Štednja',
+        amount: income - totalSpent,
+        annual: (income - totalSpent) * 12,
+        message: `Odlično! Štedite ${savingsRate}% prihoda ovog meseca (${formatCurrency(income - totalSpent)}).`,
+        savings: 'Nastavite — automatski prebacujte uštedu na poseban račun.'
+      });
+    } else if (savingsRate < 10) {
+      insights.push({
+        category: null,
+        label: 'Štednja',
+        amount: totalSpent,
+        annual: 0,
+        message: `Samo ${Math.max(0, savingsRate)}% prihoda ostaje — razmotrite smanjenje neesencijalnih troškova.`,
+        savings: 'Pravilo 50/30/20: 50% potrebe, 30% želje, 20% štednja.'
+      });
+    }
+  }
 
   if (insights.length === 0) {
     insights.push({

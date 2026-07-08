@@ -1,3 +1,45 @@
+function renderLocalProfiles() {
+  const container = document.getElementById('local-profiles-list');
+  if (!container || typeof listLocalProfiles !== 'function') return;
+
+  const profiles = listLocalProfiles();
+  const activeId = getActiveProfileId();
+
+  container.innerHTML = profiles.map(p => `
+    <div class="list-item local-profile-item" style="padding:var(--space-sm) 0">
+      <div class="list-item__icon">${p.id === activeId ? '✓' : '👤'}</div>
+      <div class="list-item__content">
+        <div class="list-item__title">${p.name}${p.id === activeId ? ' <span class="badge badge--success">Aktivan</span>' : ''}</div>
+        <div class="list-item__subtitle">${p.id === 'default' ? 'Glavni profil uređaja' : 'Lokalni profil'}</div>
+      </div>
+      <div style="display:flex;gap:var(--space-xs)">
+        ${p.id !== activeId ? `<button type="button" class="btn btn--secondary btn--sm switch-profile" data-id="${p.id}" aria-label="Prebaci na ${p.name}">Prebaci</button>` : ''}
+        ${p.id !== 'default' ? `<button type="button" class="btn btn--ghost btn--sm delete-profile" data-id="${p.id}" aria-label="Obriši profil ${p.name}">✕</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.switch-profile').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (switchLocalProfile(btn.dataset.id)) {
+        showToast('Profil prebačen. Osvežavam...', 'success');
+        setTimeout(() => location.reload(), 600);
+      }
+    });
+  });
+
+  container.querySelectorAll('.delete-profile').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const profile = profiles.find(p => p.id === btn.dataset.id);
+      if (!confirm(`Obrisati profil „${profile?.name}" i sve njegove podatke?`)) return;
+      if (deleteLocalProfile(btn.dataset.id)) {
+        showToast('Profil obrisan.');
+        renderLocalProfiles();
+      }
+    });
+  });
+}
+
 function renderRecurringList() {
   const list = getRecurringExpenses();
   const container = document.getElementById('recurring-list');
@@ -106,6 +148,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderAccountSection();
   renderSupabaseConfigSection();
+  renderLocalProfiles();
+
+  document.getElementById('add-local-profile')?.addEventListener('click', () => {
+    const name = document.getElementById('new-profile-name')?.value.trim();
+    if (!name) {
+      showToast('Unesite ime profila.');
+      return;
+    }
+    const created = addLocalProfile(name);
+    if (!created) {
+      showToast('Profil sa tim imenom već postoji.');
+      return;
+    }
+    document.getElementById('new-profile-name').value = '';
+    showToast(`Profil „${name}" dodat!`);
+    renderLocalProfiles();
+  });
 
   document.getElementById('save-supabase-config')?.addEventListener('click', () => {
     const url = document.getElementById('supabase-url').value.trim();
@@ -262,8 +321,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        importAllData(reader.result);
-        showToast('Podaci uvezeni! Osvežavam...');
+        const result = importAllData(reader.result);
+        showToast(`Podaci uvezeni (v${result.version})! Osvežavam...`, 'success');
         setTimeout(() => location.reload(), 1000);
       } catch (err) {
         showToast('Greška pri uvozu: ' + err.message);
