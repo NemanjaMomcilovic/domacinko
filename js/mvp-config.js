@@ -4,7 +4,7 @@
  */
 
 const MVP_WHAT_APP_DOES = [
-  'Prati troškove i mesečni budžet',
+  'Prati troškove, budžet i komunalije',
   'Planira obroke i listu za kupovinu',
   'Savetuje preko 10KEY Savetnika (besplatno, offline)'
 ];
@@ -15,8 +15,9 @@ const MVP_MODULE_SECTIONS = [
     modules: [
       { id: 'finances', name: 'Finansije', icon: '📊', path: 'finances.html', desc: 'Troškovi, budžet i pregled', tier: 'core' },
       { id: 'add-expense', name: 'Dodaj trošak', icon: '💸', path: 'add-expense.html', desc: 'Brzo unesite novi rashod', tier: 'core' },
+      { id: 'utility-bills', name: 'Komunalije', icon: '💡', path: 'utility-bills.html', desc: 'Struja, voda, grejanje — unos i plaćanje', tier: 'core' },
       { id: 'forecast', name: 'Prognoza troškova', icon: '📅', path: 'forecast.html', desc: 'Predstojeći rashodi', tier: 'v2' },
-      { id: 'scan-receipt', name: 'Slikaj račun', icon: '📸', path: 'scan-receipt.html', desc: 'OCR skeniranje troškova', tier: 'v2' },
+      { id: 'scan-receipt', name: 'Slikaj račun', icon: '📸', path: 'scan-receipt.html', desc: 'OCR skeniranje troškova (prodavnica)', tier: 'v2' },
       { id: 'household', name: 'Domaćinstvo', icon: '🏡', path: 'household.html', desc: 'Računi, auti, ostava', tier: 'v2' }
     ]
   },

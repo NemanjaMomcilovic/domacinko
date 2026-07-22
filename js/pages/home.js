@@ -159,6 +159,7 @@ function refreshHomeDashboard() {
 
 const QUICK_ACTIONS_BETA = [
   { href: 'add-expense.html', icon: '💸', label: 'Dodaj trošak' },
+  { href: 'utility-bills.html', icon: '💡', label: 'Komunalije' },
   { href: 'meal-plan.html', icon: '🍽️', label: 'Plan obroka' },
   { href: 'ai.html', icon: '💬', label: '10KEY Savetnik' },
   { href: 'shopping.html', icon: '🛒', label: 'Lista kupovine' }

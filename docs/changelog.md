@@ -1,5 +1,17 @@
 # Domaćinko — Changelog
 
+## [7.5.0] — 2026-07-22
+
+### Komunalije (core)
+- **Tipovi** — struja, voda, grejanje, internet, stanarina, drugo
+- **Recurrence** — `ask` (podrazumevano), `auto`, `off`
+- **Tok** — dodaj tip → podsetnik → unos / foto → potvrda → sačuvaj → označi plaćeno
+- **OCR pipeline** — zamenljiv (`bill-scanner.js` + registry); v1 lokalni parser (heuristike / foto bez teškog Tesseract-a); UI uvek potvrđuje pre čuvanja
+- **Brifing** — „Da li si dobio račun za X?" / „Račun za X nije plaćen"
+- **Ulazi** — Troškovi → Komunalije, brza akcija na početnoj, moduli hub (core)
+- Store OCR (prodavnica) ostaje v2 — nije deo ovog izdanja
+- Service Worker v7.5.0
+
 ## [7.4.0] — 2026-07-22
 
 ### Plan obroka — 3 obroka dnevno

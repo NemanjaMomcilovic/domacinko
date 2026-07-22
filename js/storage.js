@@ -361,7 +361,8 @@ const DEFAULT_DATA = {
     notificationsEnabled: false,
     contactEmail: '',
     betaMode: true,
-    householdSize: 1
+    householdSize: 1,
+    billParser: 'local'
   },
   expenses: [],
   recurringExpenses: [],
@@ -369,6 +370,10 @@ const DEFAULT_DATA = {
   favoriteProducts: [],
   mealPlan: defaultMealPlan(),
   feedback: [],
+  utilityBills: {
+    templates: [],
+    entries: []
+  },
   household: {
     familyMembers: [],
     cars: [],
@@ -445,6 +450,12 @@ function getData() {
     if (!merged.safety) merged.safety = { ...DEFAULT_DATA.safety, medicines: [] };
     if (!merged.garden) merged.garden = { plants: [], notes: '' };
     if (!merged.watchList) merged.watchList = [];
+    if (!merged.utilityBills || typeof merged.utilityBills !== 'object') {
+      merged.utilityBills = { templates: [], entries: [] };
+    }
+    if (!Array.isArray(merged.utilityBills.templates)) merged.utilityBills.templates = [];
+    if (!Array.isArray(merged.utilityBills.entries)) merged.utilityBills.entries = [];
+    if (!merged.settings.billParser) merged.settings.billParser = 'local';
     return merged;
   } catch {
     return structuredClone(DEFAULT_DATA);
@@ -911,7 +922,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '7.2.0',
+    version: '7.5.0',
     app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
     profileId: getActiveProfileId(),
@@ -2496,4 +2507,225 @@ const MAX_DIARY_PHOTO_SIZE = 150000;
 function compressImageForStorage(dataUrl, maxSize = MAX_DIARY_PHOTO_SIZE) {
   if (!dataUrl || dataUrl.length <= maxSize) return dataUrl;
   return dataUrl.substring(0, maxSize);
+}
+
+/* ========== Utility bills (komunalije) ========== */
+
+function getUtilityBills() {
+  const data = getData();
+  const ub = data.utilityBills || { templates: [], entries: [] };
+  return {
+    templates: Array.isArray(ub.templates) ? ub.templates : [],
+    entries: Array.isArray(ub.entries) ? ub.entries : []
+  };
+}
+
+function _saveUtilityBills(utilityBills) {
+  const data = getData();
+  data.utilityBills = {
+    templates: utilityBills.templates || [],
+    entries: utilityBills.entries || []
+  };
+  saveData(data);
+}
+
+function getUtilityTemplates() {
+  return getUtilityBills().templates.filter(t => t.enabled !== false);
+}
+
+function getAllUtilityTemplates() {
+  return getUtilityBills().templates;
+}
+
+function addUtilityTemplate(partial) {
+  const ub = getUtilityBills();
+  const template = {
+    id: generateId(),
+    type: partial.type || 'drugo',
+    label: partial.label || '',
+    recurrence: partial.recurrence || 'ask',
+    lastAmount: typeof partial.lastAmount === 'number' ? partial.lastAmount : 0,
+    enabled: partial.enabled !== false,
+    createdAt: new Date().toISOString()
+  };
+  ub.templates.push(template);
+  _saveUtilityBills(ub);
+  return template;
+}
+
+function updateUtilityTemplate(id, updates) {
+  const ub = getUtilityBills();
+  const idx = ub.templates.findIndex(t => t.id === id);
+  if (idx === -1) return null;
+  ub.templates[idx] = { ...ub.templates[idx], ...updates, id };
+  _saveUtilityBills(ub);
+  return ub.templates[idx];
+}
+
+function deleteUtilityTemplate(id) {
+  const ub = getUtilityBills();
+  ub.templates = ub.templates.filter(t => t.id !== id);
+  _saveUtilityBills(ub);
+}
+
+function getUtilityEntries(filters = {}) {
+  let entries = getUtilityBills().entries;
+  if (filters.period) entries = entries.filter(e => e.period === filters.period);
+  if (filters.templateId) entries = entries.filter(e => e.templateId === filters.templateId);
+  if (filters.status) entries = entries.filter(e => e.status === filters.status);
+  if (filters.type) entries = entries.filter(e => e.type === filters.type);
+  return entries.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+}
+
+function addUtilityEntry(partial) {
+  const ub = getUtilityBills();
+  const period = partial.period
+    || (typeof getCurrentBillPeriod === 'function' ? getCurrentBillPeriod() : new Date().toISOString().slice(0, 7));
+  const entry = {
+    id: generateId(),
+    templateId: partial.templateId || null,
+    type: partial.type || 'drugo',
+    period,
+    amount: typeof partial.amount === 'number' ? partial.amount : null,
+    status: partial.status || 'pending',
+    dueDate: partial.dueDate || null,
+    photoDataUrl: partial.photoDataUrl || null,
+    scannedAt: partial.scannedAt || null,
+    paidAt: partial.paidAt || null,
+    createdAt: new Date().toISOString(),
+    scanMeta: partial.scanMeta || null
+  };
+  ub.entries.push(entry);
+  if (entry.templateId && typeof entry.amount === 'number' && entry.amount > 0) {
+    const tIdx = ub.templates.findIndex(t => t.id === entry.templateId);
+    if (tIdx !== -1) ub.templates[tIdx].lastAmount = entry.amount;
+  }
+  _saveUtilityBills(ub);
+  return entry;
+}
+
+function updateUtilityEntry(id, updates) {
+  const ub = getUtilityBills();
+  const idx = ub.entries.findIndex(e => e.id === id);
+  if (idx === -1) return null;
+  const next = { ...ub.entries[idx], ...updates, id };
+  ub.entries[idx] = next;
+  if (next.templateId && typeof next.amount === 'number' && next.amount > 0) {
+    const tIdx = ub.templates.findIndex(t => t.id === next.templateId);
+    if (tIdx !== -1) ub.templates[tIdx].lastAmount = next.amount;
+  }
+  _saveUtilityBills(ub);
+  return next;
+}
+
+function deleteUtilityEntry(id) {
+  const ub = getUtilityBills();
+  ub.entries = ub.entries.filter(e => e.id !== id);
+  _saveUtilityBills(ub);
+}
+
+function markUtilityBillPaid(id, amount) {
+  const updates = {
+    status: 'paid',
+    paidAt: new Date().toISOString()
+  };
+  if (typeof amount === 'number' && amount > 0) updates.amount = amount;
+  return updateUtilityEntry(id, updates);
+}
+
+/**
+ * Ensure auto-recurrence templates have a pending entry for the period.
+ * @param {string} [period]
+ * @returns {object[]} newly created entries
+ */
+function ensureAutoUtilityBillsForPeriod(period) {
+  const p = period
+    || (typeof getCurrentBillPeriod === 'function' ? getCurrentBillPeriod() : new Date().toISOString().slice(0, 7));
+  const ub = getUtilityBills();
+  const created = [];
+  ub.templates
+    .filter(t => t.enabled !== false && t.recurrence === 'auto')
+    .forEach(t => {
+      const exists = ub.entries.some(e => e.templateId === t.id && e.period === p && e.status !== 'skipped');
+      if (exists) return;
+      const entry = {
+        id: generateId(),
+        templateId: t.id,
+        type: t.type,
+        period: p,
+        amount: t.lastAmount > 0 ? t.lastAmount : null,
+        status: 'pending',
+        dueDate: null,
+        photoDataUrl: null,
+        scannedAt: null,
+        paidAt: null,
+        createdAt: new Date().toISOString(),
+        scanMeta: null
+      };
+      ub.entries.push(entry);
+      created.push(entry);
+    });
+  if (created.length) _saveUtilityBills(ub);
+  return created;
+}
+
+/**
+ * Briefing / home prompts for ask|auto templates without a paid entry this month.
+ * @returns {{ type: 'ask'|'unpaid', templateId, billType, label, entryId?: string }[]}
+ */
+const UTILITY_ASK_LABELS = {
+  struja: 'struju',
+  voda: 'vodu',
+  grejanje: 'grejanje',
+  internet: 'internet',
+  stanarina: 'stanarinu',
+  drugo: 'ostalo'
+};
+
+function getUtilityBillPrompts(period) {
+  const p = period
+    || (typeof getCurrentBillPeriod === 'function' ? getCurrentBillPeriod() : new Date().toISOString().slice(0, 7));
+  ensureAutoUtilityBillsForPeriod(p);
+
+  const ub = getUtilityBills();
+  const prompts = [];
+
+  ub.templates
+    .filter(t => t.enabled !== false && (t.recurrence === 'ask' || t.recurrence === 'auto'))
+    .forEach(t => {
+      const custom = t.label && String(t.label).trim();
+      const label = custom
+        || (typeof getBillTypeLabel === 'function' ? getBillTypeLabel(t.type) : (UTILITY_ASK_LABELS[t.type] || t.type));
+      const askLabel = custom || UTILITY_ASK_LABELS[t.type] || label;
+      const entries = ub.entries.filter(e => e.templateId === t.id && e.period === p);
+      const paid = entries.find(e => e.status === 'paid');
+      if (paid) return;
+      const skipped = entries.every(e => e.status === 'skipped') && entries.length > 0;
+      if (skipped) return;
+
+      const unpaid = entries.find(e => e.status === 'unpaid');
+      if (unpaid) {
+        prompts.push({
+          type: 'unpaid',
+          templateId: t.id,
+          billType: t.type,
+          label: askLabel,
+          entryId: unpaid.id
+        });
+        return;
+      }
+
+      const pending = entries.find(e => e.status === 'pending');
+      if (t.recurrence === 'ask' || pending) {
+        prompts.push({
+          type: 'ask',
+          templateId: t.id,
+          billType: t.type,
+          label: askLabel,
+          entryId: pending?.id || null
+        });
+      }
+    });
+
+  return prompts;
 }

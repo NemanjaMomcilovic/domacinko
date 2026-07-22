@@ -7,7 +7,7 @@ const HOUSEHOLD_LAST_SYNC_KEY = 'domacinko_household_last_sync';
 
 const SHARED_SYNC_KEYS = [
   'expenses', 'shoppingList', 'household', 'mealPlan', 'maintenance',
-  'inventory', 'tasks', 'recurringExpenses', 'favoriteProducts'
+  'inventory', 'tasks', 'recurringExpenses', 'favoriteProducts', 'utilityBills'
 ];
 
 const INVITE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

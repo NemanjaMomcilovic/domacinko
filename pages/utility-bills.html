@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d8f5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Domaćinko">
+  <title>Domaćinko — Komunalije</title>
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .bills-type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-sm);
+    }
+    .bills-type-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: var(--space-md) var(--space-sm);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      min-height: 72px;
+    }
+    .bills-type-btn--active {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    }
+    .bills-type-btn__icon { font-size: 1.5rem; }
+    .bills-type-btn__label { font-size: var(--font-size-xs); text-align: center; }
+    .bills-recurrence {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .bills-recurrence__option {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-md);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      background: var(--color-surface);
+    }
+    .bills-recurrence__option--active {
+      border-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    }
+    .bills-recurrence__option input { margin-top: 3px; }
+    .bills-photo-preview {
+      margin-top: var(--space-sm);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      max-height: 200px;
+      background: var(--color-border);
+    }
+    .bills-photo-preview img {
+      display: block;
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+    }
+    .bills-month-status { margin-bottom: var(--space-md); }
+    .bills-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+    .bills-actions .btn { flex: 1; min-width: 120px; }
+    .bills-view { display: none; }
+    .bills-view--active { display: block; }
+    .bills-scan-hint {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="page-header" id="page-header"></header>
+
+    <main class="main-content">
+      <!-- LIST -->
+      <section id="view-list" class="bills-view bills-view--active">
+        <div class="card card--gradient-green text-center bills-month-status">
+          <p class="card__title" id="bills-period-label">Ovaj mesec</p>
+          <p class="card__subtitle text-muted" id="bills-month-summary">Nema podešenih komunalija</p>
+        </div>
+
+        <div class="section">
+          <div class="section__header">
+            <h2 class="section__title">Status ovog meseca</h2>
+          </div>
+          <div class="card card--flat" id="bills-month-list"></div>
+        </div>
+
+        <div class="section">
+          <div class="section__header">
+            <h2 class="section__title">Tipovi računa</h2>
+            <button type="button" class="section__link" id="btn-add-template" style="background:none;border:none;cursor:pointer;color:var(--color-primary);font:inherit">+ Dodaj</button>
+          </div>
+          <div class="card card--flat" id="bills-templates-list"></div>
+        </div>
+
+        <button type="button" class="btn btn--primary btn--block" id="btn-add-template-main">Dodaj komunaliju</button>
+      </section>
+
+      <!-- ADD TEMPLATE -->
+      <section id="view-template" class="bills-view">
+        <p class="text-muted mb-md" style="font-size:var(--font-size-sm)">Izaberite tip računa i kako želite da vas podsećamo svaki mesec.</p>
+
+        <div class="form-group">
+          <label class="form-label">Tip</label>
+          <div class="bills-type-grid" id="template-type-grid"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="template-label">Naziv (opciono)</label>
+          <input type="text" class="form-input" id="template-label" placeholder="npr. EPS kuća, SBB…">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Podsetnik</label>
+          <div class="bills-recurrence" id="template-recurrence"></div>
+        </div>
+
+        <div class="bills-actions">
+          <button type="button" class="btn btn--outline" id="btn-template-cancel">Otkaži</button>
+          <button type="button" class="btn btn--primary" id="btn-template-save">Sačuvaj</button>
+        </div>
+      </section>
+
+      <!-- CAPTURE / CONFIRM ENTRY -->
+      <section id="view-entry" class="bills-view">
+        <p class="text-muted mb-md" style="font-size:var(--font-size-sm)" id="entry-heading">Unos računa</p>
+
+        <div class="form-group">
+          <label class="form-label">Fotografija (opciono)</label>
+          <div style="display:flex;gap:var(--space-sm)">
+            <button type="button" class="btn btn--outline btn--block" id="btn-camera">📷 Slikaj</button>
+            <button type="button" class="btn btn--outline btn--block" id="btn-gallery">🖼 Galerija</button>
+          </div>
+          <input type="file" id="bill-camera" accept="image/*" capture="environment" class="hidden" aria-hidden="true">
+          <input type="file" id="bill-gallery" accept="image/*" class="hidden" aria-hidden="true">
+          <div class="bills-photo-preview hidden" id="bill-photo-preview"></div>
+          <p class="bills-scan-hint" id="bill-scan-hint">Uvek potvrdite iznos pre čuvanja — OCR ne čuva automatski.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="entry-amount">Iznos (RSD)</label>
+          <input type="number" class="form-input" id="entry-amount" placeholder="0" min="1" step="1" inputmode="numeric">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="entry-period">Period</label>
+          <input type="month" class="form-input" id="entry-period" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="entry-due">Rok plaćanja (opciono)</label>
+          <input type="date" class="form-input" id="entry-due">
+        </div>
+
+        <div class="bills-actions">
+          <button type="button" class="btn btn--outline" id="btn-entry-cancel">Otkaži</button>
+          <button type="button" class="btn btn--secondary" id="btn-entry-skip">Preskoči</button>
+        </div>
+        <div class="bills-actions">
+          <button type="button" class="btn btn--outline" id="btn-entry-unpaid">Sačuvaj neplaćeno</button>
+          <button type="button" class="btn btn--primary" id="btn-entry-paid">Sačuvaj i označi plaćeno</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" id="bottom-nav"></nav>
+  </div>
+
+  <script src="../config.js" onerror="void 0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/modules/bills/bill-types.js"></script>
+  <script src="../js/modules/bills/parsers/local-ocr.js"></script>
+  <script src="../js/modules/bills/bill-parser-registry.js"></script>
+  <script src="../js/modules/bills/bill-scanner.js"></script>
+  <script src="../js/ui-helpers.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/help-tooltips.js"></script>
+  <script src="../js/pages/utility-bills.js"></script>
+</body>
+</html>

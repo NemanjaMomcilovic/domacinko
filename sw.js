@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v7.4.0';
+const CACHE_NAME = 'domacinko-v7.5.0';
 
 const ASSETS = [
   './',
@@ -26,6 +26,10 @@ const ASSETS = [
   './js/modules/registry.js',
   './js/modules/ai-context.js',
   './js/modules/briefing.js',
+  './js/modules/bills/bill-types.js',
+  './js/modules/bills/parsers/local-ocr.js',
+  './js/modules/bills/bill-parser-registry.js',
+  './js/modules/bills/bill-scanner.js',
   './js/pages/auth.js',
   './js/pages/home.js',
   './js/pages/finances.js',
@@ -34,6 +38,7 @@ const ASSETS = [
   './js/pages/settings.js',
   './js/pages/profile.js',
   './js/pages/add-expense.js',
+  './js/pages/utility-bills.js',
   './js/pages/scan-receipt.js',
   './js/pages/household.js',
   './js/pages/onboarding.js',
@@ -61,6 +66,7 @@ const ASSETS = [
   './pages/home.html',
   './pages/auth.html',
   './pages/finances.html',
+  './pages/utility-bills.html',
   './pages/ai.html',
   './pages/shopping.html',
   './pages/settings.html',

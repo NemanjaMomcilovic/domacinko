@@ -136,6 +136,27 @@ function generateMorningBriefing() {
     });
   }
 
+  // Komunalije — early-month ask / unpaid prompts
+  if (typeof getUtilityBillPrompts === 'function') {
+    const utilityPrompts = getUtilityBillPrompts();
+    utilityPrompts.slice(0, 3).forEach(p => {
+      const label = p.label || p.billType || 'račun';
+      if (p.type === 'unpaid') {
+        bullets.push({
+          type: 'warn',
+          icon: '💡',
+          text: `Račun za ${label} nije plaćen`
+        });
+      } else {
+        bullets.push({
+          type: 'info',
+          icon: '📬',
+          text: `Da li si dobio račun za ${label}?`
+        });
+      }
+    });
+  }
+
   const lowStock = typeof getLowStockPantry === 'function' ? getLowStockPantry() : [];
   if (lowStock.length > 0) {
     const names = lowStock.slice(0, 3).map(p => p.name).join(', ');
@@ -266,8 +287,8 @@ function renderMorningBriefing(containerId) {
         <p class="briefing-card__empty-text">Dodajte trošak, račun ili cilj u aplikaciji da vidite pregled.</p>
         <div class="briefing-card__empty-links">
           <a href="add-expense.html" class="briefing-card__empty-link">💸 Dodaj trošak</a>
+          <a href="utility-bills.html" class="briefing-card__empty-link">💡 Komunalije</a>
           <a href="settings.html" class="briefing-card__empty-link">📄 Računi i ciljevi</a>
-          <a href="maintenance.html" class="briefing-card__empty-link">🔧 Održavanje</a>
         </div>
       </div>
     `

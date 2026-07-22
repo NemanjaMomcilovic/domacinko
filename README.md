@@ -1,20 +1,21 @@
-# Domaćinko v7.4.0
+# Domaćinko v7.5.0
 
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-7.4.0-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-7.5.0-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
 [![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84)](docs/android-build.md)
 
-**Sada:** Domaćinko prati troškove i budžet, planira obroke i listu za kupovinu, i savetuje preko besplatnog 10KEY Savetnika — sve na jednom mestu, offline i bez registracije.
+**Sada:** Domaćinko prati troškove, budžet i komunalije, planira obroke i listu za kupovinu, i savetuje preko besplatnog 10KEY Savetnika — sve na jednom mestu, offline i bez registracije.
 
-## ✨ MVP funkcije (v7.4)
+## ✨ MVP funkcije (v7.5)
 
 | Modul | Opis |
 |-------|------|
 | 🏠 **Početna** | Jutarnji brifing i pregled budžeta (realni podaci) |
 | 💰 **Troškovi** | Dodavanje, lista, mesečni pregled |
+| 💡 **Komunalije** | Struja, voda, grejanje… — unos, foto potvrda, plaćeno |
 | 🍽️ **Plan obroka** | 3 obroka/dan, 70+ srpskih jela ili samo namirnice, lista za kupovinu |
 | 🛒 **Kupovina** | Lista sa dodavanjem i označavanjem kupljenog |
 | 💬 **10KEY Savetnik** | Besplatan lokalni asistent — budžet, obroci, kupovina |
@@ -64,7 +65,7 @@ Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v7.4.0)
+- Offline keširanje (Service Worker v7.5.0)
 - Prečice: Dodaj trošak, Lista za kupovinu, AI Savetnik
 - Push podsetnici za račune, budžet i održavanje
 
