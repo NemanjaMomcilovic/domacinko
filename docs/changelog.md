@@ -11,6 +11,23 @@
 - **Kupovina (beta)** — sakrivene v2 sekcije (ostava, navike, praćenje cena)
 - **Obroci (beta)** — sakrivena ostava-sekcija „Šta mogu da skuvam?"
 - **README** — jedna rečenica šta app radi sada + link na MVP obim
+
+### Vizuelni polish — dizajn sistem v7.3
+- **Kartice i senke** — konzistentni radius, hover na desktopu, flat list-item zaobljenja
+- **Brze akcije** — gradient pozadine po ćeliji, hover lift, 10KEY zelena paleta
+- **Donja navigacija** — aktivni tab sa pozadinskim pill-om i indikatorom
+- **Hero brifing** — zlatni 10KEY akcent preko gradienta
+- **Troškovi** — FAB (+) za brzo dodavanje rashoda
+- **Kupovina** — checklist sa borderom, strikethrough i fade za kupljeno
+- **Obroci** — kartice dana sa senkom i hover borderom
+- **10KEY Savetnik** — chat bubble gradient, zaobljen input bar, status bedž senka
+- **Prijava** — forma u auth-card kartici
+- **Moduli hub** — hero baner „Osnovni alati — aktivno" / „Dolazi uskoro"
+- **Uvod** — progress tačke proširene u pill za aktivni korak
+- **Podešavanja** — section kartice sa zelenim levim akcentom
+- **Tamna tema** — glatka tranzicija pri prebacivanju (`data-theme-transition`)
+- **Mobilno** — safe-area inset, touch min 48px na form inputima
+- **UTF-8** — ispravljeno „Sačuvaj trošak" na add-expense stranici
 - Service Worker v7.3.0
 
 ## [7.2.3] — 2026-07-22

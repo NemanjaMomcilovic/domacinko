@@ -19,6 +19,7 @@
   --color-text: #1a2e24;
   --color-text-secondary: #4a6358;
   --color-text-muted: #7a9188;
+  --color-bg-muted: #eef2f0;
 
   /* Semantic */
   --color-success: #2d8f5c;
@@ -106,6 +107,7 @@
   --color-text-muted: #7a9a88;
   --color-primary-light: #1f3d2c;
   --color-primary-soft: #2a5040;
+  --color-bg-muted: #243830;
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.35);

@@ -98,7 +98,9 @@ function toggleTheme() {
   const settings = getSettings();
   const dark = !settings.darkTheme;
   saveSettings({ darkTheme: dark });
+  document.documentElement.setAttribute('data-theme-transition', '');
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  setTimeout(() => document.documentElement.removeAttribute('data-theme-transition'), 400);
   return dark;
 }
 

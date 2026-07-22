@@ -107,12 +107,28 @@ function renderModulesHub(containerId) {
   if (!container) return;
 
   const beta = typeof isBetaMode === 'function' && isBetaMode();
-  const intro = beta
-    ? 'Osnovni alati su spremni za upotrebu. Napredni moduli su u razvoju — označeni kao „Dolazi uskoro".'
-    : 'Svi alati Domaćinka na jednom mestu — organizovano po kategorijama.';
+  const hero = beta
+    ? `
+      <div class="modules-hero modules-hero--beta">
+        <span class="modules-hero__icon" aria-hidden="true">🧰</span>
+        <div>
+          <h2 class="modules-hero__title">Osnovni alati — aktivno</h2>
+          <p class="modules-hero__text">Napredni moduli (održavanje, bašta, inventar…) označeni su „Dolazi uskoro". Uključite „Prikaži sve module" u Podešavanjima za raniji pristup.</p>
+        </div>
+      </div>
+    `
+    : `
+      <div class="modules-hero">
+        <span class="modules-hero__icon" aria-hidden="true">🏠</span>
+        <div>
+          <h2 class="modules-hero__title">Svi moduli Domaćinka</h2>
+          <p class="modules-hero__text">Organizovano po kategorijama — finansije, kuća, kupovina i 10KEY Savetnik.</p>
+        </div>
+      </div>
+    `;
 
   container.innerHTML = `
-    <p class="text-muted mb-md" style="font-size:var(--font-size-sm)">${intro}</p>
+    ${hero}
     ${MVP_MODULE_SECTIONS.map(section => {
       const modules = beta
         ? [...section.modules].sort((a, b) => (a.tier === b.tier ? 0 : a.tier === 'core' ? -1 : 1))

@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation('settings', { title: 'Svi moduli', showBack: true, backHref: 'settings.html' });
+  const beta = typeof isBetaMode === 'function' && isBetaMode();
+  initNavigation('settings', {
+    title: beta ? 'Alati za dom' : 'Svi moduli',
+    showBack: true,
+    backHref: 'settings.html'
+  });
   renderModulesHub('modules-hub');
 });
