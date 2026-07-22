@@ -1,5 +1,14 @@
 # Domaćinko — Changelog
 
+## [7.2.2] — 2026-07-22
+
+### OAuth — izbor naloga
+- **Google** — `prompt=select_account` pri OAuth prijavi (uvek prikazuje izbor Google naloga)
+- **Facebook** — `auth_type=reauthenticate` za ponovnu prijavu drugim nalogom
+- **Auth stranica** — napomena za testere kako da promene Google/Facebook nalog u pregledaču
+- **Podešavanja** — ista napomena kada korisnik nije prijavljen
+- Service Worker v7.2.2
+
 ## [7.2.1] — 2026-07-08
 
 ### 10KEY Savetnik — primarni proizvod (Opcija 1)

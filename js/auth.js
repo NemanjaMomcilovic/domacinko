@@ -258,13 +258,23 @@ async function signInWithFacebook() {
   return signInWithOAuth('facebook');
 }
 
+function getOAuthSignInOptions(provider) {
+  const options = { redirectTo: getOAuthRedirectUrl() };
+  if (provider === 'google') {
+    options.queryParams = { prompt: 'select_account' };
+  } else if (provider === 'facebook') {
+    options.queryParams = { auth_type: 'reauthenticate' };
+  }
+  return options;
+}
+
 async function signInWithOAuth(provider) {
   const client = getSupabaseClient();
   if (!client) throw new Error('Supabase nije podešen.');
 
   const { data, error } = await client.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: getOAuthRedirectUrl() }
+    options: getOAuthSignInOptions(provider)
   });
   if (error) throw error;
   return data;

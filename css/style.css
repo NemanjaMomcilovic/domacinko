@@ -676,6 +676,23 @@ img, video, svg {
   margin-top: 2px;
 }
 
+.auth-oauth-hint {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.auth-oauth-hint a {
+  color: var(--color-primary);
+}
+
+.settings-oauth-hint {
+  margin: var(--space-sm) 0 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
 .auth-input,
 .auth-page .form-input {
   min-height: 48px;

@@ -423,12 +423,15 @@ function renderAccountSection() {
   const showSyncBadge = isConfigJsSupabase() && isLoggedIn?.() && !isGuestMode?.();
   syncBadge?.classList.toggle('hidden', !showSyncBadge);
 
+  const oauthHint = document.getElementById('oauth-account-hint');
+
   if (isGuestMode?.()) {
     nameEl.textContent = settings.userName || 'Gost';
     emailEl.textContent = '';
     modeEl.textContent = 'Gost režim — podaci samo na ovom uređaju';
     logoutBtn.classList.add('hidden');
     loginLink.classList.remove('hidden');
+    oauthHint?.classList.remove('hidden');
     return;
   }
 
@@ -440,6 +443,7 @@ function renderAccountSection() {
     modeEl.textContent = isInHousehold?.() ? 'Porodično domaćinstvo' : '';
     logoutBtn.classList.remove('hidden');
     loginLink.classList.add('hidden');
+    oauthHint?.classList.add('hidden');
 
     logoutBtn.onclick = async () => {
       if (!confirm('Da li ste sigurni da želite da se odjavite?')) return;
@@ -457,4 +461,5 @@ function renderAccountSection() {
     : 'Prijavite se ili koristite gost režim';
   logoutBtn.classList.add('hidden');
   loginLink.classList.remove('hidden');
+  oauthHint?.classList.remove('hidden');
 }
