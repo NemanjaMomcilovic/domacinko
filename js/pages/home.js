@@ -180,8 +180,8 @@ function renderQuickActions() {
     : QUICK_ACTIONS_FULL;
   container.innerHTML = actions.map(a => `
     <a href="${a.href}" class="quick-action">
-      <span class="quick-action__icon">${a.icon}</span>
-      ${a.label}
+      <span class="quick-action__icon" aria-hidden="true">${a.icon}</span>
+      <span class="quick-action__label">${a.label}</span>
     </a>
   `).join('');
 }

@@ -1,5 +1,19 @@
 # Domaćinko — Changelog
 
+## [7.6.0] — 2026-07-22
+
+### Vizuelni polish — premium, miran UI
+- **Dizajn tokeni** — mekši zeleni wash umesto ravnog belog; lakši slojeviti shadow-i; konzistentniji radius i spacing
+- **Tipografija** — Google Font **Outfit** (400–800) sa jasnom hijerarhijom; zadržan green/gold brand
+- **Početna** — finance summary kao jedna kompozicija; brifing hero; brze akcije sa ikonicama u „plafonu“ i više vazduha
+- **Bottom nav** — blur, soft active pill + indicator, safe-area
+- **Kartice** — ujednačena elevacija/padding; savings/cilj štednje sa gold wash umesto ljubičastog
+- **Empty states** — mekši pozadinski wash i ikonica u krugu
+- **Auth / onboarding** — veći logo, brand-first prvi utisak, zeleni wash
+- **Motion** — page fade-in, card appear, button press (`prefers-reduced-motion` poštovan)
+- **Dark theme** — usklađeni wash, nav blur i kartice
+- Service Worker v7.6.0
+
 ## [7.5.1] — 2026-07-22
 
 ### Profil iz prijave (Google / Facebook / email)

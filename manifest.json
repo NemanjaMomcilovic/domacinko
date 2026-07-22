@@ -4,7 +4,7 @@
   "description": "AI pomoćnik za domaćinstvo — budžet, kupovina, porodična sinhronizacija i Android APK",
   "start_url": "./pages/home.html",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#fbfdfb",
   "theme_color": "#2d8f5c",
   "orientation": "portrait-primary",
   "lang": "sr",

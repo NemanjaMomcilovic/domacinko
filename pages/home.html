@@ -61,28 +61,30 @@
 
       <div id="month-comparison"></div>
 
-      <div class="card card--gradient-green text-center">
-        <p class="card__title">Finansijsko zdravlje</p>
-        <div id="health-score"></div>
-        <div class="health-feedback" id="health-feedback"></div>
+      <div class="finance-summary">
+        <div class="card card--gradient-green text-center finance-summary__health">
+          <p class="card__title">Finansijsko zdravlje</p>
+          <div id="health-score"></div>
+          <div class="health-feedback" id="health-feedback"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card__label">Potrošeno</div>
+            <div class="stat-card__value" id="monthly-spent">0 RSD</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Budžet</div>
+            <div class="stat-card__value" id="monthly-budget">0 RSD</div>
+          </div>
+          <div class="stat-card stat-card--highlight" style="grid-column: span 2">
+            <div class="stat-card__label">Preostalo</div>
+            <div class="stat-card__value stat-card__value--positive" id="remaining">0 RSD</div>
+          </div>
+        </div>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-card__label">Potrošeno</div>
-          <div class="stat-card__value" id="monthly-spent">0 RSD</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card__label">Budžet</div>
-          <div class="stat-card__value" id="monthly-budget">0 RSD</div>
-        </div>
-        <div class="stat-card stat-card--highlight" style="grid-column: span 2">
-          <div class="stat-card__label">Preostalo</div>
-          <div class="stat-card__value stat-card__value--positive" id="remaining">0 RSD</div>
-        </div>
-      </div>
-
-      <div class="card card--gradient-purple" id="savings-card"></div>
+      <div class="card card--gradient-gold" id="savings-card"></div>
 
       <div class="card card--gradient-yellow advice-card">
         <div class="advice-banner__label">💡 Domaćinko kaže</div>
