@@ -424,12 +424,24 @@ function renderAccountSection() {
   const logoutBtn = document.getElementById('logout-btn');
   const loginLink = document.getElementById('login-link');
   const configured = typeof isSupabaseConfigured === 'function' && isSupabaseConfigured();
+
+  if (typeof applyAuthProfileToSettings === 'function' && isLoggedIn?.() && getCurrentUser?.()) {
+    applyAuthProfileToSettings(getCurrentUser());
+  }
+
   const settings = getSettings();
 
-  if (avatarEl && typeof getUserAvatarContent === 'function') {
-    const avatarContent = getUserAvatarContent(settings);
-    avatarEl.textContent = avatarContent;
-    avatarEl.classList.toggle('user-avatar--initial', avatarContent.length === 1);
+  if (avatarEl) {
+    const avatarUrl = (settings.avatarUrl || '').trim();
+    if (avatarUrl) {
+      avatarEl.classList.remove('user-avatar--initial');
+      avatarEl.innerHTML = `<img src="${avatarUrl}" alt="" class="user-avatar__img" referrerpolicy="no-referrer">`;
+    } else if (typeof getUserAvatarContent === 'function') {
+      avatarEl.innerHTML = '';
+      const avatarContent = getUserAvatarContent(settings);
+      avatarEl.textContent = avatarContent;
+      avatarEl.classList.toggle('user-avatar--initial', avatarContent.length === 1);
+    }
   }
 
   const showSyncBadge = isConfigJsSupabase() && isLoggedIn?.() && !isGuestMode?.();
@@ -438,7 +450,7 @@ function renderAccountSection() {
   const oauthHint = document.getElementById('oauth-account-hint');
 
   if (isGuestMode?.()) {
-    nameEl.textContent = settings.userName || 'Gost';
+    nameEl.textContent = settings.userName || settings.firstName || 'Gost';
     emailEl.textContent = '';
     modeEl.textContent = 'Gost režim — podaci samo na ovom uređaju';
     logoutBtn.classList.add('hidden');
@@ -451,7 +463,7 @@ function renderAccountSection() {
     const user = getCurrentUser();
     const profile = getCurrentProfile();
     nameEl.textContent = getAuthDisplayName();
-    emailEl.textContent = user?.email || profile?.email || '';
+    emailEl.textContent = user?.email || settings.contactEmail || profile?.email || '';
     modeEl.textContent = isInHousehold?.() ? 'Porodično domaćinstvo' : '';
     logoutBtn.classList.remove('hidden');
     loginLink.classList.add('hidden');

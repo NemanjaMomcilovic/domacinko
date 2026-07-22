@@ -53,19 +53,137 @@ function getCachedProfile() {
   }
 }
 
+function isBlank(value) {
+  return value == null || String(value).trim() === '';
+}
+
+function capitalizeWord(value) {
+  const s = String(value || '').trim();
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function splitDisplayName(fullName) {
+  const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return { firstName: '', lastName: '' };
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(' ')
+  };
+}
+
+function mergeAuthMetaSources(user) {
+  const merged = {};
+  const fill = (source) => {
+    if (!source || typeof source !== 'object') return;
+    Object.keys(source).forEach((key) => {
+      const val = source[key];
+      if (isBlank(merged[key]) && !isBlank(val)) merged[key] = val;
+    });
+  };
+
+  fill(user?.user_metadata);
+  (user?.identities || []).forEach((identity) => fill(identity?.identity_data));
+  return merged;
+}
+
+/**
+ * Map provider / Supabase user metadata into a normalized profile payload.
+ * Handles Google, Facebook, and email signup metadata field variants.
+ */
+function extractAuthProfileFields(user) {
+  if (!user) {
+    return { firstName: '', lastName: '', displayName: '', email: '', avatarUrl: '' };
+  }
+
+  const meta = mergeAuthMetaSources(user);
+  let firstName = meta.given_name || meta.first_name || meta.firstName || '';
+  let lastName = meta.family_name || meta.last_name || meta.lastName || '';
+  const displayFromMeta = meta.full_name || meta.name || meta.display_name || meta.preferred_username || '';
+
+  if ((isBlank(firstName) || isBlank(lastName)) && displayFromMeta) {
+    const split = splitDisplayName(displayFromMeta);
+    if (isBlank(firstName)) firstName = split.firstName;
+    if (isBlank(lastName)) lastName = split.lastName;
+  }
+
+  const email = user.email || meta.email || '';
+  if (isBlank(firstName) && email) {
+    const local = String(email).split('@')[0] || '';
+    const token = local.replace(/[._+\-]+/g, ' ').replace(/\d+/g, ' ').trim().split(/\s+/)[0] || local;
+    firstName = capitalizeWord(token);
+  }
+
+  const displayName = displayFromMeta
+    || [firstName, lastName].filter((p) => !isBlank(p)).join(' ').trim()
+    || firstName
+    || '';
+
+  const avatarUrl = meta.avatar_url || meta.picture || meta.avatar || meta.profile_image_url || '';
+
+  return {
+    firstName: String(firstName || '').trim(),
+    lastName: String(lastName || '').trim(),
+    displayName: String(displayName || '').trim(),
+    email: String(email || '').trim(),
+    avatarUrl: String(avatarUrl || '').trim()
+  };
+}
+
+/**
+ * Merge auth metadata into local settings — only fills EMPTY fields
+ * so user-edited profile values are never overwritten.
+ */
+function applyAuthProfileToSettings(user) {
+  if (!user || typeof getSettings !== 'function') return {};
+
+  const extracted = extractAuthProfileFields(user);
+  const settings = getSettings();
+  const updates = {};
+
+  if (isBlank(settings.firstName) && extracted.firstName) updates.firstName = extracted.firstName;
+  if (isBlank(settings.lastName) && extracted.lastName) updates.lastName = extracted.lastName;
+
+  const nextFirst = updates.firstName || settings.firstName || '';
+  const nextLast = updates.lastName || settings.lastName || '';
+  const composedName = [nextFirst, nextLast].filter(Boolean).join(' ').trim();
+
+  if (isBlank(settings.userName)) {
+    if (extracted.displayName) updates.userName = extracted.displayName;
+    else if (composedName) updates.userName = composedName;
+  }
+
+  if (isBlank(settings.contactEmail) && extracted.email) updates.contactEmail = extracted.email;
+  if (isBlank(settings.avatarUrl) && extracted.avatarUrl) updates.avatarUrl = extracted.avatarUrl;
+
+  if (Object.keys(updates).length && typeof saveSettings === 'function') {
+    saveSettings(updates);
+  }
+  return updates;
+}
+
 function applyProfileToLocalSettings(profile, skipSave) {
   if (!profile) return;
+  const current = typeof getSettings === 'function' ? getSettings() : {};
+  const profileName = [profile.first_name, profile.last_name].filter(Boolean).join(' ').trim();
+  const pickNonEmpty = (profileVal, localVal) => (
+    !isBlank(profileVal) ? String(profileVal).trim() : (localVal || '')
+  );
+
   const updates = {
-    userName: [profile.first_name, profile.last_name].filter(Boolean).join(' ').trim(),
-    firstName: profile.first_name || '',
-    lastName: profile.last_name || '',
-    monthlyBudget: profile.monthly_budget ?? 80000,
-    monthlyIncome: profile.monthly_income ?? 0,
-    currentSavings: profile.current_savings ?? 0,
-    savingsGoal: profile.savings_goal ?? 0,
-    savingsGoalName: profile.savings_goal_name || '',
-    currency: profile.currency || 'RSD'
+    userName: pickNonEmpty(profileName, current.userName),
+    firstName: pickNonEmpty(profile.first_name, current.firstName),
+    lastName: pickNonEmpty(profile.last_name, current.lastName),
+    monthlyBudget: profile.monthly_budget ?? current.monthlyBudget ?? 80000,
+    monthlyIncome: profile.monthly_income ?? current.monthlyIncome ?? 0,
+    currentSavings: profile.current_savings ?? current.currentSavings ?? 0,
+    savingsGoal: profile.savings_goal ?? current.savingsGoal ?? 0,
+    savingsGoalName: pickNonEmpty(profile.savings_goal_name, current.savingsGoalName),
+    currency: profile.currency || current.currency || 'RSD'
   };
+  if (!isBlank(profile.email) && isBlank(current.contactEmail)) {
+    updates.contactEmail = profile.email;
+  }
   if (skipSave && typeof saveSettings === 'function') {
     const data = getData();
     data.settings = { ...data.settings, ...updates };
@@ -75,6 +193,22 @@ function applyProfileToLocalSettings(profile, skipSave) {
   }
   if (profile.onboarding_complete) {
     setOnboardingComplete();
+  }
+}
+
+async function backfillProfileFromAuth(user) {
+  if (!user || !_currentProfile) return null;
+  const extracted = extractAuthProfileFields(user);
+  const updates = {};
+  if (isBlank(_currentProfile.first_name) && extracted.firstName) updates.first_name = extracted.firstName;
+  if (isBlank(_currentProfile.last_name) && extracted.lastName) updates.last_name = extracted.lastName;
+  if (isBlank(_currentProfile.email) && extracted.email) updates.email = extracted.email;
+  if (!Object.keys(updates).length) return null;
+  try {
+    return await saveProfile(updates);
+  } catch (err) {
+    console.warn('Popuna profila iz auth podataka:', err.message);
+    return null;
   }
 }
 
@@ -106,7 +240,9 @@ async function initAuth() {
   if (session?.user) {
     _currentUser = session.user;
     clearGuestMode();
+    applyAuthProfileToSettings(session.user);
     await fetchProfile();
+    await backfillProfileFromAuth(session.user);
     if (typeof pullUserDataFromCloud === 'function') {
       await pullUserDataFromCloud();
     }
@@ -119,8 +255,12 @@ async function initAuth() {
     if (session?.user) {
       _currentUser = session.user;
       clearGuestMode();
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      applyAuthProfileToSettings(session.user);
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
         await fetchProfile();
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+          await backfillProfileFromAuth(session.user);
+        }
       }
     } else if (event === 'SIGNED_OUT') {
       _currentUser = null;
@@ -164,11 +304,12 @@ async function createDefaultProfile() {
   if (!_currentUser) return null;
 
   const client = getSupabaseClient();
+  const extracted = extractAuthProfileFields(_currentUser);
   const profile = {
     user_id: _currentUser.id,
-    email: _currentUser.email || '',
-    first_name: '',
-    last_name: '',
+    email: extracted.email || _currentUser.email || '',
+    first_name: extracted.firstName || '',
+    last_name: extracted.lastName || '',
     monthly_income: 0,
     current_savings: 0,
     savings_goal: 10000,
@@ -211,21 +352,38 @@ async function saveProfile(updates) {
   return data;
 }
 
-async function signUp(email, password) {
+async function signUp(email, password, extra = {}) {
   const client = getSupabaseClient();
   if (!client) throw new Error('Supabase nije podešen.');
+
+  const firstName = String(extra.firstName || '').trim();
+  const lastName = String(extra.lastName || '').trim();
+  const fullName = [firstName, lastName].filter(Boolean).join(' ');
 
   const { data, error } = await client.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: getOAuthRedirectUrl() }
+    options: {
+      emailRedirectTo: getOAuthRedirectUrl(),
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        full_name: fullName,
+        name: fullName
+      }
+    }
   });
   if (error) throw error;
 
   if (data.user) {
     _currentUser = data.user;
     clearGuestMode();
-    await createDefaultProfile();
+    applyAuthProfileToSettings(data.user);
+    if (data.session) {
+      await finalizeSignIn(data.user);
+    } else {
+      await createDefaultProfile();
+    }
   }
   return data;
 }
@@ -233,7 +391,9 @@ async function signUp(email, password) {
 async function finalizeSignIn(user) {
   _currentUser = user;
   clearGuestMode();
+  applyAuthProfileToSettings(user);
   await fetchProfile();
+  await backfillProfileFromAuth(user);
   if (typeof pullUserDataFromCloud === 'function') {
     await pullUserDataFromCloud();
   }
@@ -442,7 +602,15 @@ function getAuthDisplayName() {
     return [_currentProfile.first_name, _currentProfile.last_name].filter(Boolean).join(' ');
   }
   const settings = typeof getSettings === 'function' ? getSettings() : {};
-  return settings.userName || settings.firstName || 'Korisnik';
+  const fromSettings = settings.userName
+    || [settings.firstName, settings.lastName].filter(Boolean).join(' ')
+    || settings.firstName;
+  if (fromSettings) return fromSettings;
+  if (_currentUser) {
+    const extracted = extractAuthProfileFields(_currentUser);
+    if (extracted.displayName) return extracted.displayName;
+  }
+  return 'Korisnik';
 }
 
 async function requireAuthOrGuest(redirectPath) {

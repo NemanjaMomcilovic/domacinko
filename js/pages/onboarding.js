@@ -24,7 +24,9 @@ function showScreen(n) {
 
   if (n === 3) {
     nextBtn.textContent = 'Dodaj prvi trošak →';
-    const firstName = document.getElementById('onb-first-name').value.trim() || 'prijatelju';
+    const firstName = document.getElementById('onb-first-name').value.trim()
+      || getSettings()?.firstName
+      || 'prijatelju';
     document.getElementById('onb-welcome-name').textContent = firstName;
   } else {
     nextBtn.textContent = 'Nastavi';
@@ -33,6 +35,8 @@ function showScreen(n) {
 
 function saveStep1Data() {
   const firstName = document.getElementById('onb-first-name').value.trim();
+  const lastName = document.getElementById('onb-last-name')?.value.trim()
+    || (getSettings()?.lastName || '');
   const householdSize = parseInt(document.getElementById('onb-household-size').value, 10) || 1;
 
   if (!firstName) {
@@ -42,7 +46,8 @@ function saveStep1Data() {
 
   saveSettings({
     firstName,
-    userName: firstName,
+    lastName,
+    userName: [firstName, lastName].filter(Boolean).join(' '),
     householdSize
   });
 
@@ -68,13 +73,19 @@ function saveStep2Data() {
 async function finishOnboarding() {
   setOnboardingComplete();
 
-  const firstName = document.getElementById('onb-first-name').value.trim();
+  const firstName = document.getElementById('onb-first-name').value.trim()
+    || getSettings()?.firstName
+    || '';
+  const lastName = document.getElementById('onb-last-name')?.value.trim()
+    || getSettings()?.lastName
+    || '';
   const budget = parseFloat(document.getElementById('onb-budget').value) || 80000;
 
   if (isLoggedIn()) {
     try {
       await saveProfile({
         first_name: firstName,
+        last_name: lastName,
         monthly_budget: budget,
         onboarding_complete: true
       });
@@ -115,6 +126,34 @@ function skipOptionalStep() {
   }
 }
 
+function applyAuthPrefillToOnboarding() {
+  if (typeof applyAuthProfileToSettings === 'function' && isLoggedIn() && getCurrentUser()) {
+    applyAuthProfileToSettings(getCurrentUser());
+  }
+
+  const settings = getSettings();
+  const firstNameInput = document.getElementById('onb-first-name');
+  const lastNameInput = document.getElementById('onb-last-name');
+  const titleEl = document.querySelector('[data-screen="1"] .onboarding__title');
+  const textEl = document.querySelector('[data-screen="1"] .onboarding__text');
+  const nameLabel = document.querySelector('label[for="onb-first-name"]');
+
+  if (settings.firstName && firstNameInput) firstNameInput.value = settings.firstName;
+  if (settings.lastName && lastNameInput) lastNameInput.value = settings.lastName;
+  if (settings.householdSize) {
+    document.getElementById('onb-household-size').value = String(Math.min(6, settings.householdSize));
+  }
+  if (settings.monthlyBudget) document.getElementById('onb-budget').value = settings.monthlyBudget;
+
+  if ((settings.firstName || '').trim()) {
+    if (titleEl) titleEl.textContent = `Zdravo, ${settings.firstName}!`;
+    if (textEl) {
+      textEl.textContent = 'Ime smo preuzeli sa naloga. Potvrdite veličinu domaćinstva — sve možete promeniti kasnije u Više → Moj profil.';
+    }
+    if (nameLabel) nameLabel.textContent = 'Ime (sa naloga)';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth();
 
@@ -126,13 +165,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const settings = getSettings();
-  if (settings.firstName) document.getElementById('onb-first-name').value = settings.firstName;
-  if (settings.householdSize) {
-    document.getElementById('onb-household-size').value = String(Math.min(6, settings.householdSize));
-  }
-  if (settings.monthlyBudget) document.getElementById('onb-budget').value = settings.monthlyBudget;
+  applyAuthPrefillToOnboarding();
 
+  // Ako ime već postoji, i dalje prikaži korak 1 zbog domaćinstva (ime je popunjeno).
   showScreen(1);
 
   document.getElementById('next-btn').addEventListener('click', goNext);

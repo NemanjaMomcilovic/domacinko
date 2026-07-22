@@ -140,7 +140,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const result = await signUp(
         document.getElementById('register-email').value.trim(),
-        password
+        password,
+        {
+          firstName: document.getElementById('register-first-name')?.value.trim() || '',
+          lastName: document.getElementById('register-last-name')?.value.trim() || ''
+        }
       );
       if (result.user && !result.session) {
         showAuthMessage('Proverite email za potvrdu naloga, zatim se prijavite.');

@@ -1,5 +1,15 @@
 # Domaćinko — Changelog
 
+## [7.5.1] — 2026-07-22
+
+### Profil iz prijave (Google / Facebook / email)
+- **Automatsko mapiranje** — posle uspešne prijave ili registracije, ime, prezime, email i avatar se preuzimaju iz `user_metadata` / `identities` i upisuju u lokalna podešavanja (samo prazna polja)
+- **Google / Facebook** — `full_name` / `name` / `given_name` / `family_name`, `avatar_url` / `picture`, email
+- **Email registracija** — opciona polja ime/prezime; ako nedostaju, privremeno ime iz lokalnog dela emaila
+- **Onboarding** — ime/prezime unapred popunjeni; ako ime postoji, prilagođen tekst („sa naloga“), i dalje se pita za domaćinstvo i budžet
+- **Ko sam / Moj profil** — prikazuje sinhronizovano ime i avatar sa naloga
+- Service Worker v7.5.1
+
 ## [7.5.0] — 2026-07-22
 
 ### Komunalije (core)

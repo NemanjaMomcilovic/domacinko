@@ -63,6 +63,14 @@
       <!-- Registracija -->
       <form class="auth-form hidden" id="register-form" data-panel="register">
         <div class="form-group">
+          <label class="form-label" for="register-first-name">Ime <span class="text-muted">(opciono)</span></label>
+          <input type="text" class="form-input auth-input" id="register-first-name" placeholder="npr. Ana" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="register-last-name">Prezime <span class="text-muted">(opciono)</span></label>
+          <input type="text" class="form-input auth-input" id="register-last-name" placeholder="npr. Petrović" autocomplete="family-name">
+        </div>
+        <div class="form-group">
           <label class="form-label" for="register-email">Email</label>
           <input type="email" class="form-input auth-input" id="register-email" placeholder="vas@email.com" required autocomplete="email">
         </div>

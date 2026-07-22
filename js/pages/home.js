@@ -188,6 +188,9 @@ function renderQuickActions() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth?.();
+  if (typeof applyAuthProfileToSettings === 'function' && isLoggedIn?.() && getCurrentUser?.()) {
+    applyAuthProfileToSettings(getCurrentUser());
+  }
 
   initNavigation('home');
   initPwaInstallBanner();
@@ -198,9 +201,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('greeting').textContent = `${getGreeting()}, ${name}!`;
 
   const avatarEl = document.getElementById('user-avatar');
-  const avatarContent = getUserAvatarContent(settings);
-  avatarEl.textContent = avatarContent;
-  if (avatarContent.length === 1) avatarEl.classList.add('user-avatar--initial');
+  const avatarUrl = (settings.avatarUrl || '').trim();
+  if (avatarUrl) {
+    avatarEl.classList.remove('user-avatar--initial');
+    avatarEl.innerHTML = `<img src="${avatarUrl}" alt="" class="user-avatar__img" referrerpolicy="no-referrer">`;
+  } else {
+    avatarEl.innerHTML = '';
+    const avatarContent = getUserAvatarContent(settings);
+    avatarEl.textContent = avatarContent;
+    if (avatarContent.length === 1) avatarEl.classList.add('user-avatar--initial');
+  }
 
   const household = getHousehold();
   const members = household.familyMembers?.length || 0;

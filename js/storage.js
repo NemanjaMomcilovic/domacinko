@@ -360,6 +360,7 @@ const DEFAULT_DATA = {
     apiUrl: 'https://api.openai.com/v1/chat/completions',
     notificationsEnabled: false,
     contactEmail: '',
+    avatarUrl: '',
     betaMode: true,
     householdSize: 1,
     billParser: 'local'
@@ -922,7 +923,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '7.5.0',
+    version: '7.5.1',
     app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
     profileId: getActiveProfileId(),

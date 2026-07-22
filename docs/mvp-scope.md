@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.5.0)
+# Domaćinko — MVP obim (v7.5.1)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 
@@ -87,6 +87,7 @@ OCR pipeline je zamenljiv (`js/modules/bills/`) — UI uvek traži potvrdu. Stor
 
 ## Verzionisanje
 
+- **v7.5.1** — Profil iz auth (Google/Facebook/email) → onboarding i podešavanja
 - **v7.5.0** — Komunalije (core): tipovi, recurrence, foto potvrda, brifing
 - **v7.4.0** — Plan obroka: 3 obroka/dan, gotovo jelo ili namirnice, proširen katalog
 - **v7.3.0** — MVP focus: dokumentacija, beta enforcement, polish core tokova

@@ -1,6 +1,6 @@
 {
   "name": "domacinko",
-  "version": "7.5.0",
+  "version": "7.5.1",
   "description": "Domaćinko — AI pomoćnik za domaćinstvo (PWA + Android)",
   "private": true,
   "scripts": {

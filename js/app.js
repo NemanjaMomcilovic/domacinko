@@ -157,7 +157,7 @@ function renderHealthFeedback(containerId) {
 }
 
 function getUserAvatarContent(settings) {
-  const name = (settings?.userName || '').trim();
+  const name = (settings?.userName || settings?.firstName || '').trim();
   if (name) return name.charAt(0).toUpperCase();
   return '🏡';
 }
