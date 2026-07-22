@@ -1,5 +1,15 @@
 # Domaćinko — Changelog
 
+## [7.6.1] — 2026-07-22
+
+### Svetla / Tamna tema — vidljiv prekidač
+- **Theme switch** — moderni sun/moon toggle (iOS/Android stil) sa glatkom tranzicijom
+- **Više → Kako app radi** — istaknut red „Svetla / Tamna tema“ (van sklopljenog Izgleda)
+- **Početna** — brzi prekidač u headeru pored avatara
+- **Tokeni** — mekši zeleni u light; mirnije duboke površine u dark (bez neona)
+- **Persistencija** — `settings.darkTheme` + primena na load; sync između tabova/stranica
+- Service Worker v7.6.1
+
 ## [7.6.0] — 2026-07-22
 
 ### Vizuelni polish — premium, miran UI

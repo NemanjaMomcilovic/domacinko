@@ -247,14 +247,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  const themeToggle = document.getElementById('dark-theme-toggle');
-  if (settings.darkTheme) themeToggle.classList.add('toggle--on');
-
-  themeToggle.addEventListener('click', () => {
-    const dark = toggleTheme();
-    themeToggle.classList.toggle('toggle--on', dark);
-    saveSettings({ darkTheme: dark });
-  });
+  const themeToggle = document.getElementById('theme-switch-settings');
+  if (themeToggle && typeof bindThemeSwitches === 'function') {
+    bindThemeSwitches();
+  } else if (themeToggle) {
+    if (settings.darkTheme) themeToggle.classList.add('theme-switch--dark');
+    themeToggle.addEventListener('click', () => {
+      const dark = toggleTheme();
+      themeToggle.classList.toggle('theme-switch--dark', dark);
+    });
+  }
 
   const largeTextToggle = document.getElementById('large-text-toggle');
   if (settings.largeText) largeTextToggle?.classList.add('toggle--on');

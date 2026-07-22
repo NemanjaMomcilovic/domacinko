@@ -923,7 +923,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '7.6.0',
+    version: '7.6.1',
     app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
     profileId: getActiveProfileId(),

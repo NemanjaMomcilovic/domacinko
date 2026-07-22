@@ -93,18 +93,31 @@
                 <option value="USD">USD</option>
               </select>
             </div>
-            <details class="settings-appearance">
+            <div class="theme-switch-row">
+              <div class="theme-switch-row__text">
+                <span class="theme-switch-row__title">Svetla / Tamna tema</span>
+                <span class="theme-switch-row__hint" data-theme-hint>Svetla tema</span>
+              </div>
+              <button type="button" class="theme-switch" id="theme-switch-settings"
+                role="switch" aria-checked="false" aria-label="Svetla tema">
+                <span class="theme-switch__track">
+                  <svg class="theme-switch__icon theme-switch__icon--sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+                  </svg>
+                  <svg class="theme-switch__icon theme-switch__icon--moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z"/>
+                  </svg>
+                  <span class="theme-switch__thumb"></span>
+                </span>
+              </button>
+            </div>
+            <details class="settings-appearance" open>
               <summary class="settings-item settings-item--summary">
                 <span class="settings-item__label">Izgled</span>
-                <span class="settings-item__value">Tamna tema, veći tekst</span>
+                <span class="settings-item__value">Veći tekst, kontrast</span>
               </summary>
               <div class="settings-appearance__body">
-                <div class="settings-item">
-                  <span class="settings-item__label">Tamna tema</span>
-                  <button type="button" class="toggle" id="dark-theme-toggle" aria-label="Tamna tema">
-                    <span class="toggle__knob"></span>
-                  </button>
-                </div>
                 <div class="settings-item">
                   <span class="settings-item__label">Veći tekst</span>
                   <button type="button" class="toggle" id="large-text-toggle" aria-label="Veći tekst">
@@ -313,7 +326,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.6.0 · MVP focus</p>
+          <p class="text-muted settings-about__version">Verzija 7.6.1 · MVP focus</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>

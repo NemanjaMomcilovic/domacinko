@@ -5,31 +5,31 @@
   --color-gold-dark: #9a7b1a;
   --color-gold-wash: rgba(201, 162, 39, 0.12);
 
-  /* Domaćinko primary */
-  --color-primary: #2d8f5c;
-  --color-primary-dark: #1f6b44;
-  --color-primary-light: #e8f5ee;
-  --color-primary-soft: #b8e0c8;
-  --color-primary-muted: #4aab75;
+  /* Domaćinko primary — soft sage green, not neon */
+  --color-primary: #2f8a5c;
+  --color-primary-dark: #246b47;
+  --color-primary-light: #eaf6ef;
+  --color-primary-soft: #c5e4d2;
+  --color-primary-muted: #4a9d70;
 
   /* Neutrals — soft green-tinted wash, not flat white */
-  --color-bg: #fbfdfb;
-  --color-bg-secondary: #eef5f1;
-  --color-surface: #f3f8f5;
-  --color-border: #d9e6df;
+  --color-bg: #fafcfb;
+  --color-bg-secondary: #f0f5f2;
+  --color-surface: #f4f8f5;
+  --color-border: #d5e3db;
   --color-text: #1a2e24;
   --color-text-secondary: #4a6358;
   --color-text-muted: #6f857b;
   --color-bg-muted: #e8f0eb;
   --color-bg-wash: linear-gradient(
     165deg,
-    #f7fbf8 0%,
-    #eef6f1 42%,
-    #f4f7f5 100%
+    #f6faf8 0%,
+    #eef5f1 42%,
+    #f3f7f5 100%
   );
   --color-app-wash: linear-gradient(
     180deg,
-    rgba(232, 245, 238, 0.55) 0%,
+    rgba(234, 246, 239, 0.5) 0%,
     var(--color-bg) 28%,
     var(--color-bg) 100%
   );
@@ -121,31 +121,35 @@
 }
 
 [data-theme="dark"] {
-  --color-bg: #121f18;
-  --color-bg-secondary: #1a2e24;
-  --color-surface: #1a2920;
-  --color-border: #2d4538;
-  --color-text: #e8f5ee;
-  --color-text-secondary: #b0cfc0;
-  --color-text-muted: #7a9a88;
-  --color-primary-light: #1f3d2c;
-  --color-primary-soft: #2a5040;
-  --color-bg-muted: #243830;
-  --color-gold-wash: rgba(201, 162, 39, 0.18);
+  /* Calmer deep greens — muted surfaces, soft primary */
+  --color-bg: #0e1712;
+  --color-bg-secondary: #152019;
+  --color-surface: #18241c;
+  --color-border: #2a3a30;
+  --color-text: #e2eee7;
+  --color-text-secondary: #a5bdb0;
+  --color-text-muted: #758a7e;
+  --color-primary: #3d8f66;
+  --color-primary-dark: #2f7352;
+  --color-primary-muted: #4a9a72;
+  --color-primary-light: #1a2e24;
+  --color-primary-soft: #243830;
+  --color-bg-muted: #1e2e26;
+  --color-gold-wash: rgba(201, 162, 39, 0.14);
   --color-bg-wash: linear-gradient(
     165deg,
-    #152219 0%,
-    #1a2e24 45%,
-    #152219 100%
+    #101a14 0%,
+    #152019 45%,
+    #101a14 100%
   );
   --color-app-wash: linear-gradient(
     180deg,
-    rgba(45, 143, 92, 0.12) 0%,
+    rgba(61, 143, 102, 0.08) 0%,
     var(--color-bg) 32%,
     var(--color-bg) 100%
   );
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.15);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.3), 0 16px 36px rgba(0, 0, 0, 0.25);
-  --shadow-nav: 0 -1px 0 rgba(0, 0, 0, 0.25), 0 -8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 1px 4px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.32), 0 8px 20px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.36), 0 16px 36px rgba(0, 0, 0, 0.28);
+  --shadow-nav: 0 -1px 0 rgba(0, 0, 0, 0.3), 0 -8px 24px rgba(0, 0, 0, 0.35);
 }
