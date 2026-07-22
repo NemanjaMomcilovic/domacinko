@@ -1315,6 +1315,35 @@
   line-height: 1.4;
 }
 
+.module-card__badge {
+  display: inline-block;
+  margin-top: var(--space-xs);
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-muted);
+  color: var(--color-text-muted);
+}
+
+.module-card__badge--core {
+  background: rgba(45, 143, 92, 0.12);
+  color: var(--color-primary);
+}
+
+.module-card--coming-soon {
+  opacity: 0.72;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.module-card--coming-soon:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
 /* Household form fields */
 .hh-form-fields {
   display: flex;

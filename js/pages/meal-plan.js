@@ -269,7 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMealPresets();
   renderMealDays();
   renderMealPlanEmptyHint();
-  renderCookSuggestions();
+
+  const beta = typeof isBetaMode === 'function' && isBetaMode();
+  const cookSection = document.getElementById('cook-suggestions')?.closest('.section');
+  if (beta && cookSection) {
+    cookSection.classList.add('hidden');
+  } else {
+    renderCookSuggestions();
+  }
 
   document.getElementById('generate-shopping').addEventListener('click', () => {
     const plan = getMealPlan();

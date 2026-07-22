@@ -130,6 +130,13 @@ function renderLowStockWarnings() {
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('shopping', { title: 'Lista za kupovinu' });
 
+  const beta = typeof isBetaMode === 'function' && isBetaMode();
+  if (beta) {
+    document.querySelectorAll('#pantry-warnings, #purchase-patterns, #watch-list').forEach(el => {
+      el.closest('.section')?.classList.add('hidden');
+    });
+  }
+
   const catSelect = document.getElementById('item-category');
   if (catSelect && typeof SHOPPING_CATEGORIES !== 'undefined') {
     catSelect.innerHTML = SHOPPING_CATEGORIES.map(c =>

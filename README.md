@@ -1,27 +1,27 @@
-# Domaćinko v7.2.3
+# Domaćinko v7.3.0
 
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-7.2.3-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-7.3.0-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
 [![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84)](docs/android-build.md)
 
-Domaćinko prati vaše finansije, kupovinu, održavanje, inventar i popravke — sa proaktivnim jutarnjim brifingom, AI savetnikom, **porodičnom sinhronizacijom** i offline PWA podrškom.
+**Sada:** Domaćinko prati troškove i budžet, planira obroke i listu za kupovinu, i savetuje preko besplatnog 10KEY Savetnika — sve na jednom mestu, offline i bez registracije.
 
-## ✨ Ključne funkcije
+## ✨ MVP funkcije (v7.3)
 
 | Modul | Opis |
 |-------|------|
-| 🏠 **Početna** | Digitalni domaćin — jutarnji brifing sa 20+ scenarija |
-| 👨‍👩‍👧‍👦 **Porodica** | Deljenje troškova i kupovine — pozivni kod, Supabase sync |
-| 💰 **Finansije** | Budžet, trend, nedeljni pregled, **Štampaj izveštaj** (PDF) |
-| 🤖 **AI** | Savetnik, Majstor, Vizuelni asistent — offline + OpenAI opcija |
-| 🍽️ **Plan obroka** | Drag-and-drop, 24+ srpska jela, auto lista za kupovinu |
-| 👤 **Lokalni profili** | Više članova na istom uređaju + porodična sinhronizacija |
-| 🛒 **Kupovina** | Lista sa kategorijama, omiljeni proizvodi, upozorenja ostave |
-| 🔧 **Održavanje** | Sezonski zadaci, podsetnici, garancije |
-| 📱 **Android APK** | Capacitor wrapper — build lokalno u Android Studio |
+| 🏠 **Početna** | Jutarnji brifing i pregled budžeta (realni podaci) |
+| 💰 **Troškovi** | Dodavanje, lista, mesečni pregled |
+| 🍽️ **Plan obroka** | 24 srpska jela, prevlačenje, auto lista za kupovinu |
+| 🛒 **Kupovina** | Lista sa dodavanjem i označavanjem kupljenog |
+| 💬 **10KEY Savetnik** | Besplatan lokalni asistent — budžet, obroci, kupovina |
+| 👤 **Nalog i profil** | Prijava, sinhronizacija, ime i budžet |
+| 👨‍👩‍👧 **Porodica** | Pozivni kod i deljenje podataka (Supabase) |
+
+Napredni moduli (održavanje, inventar, bašta…) dolaze u v2 — vidljivi u **Više → Pregled svih modula** kao „Dolazi uskoro". Detalji: [docs/mvp-scope.md](docs/mvp-scope.md).
 
 ## 🚀 Pokretanje
 
@@ -64,7 +64,7 @@ Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v7.2.3)
+- Offline keširanje (Service Worker v7.3.0)
 - Prečice: Dodaj trošak, Lista za kupovinu, AI Savetnik
 - Push podsetnici za račune, budžet i održavanje
 
@@ -88,7 +88,7 @@ domacinko/
 
 ## 📖 Dokumentacija
 
-- **[Beta launch — korak po korak](docs/SETUP-KORAK-PO-KORAK.md)** ← počni ovde za friend beta
+- **[MVP obim (v1 vs v2)](docs/mvp-scope.md)** ← šta app radi sada
 - [Vizija proizvoda](docs/vision.md)
 - [Changelog](docs/changelog.md)
 - [Brzi vodič za korisnike](docs/user-quickstart.md)

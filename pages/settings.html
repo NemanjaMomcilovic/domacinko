@@ -19,6 +19,17 @@
     <header class="page-header" id="page-header"></header>
 
     <main class="main-content main-content--settings">
+      <div class="settings-group" id="mvp-summary">
+        <h3 class="settings-group__title">Šta app radi</h3>
+        <div class="card card--flat settings-mvp-card">
+          <ul class="settings-mvp-list">
+            <li>💰 Prati troškove i mesečni budžet</li>
+            <li>🍽️ Planira obroke i listu za kupovinu</li>
+            <li>💬 Savetuje preko 10KEY Savetnika (besplatno)</li>
+          </ul>
+        </div>
+      </div>
+
       <form id="settings-form">
         <!-- 1. Ko sam -->
         <div class="settings-group">
@@ -124,13 +135,13 @@
         </div>
 
         <!-- Alati za dom -->
-        <div class="settings-group">
+        <div class="settings-group" id="more-tools-group">
           <h3 class="settings-group__title">Više alata</h3>
           <div class="card card--flat settings-section-card">
-            <p class="settings-section-card__subtitle text-muted">
-              Održavanje, bašta, projekti, inventar i ostali moduli za napredne korisnike.
+            <p class="settings-section-card__subtitle text-muted" id="more-tools-subtitle">
+              Osnovni moduli su aktivni. Napredni alati (održavanje, bašta, inventar…) dolaze uskoro.
             </p>
-            <a href="modules.html" class="btn btn--secondary btn--block">Alati za dom</a>
+            <a href="modules.html" class="btn btn--secondary btn--block">Pregled svih modula</a>
           </div>
         </div>
 
@@ -139,7 +150,7 @@
           <h3 class="settings-group__title">10KEY Savetnik</h3>
           <div class="card card--flat settings-section-card">
             <p class="settings-section-card__subtitle text-muted">
-              Besplatan kućni asistent — radi odmah, offline, na osnovu vaših podataka (budžet, kupovina, obroci, održavanje).
+              Besplatan kućni asistent — radi odmah, offline, na osnovu vaših podataka (budžet, kupovina, obroci).
             </p>
             <a href="ai.html" class="btn btn--primary btn--block">Otvori 10KEY Savetnik</a>
           </div>
@@ -302,7 +313,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.2.3</p>
+          <p class="text-muted settings-about__version">Verzija 7.3.0 · MVP focus</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>

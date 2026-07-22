@@ -1,5 +1,18 @@
 # Domaćinko — Changelog
 
+## [7.3.0] — 2026-07-22
+
+### MVP focus — jasna v1 granica
+- **`docs/mvp-scope.md`** — dokumentovan Core v1 vs v2+ (šta radi sada, šta dolazi kasnije)
+- **`js/mvp-config.js`** — centralna lista modula sa `tier: core | v2`
+- **Beta režim** — v2 moduli u `modules.html` označeni „Dolazi uskoro" (neklikabilni u beta)
+- **Landing + uvod** — sekcija „Šta app radi" (3 stavke), bez obećanja v2 funkcija
+- **Više (settings)** — MVP rezime na vrhu; „Više alata" tekst prilagođen beta režimu
+- **Kupovina (beta)** — sakrivene v2 sekcije (ostava, navike, praćenje cena)
+- **Obroci (beta)** — sakrivena ostava-sekcija „Šta mogu da skuvam?"
+- **README** — jedna rečenica šta app radi sada + link na MVP obim
+- Service Worker v7.3.0
+
 ## [7.2.3] — 2026-07-22
 
 ### Prijava i odjava — UX

@@ -150,6 +150,17 @@ function renderSupabaseConfigSection() {
   document.getElementById('test-supabase-config')?.classList.remove('hidden');
 }
 
+function renderMoreToolsSection() {
+  const subtitle = document.getElementById('more-tools-subtitle');
+  if (!subtitle) return;
+
+  if (isBetaMode()) {
+    subtitle.textContent = 'Osnovni moduli su aktivni. Napredni alati (održavanje, bašta, inventar…) dolaze uskoro.';
+  } else {
+    subtitle.textContent = 'Održavanje, bašta, projekti, inventar i svi ostali moduli za napredne korisnike.';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth?.();
   if (typeof initHouseholdSync === 'function' && isLoggedIn?.()) {
@@ -165,6 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderAccountSection();
   renderHouseholdSection();
+  renderMoreToolsSection();
   renderDeveloperSection();
   renderLocalProfiles();
 

@@ -233,6 +233,28 @@ img, video, svg {
   padding-left: var(--space-sm);
 }
 
+.settings-mvp-card {
+  padding: var(--space-md);
+}
+
+.settings-mvp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-mvp-list li {
+  padding: var(--space-sm) 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.settings-mvp-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 .settings-item {
   display: flex;
   justify-content: space-between;
@@ -418,6 +440,27 @@ img, video, svg {
   padding: var(--space-sm) 0;
   font-size: var(--font-size-base);
   color: var(--color-text);
+}
+
+.onboarding__mvp-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  text-align: left;
+}
+
+.onboarding__mvp-label {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.onboarding__features--compact li {
+  padding: var(--space-xs) 0;
+  font-size: var(--font-size-sm);
 }
 
 .onboarding__footer {
@@ -1384,6 +1427,30 @@ img, video, svg {
 
 .landing__features {
   padding: var(--space-xl) var(--space-lg);
+}
+
+.landing__mvp-list {
+  list-style: none;
+  padding: 0;
+  max-width: 520px;
+  margin: 0 auto var(--space-md);
+}
+
+.landing__mvp-list li {
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+.landing__mvp-note {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .landing__section-title {
