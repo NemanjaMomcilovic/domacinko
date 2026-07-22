@@ -13,6 +13,13 @@ function setLoading(btn, loading) {
   btn.textContent = loading ? 'Sačekajte...' : btn.dataset.originalText;
 }
 
+function setOAuthLoading(loading) {
+  setLoading(document.getElementById('google-btn'), loading);
+  setLoading(document.getElementById('facebook-btn'), loading);
+  const guestBtn = document.getElementById('guest-btn');
+  if (guestBtn) guestBtn.disabled = loading;
+}
+
 function redirectAfterAuth() {
   if (needsOnboarding()) {
     window.location.href = 'onboarding.html';
@@ -51,9 +58,29 @@ function updateSupabaseConfigUI() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const isOAuthReturn = typeof isOAuthCallbackUrl === 'function' && isOAuthCallbackUrl();
+  if (isOAuthReturn) {
+    setOAuthLoading(true);
+    showAuthMessage('Završavamo prijavu...');
+  }
+
+  const oauthResult = typeof handleOAuthCallback === 'function'
+    ? await handleOAuthCallback()
+    : { handled: false };
+
+  if (oauthResult.handled) {
+    if (oauthResult.success) {
+      showToast('Uspešno ste se prijavili!');
+      redirectAfterAuth();
+      return;
+    }
+    setOAuthLoading(false);
+    showAuthMessage(oauthResult.error, true);
+  }
+
   await initAuth();
 
-  if (isGuestMode() || isLoggedIn()) {
+  if (isLoggedIn()) {
     redirectAfterAuth();
     return;
   }
@@ -90,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       showToast('Dobrodošli nazad!');
       redirectAfterAuth();
     } catch (err) {
-      showAuthMessage(err.message || 'Prijava nije uspela.', true);
+      showAuthMessage(mapAuthError(err), true);
     } finally {
       setLoading(btn, false);
     }
@@ -122,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         redirectAfterAuth();
       }
     } catch (err) {
-      showAuthMessage(err.message || 'Registracija nije uspela.', true);
+      showAuthMessage(mapAuthError(err), true);
     } finally {
       setLoading(btn, false);
     }
@@ -147,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
       const msg = err.message?.includes('rate')
         ? 'Previše zahteva. Sačekajte par minuta i pokušajte ponovo.'
-        : (err.message || 'Slanje linka nije uspelo. Proverite email adresu.');
+        : mapAuthError(err);
       showAuthMessage(msg, true);
     } finally {
       setLoading(btn, false);
@@ -155,18 +182,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   googleBtn.addEventListener('click', async () => {
+    setOAuthLoading(true);
     try {
       await signInWithGoogle();
     } catch (err) {
-      showAuthMessage(err.message || 'Google prijava nije uspela.', true);
+      showAuthMessage(mapAuthError(err), true);
+      setOAuthLoading(false);
     }
   });
 
   facebookBtn.addEventListener('click', async () => {
+    setOAuthLoading(true);
     try {
       await signInWithFacebook();
     } catch (err) {
-      showAuthMessage(err.message || 'Facebook prijava nije uspela.', true);
+      showAuthMessage(mapAuthError(err), true);
+      setOAuthLoading(false);
     }
   });
 

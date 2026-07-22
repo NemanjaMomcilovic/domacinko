@@ -1,5 +1,15 @@
 # Domaćinko — Changelog
 
+## [7.2.3] — 2026-07-22
+
+### Prijava i odjava — UX
+- **OAuth povratak** — auth stranica prepoznaje callback (hash/query), čisti URL i automatski preusmerava na onboarding ili početnu
+- **Gost na auth stranici** — gosti više nisu automatski preusmereni; mogu da se prijave bez gubljenja lokalnih podataka
+- **Učitavanje** — dugmad Google/Facebook prikazuju „Sačekajte..." tokom OAuth-a
+- **Greške na srpskom** — jasne poruke za isteklu sesiju, mrežu, pogrešne kredencijale i otkazanu prijavu
+- **Odjava** — potvrda, stanje učitavanja, čišćenje keša profila/domaćinstva; preusmeravanje na auth stranicu
+- Service Worker v7.2.3
+
 ## [7.2.2] — 2026-07-22
 
 ### OAuth — izbor naloga

@@ -447,9 +447,18 @@ function renderAccountSection() {
 
     logoutBtn.onclick = async () => {
       if (!confirm('Da li ste sigurni da želite da se odjavite?')) return;
-      await signOut();
-      clearGuestMode();
-      window.location.href = 'auth.html';
+      logoutBtn.disabled = true;
+      const originalText = logoutBtn.textContent;
+      logoutBtn.textContent = 'Odjavljivanje...';
+      try {
+        await signOut();
+        showToast('Uspešno ste se odjavili.');
+        window.location.href = 'auth.html';
+      } catch {
+        showToast('Odjava nije uspela. Pokušajte ponovo.', 'error');
+        logoutBtn.disabled = false;
+        logoutBtn.textContent = originalText;
+      }
     };
     return;
   }

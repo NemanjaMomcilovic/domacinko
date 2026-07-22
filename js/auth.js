@@ -230,14 +230,8 @@ async function signUp(email, password) {
   return data;
 }
 
-async function signIn(email, password) {
-  const client = getSupabaseClient();
-  if (!client) throw new Error('Supabase nije podešen.');
-
-  const { data, error } = await client.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-
-  _currentUser = data.user;
+async function finalizeSignIn(user) {
+  _currentUser = user;
   clearGuestMode();
   await fetchProfile();
   if (typeof pullUserDataFromCloud === 'function') {
@@ -247,6 +241,16 @@ async function signIn(email, password) {
     await initHouseholdSync();
   }
   await offerGuestDataImport();
+}
+
+async function signIn(email, password) {
+  const client = getSupabaseClient();
+  if (!client) throw new Error('Supabase nije podešen.');
+
+  const { data, error } = await client.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+
+  await finalizeSignIn(data.user);
   return data;
 }
 
@@ -290,15 +294,84 @@ async function resetPassword(email) {
   if (error) throw error;
 }
 
+function mapAuthError(err) {
+  const msg = (err?.message || err?.error_description || String(err || '')).toLowerCase();
+  if (!msg || msg === 'undefined') return 'Došlo je do greške. Pokušajte ponovo.';
+  if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+    return 'Pogrešan email ili lozinka.';
+  }
+  if (msg.includes('invalid') && msg.includes('session')) return 'Sesija je istekla. Prijavite se ponovo.';
+  if (msg.includes('email not confirmed')) return 'Potvrdite email pre prijave.';
+  if (msg.includes('user already registered')) return 'Nalog sa ovim emailom već postoji.';
+  if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch')) {
+    return 'Proverite internet vezu i pokušajte ponovo.';
+  }
+  if (msg.includes('rate limit') || msg.includes('too many')) {
+    return 'Previše pokušaja. Sačekajte par minuta.';
+  }
+  if (msg.includes('access_denied') || msg.includes('oauth') || msg.includes('cancel')) {
+    return 'Prijava otkazana. Pokušajte ponovo.';
+  }
+  return err?.message || err?.error_description || 'Došlo je do greške. Pokušajte ponovo.';
+}
+
+function isOAuthCallbackUrl() {
+  const combined = (window.location.hash || '') + (window.location.search || '');
+  return /access_token|refresh_token|(?:^|[?&#])code=|error(?:=|_description)/.test(combined);
+}
+
+function parseOAuthUrlError() {
+  const hash = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+  const search = new URLSearchParams(window.location.search || '');
+  return hash.get('error_description') || hash.get('error')
+    || search.get('error_description') || search.get('error');
+}
+
+function cleanOAuthUrl() {
+  history.replaceState({}, document.title, window.location.pathname);
+}
+
+async function handleOAuthCallback() {
+  if (!isOAuthCallbackUrl()) return { handled: false };
+
+  const urlError = parseOAuthUrlError();
+  if (urlError) {
+    cleanOAuthUrl();
+    return { handled: true, success: false, error: mapAuthError({ message: urlError }) };
+  }
+
+  const client = getSupabaseClient();
+  if (!client) {
+    cleanOAuthUrl();
+    return { handled: true, success: false, error: 'Supabase nije podešen.' };
+  }
+
+  const { data: { session }, error } = await client.auth.getSession();
+  cleanOAuthUrl();
+
+  if (error) return { handled: true, success: false, error: mapAuthError(error) };
+  if (!session?.user) {
+    return { handled: true, success: false, error: 'Prijava nije uspela. Pokušajte ponovo.' };
+  }
+
+  await finalizeSignIn(session.user);
+  return { handled: true, success: true };
+}
+
 async function signOut() {
   const client = getSupabaseClient();
   if (client) {
-    await client.auth.signOut();
+    try {
+      await client.auth.signOut();
+    } catch (err) {
+      console.warn('Odjava:', err.message);
+    }
   }
   _currentUser = null;
   _currentProfile = null;
   cacheProfile(null);
   localStorage.removeItem(AUTH_MODE_KEY);
+  sessionStorage.removeItem('guest_import_asked');
   if (typeof clearHouseholdCache === 'function') {
     clearHouseholdCache();
   }
