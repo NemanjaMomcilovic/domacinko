@@ -59,14 +59,23 @@ function getOpenAIModel() {
   return OPENAI_MODEL;
 }
 
-function getTodayMealKey() {
-  return DAY_KEYS[new Date().getDay()];
-}
-
 function getTodayMeal() {
+  if (typeof getTodayMealSummary === 'function') {
+    return getTodayMealSummary();
+  }
   const plan = getMealPlan();
-  const key = getTodayMealKey();
-  return (plan[key] || '').trim();
+  const key = typeof getTodayMealKey === 'function'
+    ? getTodayMealKey()
+    : DAY_KEYS[new Date().getDay()];
+  const day = plan[key];
+  if (!day || typeof day === 'string') return (day || '').trim();
+  if (typeof formatMealSlotLabel === 'function' && typeof MEAL_SLOTS !== 'undefined') {
+    return MEAL_SLOTS.map(s => {
+      const label = formatMealSlotLabel(day[s.id]);
+      return label ? `${s.label}: ${label}` : '';
+    }).filter(Boolean).join(' · ');
+  }
+  return '';
 }
 
 function detectIntent(message) {
@@ -97,7 +106,9 @@ function buildRichContextBlock() {
   const reminders = typeof getRecurringReminders === 'function' ? getRecurringReminders() : [];
   const todayMeal = getTodayMeal();
   const mealPlan = getMealPlan();
-  const plannedMeals = Object.values(mealPlan).filter(m => m && m.trim()).length;
+  const plannedMeals = typeof countFilledMealDays === 'function'
+    ? countFilledMealDays(mealPlan)
+    : Object.values(mealPlan).filter(m => m && (typeof m === 'string' ? m.trim() : true)).length;
   const shopping = getShoppingList().filter(i => !i.bought);
   const dueMaint = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
   const overdueMaint = dueMaint.filter(t => t.overdue);
@@ -350,7 +361,20 @@ function getSmartResponse(message) {
     case 'meal_plan': {
       const plan = getMealPlan();
       const days = { mon: 'Pon', tue: 'Uto', wed: 'Sre', thu: 'Čet', fri: 'Pet', sat: 'Sub', sun: 'Ned' };
-      const entries = Object.entries(days).filter(([k]) => plan[k]?.trim()).map(([k, label]) => `${label}: ${plan[k]}`);
+      const entries = Object.entries(days).map(([k, label]) => {
+        const day = plan[k];
+        if (!day) return null;
+        if (typeof day === 'string') {
+          return day.trim() ? `${label}: ${day.trim()}` : null;
+        }
+        const parts = (typeof MEAL_SLOTS !== 'undefined' ? MEAL_SLOTS : [])
+          .map(s => {
+            const text = typeof formatMealSlotLabel === 'function' ? formatMealSlotLabel(day[s.id]) : '';
+            return text ? `${s.short || s.label}: ${text}` : '';
+          })
+          .filter(Boolean);
+        return parts.length ? `${label}: ${parts.join(', ')}` : null;
+      }).filter(Boolean);
       return entries.length ? `Plan obroka:\n${entries.join('\n')}` : 'Plan obroka je prazan — dodajte obroke u Plan obroka.';
     }
     case 'spending_top': {

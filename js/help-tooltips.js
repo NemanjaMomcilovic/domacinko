@@ -15,7 +15,7 @@ const HELP_TOPICS = {
   },
   'meal-plan': {
     title: 'Plan obroka',
-    text: 'Prevucite jela na dane u nedelji (touch: držite i pomerite). Srpska jela se dodaju jednim dodirom. Generišite listu za kupovinu automatski iz plana.'
+    text: 'Tri obroka dnevno (doručak, ručak, večera). Dodirnite slot — izaberite gotovo srpsko jelo ili unesite samo namirnice. Generišite listu za kupovinu iz plana.'
   },
   'ai-modules': {
     title: 'AI moduli',

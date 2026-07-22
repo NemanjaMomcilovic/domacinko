@@ -97,14 +97,179 @@ const SPLASH_KEY = 'splashSeen';
 const NOTIFICATION_STATE_KEY = 'domacinko_notifications';
 
 const MEAL_DAYS = [
-  { id: 'mon', label: 'Pon' },
-  { id: 'tue', label: 'Uto' },
-  { id: 'wed', label: 'Sre' },
-  { id: 'thu', label: 'Čet' },
-  { id: 'fri', label: 'Pet' },
-  { id: 'sat', label: 'Sub' },
-  { id: 'sun', label: 'Ned' }
+  { id: 'mon', label: 'Pon', full: 'Ponedeljak' },
+  { id: 'tue', label: 'Uto', full: 'Utorak' },
+  { id: 'wed', label: 'Sre', full: 'Sreda' },
+  { id: 'thu', label: 'Čet', full: 'Četvrtak' },
+  { id: 'fri', label: 'Pet', full: 'Petak' },
+  { id: 'sat', label: 'Sub', full: 'Subota' },
+  { id: 'sun', label: 'Ned', full: 'Nedelja' }
 ];
+
+const MEAL_SLOTS = [
+  { id: 'breakfast', label: 'Doručak', short: 'Dor' },
+  { id: 'lunch', label: 'Ručak', short: 'Ruč' },
+  { id: 'dinner', label: 'Večera', short: 'Več' }
+];
+
+function emptyMealSlot() {
+  return { type: 'empty', name: '', mealId: '', ingredients: [] };
+}
+
+function emptyMealDay() {
+  return {
+    breakfast: emptyMealSlot(),
+    lunch: emptyMealSlot(),
+    dinner: emptyMealSlot()
+  };
+}
+
+function defaultMealPlan() {
+  return {
+    mon: emptyMealDay(),
+    tue: emptyMealDay(),
+    wed: emptyMealDay(),
+    thu: emptyMealDay(),
+    fri: emptyMealDay(),
+    sat: emptyMealDay(),
+    sun: emptyMealDay()
+  };
+}
+
+function isMealSlotFilled(slot) {
+  if (!slot || slot.type === 'empty') return false;
+  if (slot.type === 'meal') return !!(slot.name || slot.mealId);
+  if (slot.type === 'ingredients') {
+    return !!(slot.name || (Array.isArray(slot.ingredients) && slot.ingredients.length));
+  }
+  return !!(slot.name || slot.mealId || (slot.ingredients && slot.ingredients.length));
+}
+
+function formatMealSlotLabel(slot) {
+  if (!isMealSlotFilled(slot)) return '';
+  if (slot.type === 'ingredients') {
+    if (slot.name) return slot.name;
+    const ings = slot.ingredients || [];
+    if (!ings.length) return '';
+    return ings.slice(0, 3).join(', ') + (ings.length > 3 ? '…' : '');
+  }
+  return slot.name || '';
+}
+
+function findMealPresetById(id) {
+  if (!id || typeof SERBIAN_MEAL_PRESETS === 'undefined') return null;
+  return SERBIAN_MEAL_PRESETS.find(m => m.id === id) || null;
+}
+
+function findMealPresetByName(name) {
+  if (!name || typeof SERBIAN_MEAL_PRESETS === 'undefined') return null;
+  const needle = name.trim().toLowerCase();
+  return SERBIAN_MEAL_PRESETS.find(m => m.name.toLowerCase() === needle) || null;
+}
+
+function getMealPresetsForSlot(slotId) {
+  if (typeof SERBIAN_MEAL_PRESETS === 'undefined') return [];
+  if (!slotId) return [...SERBIAN_MEAL_PRESETS];
+  return SERBIAN_MEAL_PRESETS.filter(m =>
+    (m.tags || ['any']).includes(slotId) || (m.tags || []).includes('any')
+  );
+}
+
+function migrateMealSlot(raw) {
+  if (!raw) return emptyMealSlot();
+  if (typeof raw === 'string') {
+    const name = raw.trim();
+    if (!name) return emptyMealSlot();
+    const preset = findMealPresetByName(name);
+    return {
+      type: 'meal',
+      name: preset?.name || name,
+      mealId: preset?.id || '',
+      ingredients: preset?.ingredients ? [...preset.ingredients] : []
+    };
+  }
+  const ingredients = Array.isArray(raw.ingredients)
+    ? raw.ingredients.map(i => String(i).trim()).filter(Boolean)
+    : [];
+  let type = raw.type;
+  if (type !== 'meal' && type !== 'ingredients' && type !== 'empty') {
+    type = raw.mealId || (raw.name && !ingredients.length) ? 'meal'
+      : ingredients.length ? 'ingredients'
+      : raw.name ? 'meal'
+      : 'empty';
+  }
+  const slot = {
+    type,
+    name: (raw.name || '').trim(),
+    mealId: raw.mealId || '',
+    ingredients
+  };
+  if (slot.type === 'empty' || !isMealSlotFilled(slot)) return emptyMealSlot();
+  return slot;
+}
+
+function migrateMealDay(raw) {
+  if (!raw) return emptyMealDay();
+  if (typeof raw === 'string') {
+    const day = emptyMealDay();
+    day.lunch = migrateMealSlot(raw);
+    return day;
+  }
+  return {
+    breakfast: migrateMealSlot(raw.breakfast),
+    lunch: migrateMealSlot(raw.lunch),
+    dinner: migrateMealSlot(raw.dinner)
+  };
+}
+
+function migrateMealPlan(plan) {
+  const next = defaultMealPlan();
+  if (!plan || typeof plan !== 'object') return next;
+  MEAL_DAYS.forEach(day => {
+    next[day.id] = migrateMealDay(plan[day.id]);
+  });
+  return next;
+}
+
+function countFilledMealDays(plan) {
+  const p = plan || getMealPlan();
+  return MEAL_DAYS.filter(d => {
+    const day = p[d.id];
+    return day && MEAL_SLOTS.some(s => isMealSlotFilled(day[s.id]));
+  }).length;
+}
+
+function countFilledMealSlots(plan) {
+  const p = plan || getMealPlan();
+  let n = 0;
+  MEAL_DAYS.forEach(d => {
+    const day = p[d.id];
+    if (!day) return;
+    MEAL_SLOTS.forEach(s => {
+      if (isMealSlotFilled(day[s.id])) n++;
+    });
+  });
+  return n;
+}
+
+function getTodayMealKey() {
+  return ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()];
+}
+
+function getTodayMealDay() {
+  return getMealPlan()[getTodayMealKey()] || emptyMealDay();
+}
+
+/** Sažetak današnjih obroka (ručak/večera prioritetno) za brifing i Savetnik */
+function getTodayMealSummary() {
+  const day = getTodayMealDay();
+  const parts = [];
+  MEAL_SLOTS.forEach(slot => {
+    const label = formatMealSlotLabel(day[slot.id]);
+    if (label) parts.push(`${slot.label}: ${label}`);
+  });
+  return parts.join(' · ');
+}
 
 const MEAL_INGREDIENT_MAP = {
   'piletina': ['piletina', 'so', 'biber', 'ulje'],
@@ -202,9 +367,7 @@ const DEFAULT_DATA = {
   recurringExpenses: [],
   shoppingList: [],
   favoriteProducts: [],
-  mealPlan: {
-    mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: ''
-  },
+  mealPlan: defaultMealPlan(),
   feedback: [],
   household: {
     familyMembers: [],
@@ -263,7 +426,7 @@ function getData() {
     const merged = { ...structuredClone(DEFAULT_DATA), ...parsed };
     merged.settings = { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) };
     if (!merged.recurringExpenses) merged.recurringExpenses = [];
-    if (!merged.mealPlan) merged.mealPlan = { ...DEFAULT_DATA.mealPlan };
+    merged.mealPlan = migrateMealPlan(merged.mealPlan);
     if (!merged.feedback) merged.feedback = [];
     if (merged.household && !merged.household.pantry) merged.household.pantry = [];
     if (!merged.inventory) merged.inventory = [];
@@ -790,62 +953,114 @@ function addFeedback(text) {
 }
 
 function getMealPlan() {
-  return getData().mealPlan || { ...DEFAULT_DATA.mealPlan };
+  return migrateMealPlan(getData().mealPlan);
 }
 
 function saveMealPlan(mealPlan) {
   const data = getData();
-  data.mealPlan = { ...data.mealPlan, ...mealPlan };
+  data.mealPlan = migrateMealPlan({ ...data.mealPlan, ...mealPlan });
   saveData(data);
 }
 
-function setMealForDay(dayId, mealName) {
+function setMealForDay(dayId, mealOrDay) {
   const data = getData();
-  if (!data.mealPlan) data.mealPlan = { ...DEFAULT_DATA.mealPlan };
-  data.mealPlan[dayId] = mealName;
+  if (!data.mealPlan) data.mealPlan = defaultMealPlan();
+  data.mealPlan = migrateMealPlan(data.mealPlan);
+  if (typeof mealOrDay === 'string') {
+    data.mealPlan[dayId] = migrateMealDay(mealOrDay);
+  } else {
+    data.mealPlan[dayId] = migrateMealDay(mealOrDay || emptyMealDay());
+  }
   saveData(data);
+}
+
+function getMealSlot(dayId, slotId) {
+  const day = getMealPlan()[dayId] || emptyMealDay();
+  return migrateMealSlot(day[slotId]);
+}
+
+function setMealSlot(dayId, slotId, slotData) {
+  const data = getData();
+  data.mealPlan = migrateMealPlan(data.mealPlan);
+  if (!data.mealPlan[dayId]) data.mealPlan[dayId] = emptyMealDay();
+  data.mealPlan[dayId][slotId] = migrateMealSlot(slotData);
+  saveData(data);
+}
+
+function clearMealSlot(dayId, slotId) {
+  setMealSlot(dayId, slotId, emptyMealSlot());
+}
+
+function clearMealDay(dayId) {
+  setMealForDay(dayId, emptyMealDay());
+}
+
+function swapMealDays(fromDay, toDay) {
+  if (!fromDay || !toDay || fromDay === toDay) return;
+  const data = getData();
+  data.mealPlan = migrateMealPlan(data.mealPlan);
+  const tmp = data.mealPlan[fromDay];
+  data.mealPlan[fromDay] = data.mealPlan[toDay];
+  data.mealPlan[toDay] = tmp;
+  saveData(data);
+}
+
+function collectSlotIngredients(slot) {
+  if (!isMealSlotFilled(slot)) return [];
+  if (Array.isArray(slot.ingredients) && slot.ingredients.length) {
+    return slot.ingredients.map(i => String(i).trim()).filter(Boolean);
+  }
+  if (slot.mealId) {
+    const preset = findMealPresetById(slot.mealId);
+    if (preset?.ingredients?.length) return [...preset.ingredients];
+  }
+  const name = (slot.name || '').trim().toLowerCase();
+  if (!name) return [];
+  const preset = findMealPresetByName(name);
+  if (preset?.ingredients?.length) return [...preset.ingredients];
+  const found = [];
+  for (const [key, items] of Object.entries(MEAL_INGREDIENT_MAP)) {
+    if (name.includes(key)) items.forEach(i => found.push(i));
+  }
+  if (found.length) return found;
+  return name.split(/[,+\-/&]| i /).map(p => p.trim()).filter(p => p.length > 2);
 }
 
 function extractIngredientsFromMeals() {
   const plan = getMealPlan();
   const ingredients = new Set();
+  MEAL_DAYS.forEach(day => {
+    const d = plan[day.id];
+    if (!d) return;
+    MEAL_SLOTS.forEach(slot => {
+      collectSlotIngredients(d[slot.id]).forEach(i => ingredients.add(i));
+    });
+  });
+  return [...ingredients];
+}
 
-  Object.values(plan).forEach(meal => {
-    const name = (meal || '').trim().toLowerCase();
-    if (!name) return;
-
-    let matched = false;
-    for (const [key, items] of Object.entries(MEAL_INGREDIENT_MAP)) {
-      if (name.includes(key)) {
-        items.forEach(i => ingredients.add(i));
-        matched = true;
-      }
-    }
-
-    if (!matched) {
-      name.split(/[,+\-/&]| i /).forEach(part => {
-        const trimmed = part.trim();
-        if (trimmed.length > 2) ingredients.add(trimmed);
-      });
+function addIngredientsToShoppingList(ingredients) {
+  const list = (ingredients || []).map(i => String(i).trim()).filter(Boolean);
+  const existing = getShoppingList().map(i => i.name.toLowerCase());
+  let added = 0;
+  list.forEach(ing => {
+    if (!existing.includes(ing.toLowerCase())) {
+      addShoppingItem(ing.charAt(0).toUpperCase() + ing.slice(1));
+      existing.push(ing.toLowerCase());
+      added++;
     }
   });
-
-  return [...ingredients];
+  return { added, total: list.length };
 }
 
 function generateShoppingFromMealPlan() {
   const ingredients = extractIngredientsFromMeals();
-  const existing = getShoppingList().map(i => i.name.toLowerCase());
-  let added = 0;
+  return addIngredientsToShoppingList(ingredients);
+}
 
-  ingredients.forEach(ing => {
-    if (!existing.includes(ing.toLowerCase())) {
-      addShoppingItem(ing.charAt(0).toUpperCase() + ing.slice(1));
-      added++;
-    }
-  });
-
-  return { added, total: ingredients.length };
+function addMealSlotIngredientsToShopping(dayId, slotId) {
+  const slot = getMealSlot(dayId, slotId);
+  return addIngredientsToShoppingList(collectSlotIngredients(slot));
 }
 
 function getPantryItems() {
@@ -1858,30 +2073,87 @@ const SHOPPING_CATEGORIES = [
 ];
 
 const SERBIAN_MEAL_PRESETS = [
-  { name: 'Pasulj', ingredients: ['pasulj', 'luk', 'šargarepa', 'krompir', 'crvena paprika'] },
-  { name: 'Sarma', ingredients: ['kupus', 'meso', 'pirinač', 'luk', 'so'] },
-  { name: 'Pljeskavica', ingredients: ['mleveno meso', 'luk', 'so', 'biber'] },
-  { name: 'Ćevapi', ingredients: ['mleveno meso', 'luk', 'so', 'lepinja', 'luk'] },
-  { name: 'Musaka', ingredients: ['krompir', 'meso', 'jaja', 'mleko', 'luk'] },
-  { name: 'Gulaš', ingredients: ['meso', 'luk', 'paprika', 'paradajz', 'brašno'] },
-  { name: 'Teleći gulaš', ingredients: ['teleće meso', 'luk', 'šargarepa', 'paprika', 'paradajz'] },
-  { name: 'Prebranac', ingredients: ['pasulj', 'luk', 'brašno', 'ulje'] },
-  { name: 'Podvarak', ingredients: ['kupus', 'meso', 'luk', 'so', 'biber'] },
-  { name: 'Punjene paprike', ingredients: ['paprika', 'meso', 'pirinač', 'luk', 'paradajz'] },
-  { name: 'Punjene tikvice', ingredients: ['tikvice', 'meso', 'pirinač', 'luk', 'jaja'] },
-  { name: 'Karađorđeva šnicla', ingredients: ['svinjetina', 'kajmak', 'jaja', 'brašno', 'ulje'] },
-  { name: 'Krmenadla', ingredients: ['svinjetina', 'so', 'biber', 'ulje', 'limun'] },
-  { name: 'Riblja čorba', ingredients: ['riba', 'luk', 'šargarepa', 'paradajz', 'so'] },
-  { name: 'Čorba od povrća', ingredients: ['povrće', 'luk', 'šargarepa', 'so'] },
-  { name: 'Kuvano meso', ingredients: ['meso', 'luk', 'šargarepa', 'krompir', 'so'] },
-  { name: 'Gibanica', ingredients: ['jufke', 'sir', 'jaja', 'ulje', 'mleko'] },
-  { name: 'Proja', ingredients: ['kukuruzno brašno', 'jaja', 'mleko', 'ulje', 'so'] },
-  { name: 'Palačinke', ingredients: ['brašno', 'jaja', 'mleko', 'šećer', 'ulje'] },
-  { name: 'Šopska salata', ingredients: ['paradajz', 'krastavac', 'sir', 'luk', 'masline'] },
-  { name: 'Tarator', ingredients: ['krastavac', 'jogurt', 'beli luk', 'orasi', 'ulje'] },
-  { name: 'Dinstano povrće', ingredients: ['tikvice', 'patlidžan', 'paprika', 'luk', 'paradajz'] },
-  { name: 'Piletina sa povrćem', ingredients: ['piletina', 'paprika', 'luk', 'šargarepa', 'ulje'] },
-  { name: 'Omlet', ingredients: ['jaja', 'mleko', 'sir', 'šunka', 'so'] }
+  // Doručak
+  { id: 'kajgana', name: 'Kajgana', tags: ['breakfast'], ingredients: ['jaja', 'ulje', 'so'] },
+  { id: 'omlet', name: 'Omlet', tags: ['breakfast'], ingredients: ['jaja', 'mleko', 'sir', 'šunka', 'so'] },
+  { id: 'kuvana-jaja', name: 'Kuvana jaja', tags: ['breakfast'], ingredients: ['jaja', 'so'] },
+  { id: 'proja', name: 'Proja', tags: ['breakfast', 'any'], ingredients: ['kukuruzno brašno', 'jaja', 'mleko', 'ulje', 'so'] },
+  { id: 'pogaca', name: 'Pogača', tags: ['breakfast', 'any'], ingredients: ['brašno', 'kvasac', 'ulje', 'so', 'mleko'] },
+  { id: 'sendvic', name: 'Sendvič', tags: ['breakfast'], ingredients: ['hleb', 'šunka', 'sir', 'majonez'] },
+  { id: 'ovsena-kasa', name: 'Ovsena kaša', tags: ['breakfast'], ingredients: ['ovsene pahuljice', 'mleko', 'med', 'banana'] },
+  { id: 'jogurt-voce', name: 'Jogurt sa voćem', tags: ['breakfast'], ingredients: ['jogurt', 'voće', 'med'] },
+  { id: 'burek', name: 'Burek', tags: ['breakfast', 'any'], ingredients: ['jufke', 'mleveno meso', 'luk', 'ulje'] },
+  { id: 'gibanica', name: 'Gibanica', tags: ['breakfast', 'any'], ingredients: ['jufke', 'sir', 'jaja', 'ulje', 'mleko'] },
+  { id: 'caj-kifla', name: 'Čaj i kifla', tags: ['breakfast'], ingredients: ['čaj', 'kifle', 'margarin'] },
+  { id: 'palacinke', name: 'Palačinke', tags: ['breakfast', 'any'], ingredients: ['brašno', 'jaja', 'mleko', 'šećer', 'ulje'] },
+  { id: 'hleb-kajmak', name: 'Hleb sa kajmakom', tags: ['breakfast'], ingredients: ['hleb', 'kajmak'] },
+  { id: 'popara', name: 'Popara', tags: ['breakfast'], ingredients: ['hleb', 'mleko', 'sir', 'kajmak'] },
+  { id: 'tost-sir', name: 'Tost sa sirom', tags: ['breakfast'], ingredients: ['hleb', 'sir', 'puter'] },
+  { id: 'pita-sir', name: 'Pita sa sirom', tags: ['breakfast', 'any'], ingredients: ['jufke', 'sir', 'jaja', 'ulje'] },
+  { id: 'komplet-lepinja', name: 'Komplet lepinja', tags: ['breakfast', 'any'], ingredients: ['lepinja', 'jaje', 'kajmak', 'suvo meso'] },
+  { id: 'mesani-dorucak', name: 'Mešani doručak', tags: ['breakfast'], ingredients: ['jaja', 'slanina', 'hleb', 'sir'] },
+  { id: 'sir-jaja', name: 'Sir i jaja', tags: ['breakfast'], ingredients: ['sir', 'jaja', 'hleb'] },
+  { id: 'musli', name: 'Musli sa mlekom', tags: ['breakfast'], ingredients: ['musli', 'mleko', 'voće'] },
+  { id: 'lepinja-kajmak', name: 'Lepinja sa kajmakom', tags: ['breakfast', 'any'], ingredients: ['lepinja', 'kajmak'] },
+  { id: 'ajvar-jaja', name: 'Ajvar sa jajima', tags: ['breakfast'], ingredients: ['ajvar', 'jaja', 'hleb'] },
+
+  // Ručak / večera
+  { id: 'pasulj', name: 'Pasulj', tags: ['lunch', 'dinner'], ingredients: ['pasulj', 'luk', 'šargarepa', 'krompir', 'crvena paprika'] },
+  { id: 'prebranac', name: 'Prebranac', tags: ['lunch', 'dinner'], ingredients: ['pasulj', 'luk', 'brašno', 'ulje', 'aleva paprika'] },
+  { id: 'sarma', name: 'Sarma', tags: ['lunch', 'dinner'], ingredients: ['kupus', 'meso', 'pirinač', 'luk', 'so'] },
+  { id: 'musaka', name: 'Musaka', tags: ['lunch', 'dinner'], ingredients: ['krompir', 'meso', 'jaja', 'mleko', 'luk'] },
+  { id: 'paprikas', name: 'Paprikaš', tags: ['lunch', 'dinner'], ingredients: ['meso', 'paprika', 'luk', 'paradajz', 'aleva paprika'] },
+  { id: 'pileci-paprikas', name: 'Pileći paprikaš', tags: ['lunch', 'dinner'], ingredients: ['piletina', 'paprika', 'luk', 'paradajz', 'pavlak'] },
+  { id: 'svinjski-paprikas', name: 'Svinjski paprikaš', tags: ['lunch', 'dinner'], ingredients: ['svinjetina', 'paprika', 'luk', 'paradajz'] },
+  { id: 'becar-paprikas', name: 'Bećar paprikaš', tags: ['lunch', 'dinner'], ingredients: ['paprika', 'luk', 'paradajz', 'jaja', 'ulje'] },
+  { id: 'gulas', name: 'Gulaš', tags: ['lunch', 'dinner'], ingredients: ['meso', 'luk', 'paprika', 'paradajz', 'brašno'] },
+  { id: 'teleci-gulas', name: 'Teleći gulaš', tags: ['lunch', 'dinner'], ingredients: ['teleće meso', 'luk', 'šargarepa', 'paprika', 'paradajz'] },
+  { id: 'cufte', name: 'Ćufte', tags: ['lunch', 'dinner'], ingredients: ['mleveno meso', 'luk', 'jaja', 'pirinač', 'paradajz'] },
+  { id: 'pljeskavica', name: 'Pljeskavica', tags: ['lunch', 'dinner'], ingredients: ['mleveno meso', 'luk', 'so', 'biber'] },
+  { id: 'cevapi', name: 'Ćevapi', tags: ['lunch', 'dinner'], ingredients: ['mleveno meso', 'luk', 'so', 'lepinja'] },
+  { id: 'pohovana-piletina', name: 'Pohovana piletina', tags: ['lunch', 'dinner'], ingredients: ['piletina', 'jaja', 'brašno', 'prezle', 'ulje'] },
+  { id: 'ribija-corba', name: 'Riblja čorba', tags: ['lunch', 'dinner'], ingredients: ['riba', 'luk', 'šargarepa', 'paradajz', 'so'] },
+  { id: 'teleca-corba', name: 'Teleća čorba', tags: ['lunch', 'dinner'], ingredients: ['teleće meso', 'šargarepa', 'celer', 'krompir', 'so'] },
+  { id: 'corba-povrca', name: 'Čorba od povrća', tags: ['lunch', 'dinner'], ingredients: ['povrće', 'luk', 'šargarepa', 'so'] },
+  { id: 'supa-piletina', name: 'Pileća supa', tags: ['lunch', 'dinner'], ingredients: ['piletina', 'šargarepa', 'celer', 'rezanci', 'so'] },
+  { id: 'corba-paradajz', name: 'Čorba od paradajza', tags: ['lunch', 'dinner'], ingredients: ['paradajz', 'luk', 'pirinač', 'šećer', 'so'] },
+  { id: 'grasak', name: 'Grašak', tags: ['lunch', 'dinner'], ingredients: ['grašak', 'šargarepa', 'luk', 'meso'] },
+  { id: 'grasak-meso', name: 'Grašak sa mesom', tags: ['lunch', 'dinner'], ingredients: ['grašak', 'meso', 'šargarepa', 'luk'] },
+  { id: 'boranija', name: 'Boranija', tags: ['lunch', 'dinner'], ingredients: ['boranija', 'luk', 'šargarepa', 'paradajz'] },
+  { id: 'kupus', name: 'Dinstani kupus', tags: ['lunch', 'dinner'], ingredients: ['kupus', 'luk', 'ulje', 'so', 'biber'] },
+  { id: 'podvarak', name: 'Podvarak', tags: ['lunch', 'dinner'], ingredients: ['kiseli kupus', 'meso', 'luk', 'so', 'biber'] },
+  { id: 'duvec', name: 'Đuveč', tags: ['lunch', 'dinner'], ingredients: ['pirinač', 'paprika', 'patlidžan', 'paradajz', 'meso'] },
+  { id: 'punjene-paprike', name: 'Punjene paprike', tags: ['lunch', 'dinner'], ingredients: ['paprika', 'meso', 'pirinač', 'luk', 'paradajz'] },
+  { id: 'punjene-tikvice', name: 'Punjene tikvice', tags: ['lunch', 'dinner'], ingredients: ['tikvice', 'meso', 'pirinač', 'luk', 'jaja'] },
+  { id: 'karadjordjeva', name: 'Karađorđeva šnicla', tags: ['lunch', 'dinner'], ingredients: ['svinjetina', 'kajmak', 'jaja', 'brašno', 'ulje'] },
+  { id: 'becka-snicla', name: 'Bečka šnicla', tags: ['lunch', 'dinner'], ingredients: ['teleće meso', 'jaja', 'brašno', 'prezle', 'ulje'] },
+  { id: 'krmenadla', name: 'Krmenadla', tags: ['lunch', 'dinner'], ingredients: ['svinjetina', 'so', 'biber', 'ulje', 'limun'] },
+  { id: 'svinjski-kotlet', name: 'Svinjski kotlet', tags: ['lunch', 'dinner'], ingredients: ['svinjetina', 'so', 'biber', 'ulje'] },
+  { id: 'rizoto', name: 'Rižoto', tags: ['lunch', 'dinner'], ingredients: ['pirinač', 'piletina', 'pečurke', 'luk', 'sir'] },
+  { id: 'pilav', name: 'Pilav', tags: ['lunch', 'dinner'], ingredients: ['pirinač', 'meso', 'luk', 'šargarepa', 'ulje'] },
+  { id: 'spagete-bolo', name: 'Špagete bolognese', tags: ['lunch', 'dinner'], ingredients: ['špagete', 'mleveno meso', 'paradajz', 'luk', 'sir'] },
+  { id: 'makarone-sir', name: 'Makarone sa sirom', tags: ['lunch', 'dinner'], ingredients: ['makarone', 'sir', 'mleko', 'puter'] },
+  { id: 'lazanje', name: 'Lazanje', tags: ['lunch', 'dinner'], ingredients: ['testenina', 'mleveno meso', 'paradajz', 'bešamel', 'sir'] },
+  { id: 'pizza', name: 'Pizza (domaća)', tags: ['lunch', 'dinner'], ingredients: ['brašno', 'sir', 'paradajz', 'šunka', 'masline'] },
+  { id: 'peceno-meso', name: 'Pečeno meso', tags: ['lunch', 'dinner'], ingredients: ['meso', 'krompir', 'ulje', 'so', 'biber'] },
+  { id: 'rostilj-mix', name: 'Roštilj mix', tags: ['lunch', 'dinner'], ingredients: ['ćevapi', 'pljeskavica', 'kobasica', 'lepinja', 'luk'] },
+  { id: 'kuvano-meso', name: 'Kuvano meso', tags: ['lunch', 'dinner'], ingredients: ['meso', 'luk', 'šargarepa', 'krompir', 'so'] },
+  { id: 'piletina-povrce', name: 'Piletina sa povrćem', tags: ['lunch', 'dinner'], ingredients: ['piletina', 'paprika', 'luk', 'šargarepa', 'ulje'] },
+  { id: 'fis-paprikas', name: 'Fiš paprikaš', tags: ['lunch', 'dinner'], ingredients: ['riba', 'paprika', 'luk', 'paradajz', 'aleva paprika'] },
+  { id: 'pecena-paprika', name: 'Pečena paprika', tags: ['lunch', 'dinner', 'any'], ingredients: ['paprika', 'beli luk', 'ulje', 'sirće'] },
+  { id: 'grilovano-povrce', name: 'Grilovano povrće', tags: ['lunch', 'dinner'], ingredients: ['tikvice', 'patlidžan', 'paprika', 'ulje'] },
+  { id: 'dinstano-povrce', name: 'Dinstano povrće', tags: ['lunch', 'dinner'], ingredients: ['tikvice', 'patlidžan', 'paprika', 'luk', 'paradajz'] },
+  { id: 'sataras', name: 'Sataraš', tags: ['lunch', 'dinner'], ingredients: ['paprika', 'paradajz', 'luk', 'ulje', 'jaja'] },
+  { id: 'paprike-pavlaka', name: 'Paprike u pavlaci', tags: ['lunch', 'dinner'], ingredients: ['paprika', 'pavlak', 'beli luk', 'ulje'] },
+  { id: 'sopska', name: 'Šopska salata', tags: ['lunch', 'dinner', 'any'], ingredients: ['paradajz', 'krastavac', 'sir', 'luk', 'masline'] },
+  { id: 'srpska-salata', name: 'Srpska salata', tags: ['lunch', 'dinner', 'any'], ingredients: ['paradajz', 'paprika', 'luk', 'ulje', 'sirće'] },
+  { id: 'tarator', name: 'Tarator', tags: ['lunch', 'dinner', 'any'], ingredients: ['krastavac', 'jogurt', 'beli luk', 'orasi', 'ulje'] },
+  { id: 'kupus-salata', name: 'Kupus salata', tags: ['lunch', 'dinner', 'any'], ingredients: ['kupus', 'ulje', 'sirće', 'so'] },
+  { id: 'mesana-salata', name: 'Mešana salata', tags: ['lunch', 'dinner', 'any'], ingredients: ['zelena salata', 'paradajz', 'krastavac', 'ulje'] },
+  { id: 'krompir-salata', name: 'Krompir salata', tags: ['lunch', 'dinner'], ingredients: ['krompir', 'luk', 'ulje', 'sirće'] },
+  { id: 'janija', name: 'Janija', tags: ['lunch', 'dinner'], ingredients: ['meso', 'luk', 'šargarepa', 'krompir', 'paradajz'] },
+  { id: 'pasulj-sa-kobasicom', name: 'Pasulj sa kobasicom', tags: ['lunch', 'dinner'], ingredients: ['pasulj', 'kobasica', 'luk', 'šargarepa'] },
+  { id: 'punjeni-kupus', name: 'Punjeni kupus', tags: ['lunch', 'dinner'], ingredients: ['kupus', 'meso', 'pirinač', 'luk'] }
 ];
 
 function getTodaySpending() {

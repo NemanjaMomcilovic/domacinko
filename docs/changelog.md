@@ -1,5 +1,17 @@
 # Domaćinko — Changelog
 
+## [7.4.0] — 2026-07-22
+
+### Plan obroka — 3 obroka dnevno
+- **Model** — `mealPlan[dan] = { breakfast, lunch, dinner }` sa `{ type: 'meal'|'ingredients'|'empty', name, mealId, ingredients }`
+- **Migracija** — stari string po danu prelazi u `lunch` za taj dan
+- **UI** — slotovi doručak / ručak / večera; modal sa karticama **Gotovo jelo** | **Namirnice**
+- **Gotovo jelo** — pretraga i filter kataloga po tipu obroka; opciono „Dodaj sastojke na listu kupovine"
+- **Namirnice** — opcioni naziv + lista sastojaka (chips)
+- **Katalog** — 70+ tradicionalnih srpskih jela sa sastojcima i tagovima (breakfast / lunch / dinner / any)
+- **Savetnik** — današnji pregled koristi ručak/večeru (i doručak ako postoji)
+- Service Worker v7.4.0
+
 ## [7.3.0] — 2026-07-22
 
 ### MVP focus — jasna v1 granica

@@ -17,15 +17,10 @@
 
     <main class="main-content">
       <p class="text-muted mb-md" style="font-size:var(--font-size-sm)">
-        Planirajte obroke za celu nedelju i automatski generišite listu za kupovinu.
+        Tri obroka dnevno — doručak, ručak i večera. Izaberite gotovo jelo ili unesite samo namirnice.
       </p>
 
       <div class="section mb-md hidden" id="meal-empty-hint"></div>
-
-      <div class="section mb-md">
-        <h2 class="section__title mb-sm">Srpska jela — brzi izbor</h2>
-        <div id="meal-presets"></div>
-      </div>
 
       <div class="card card--flat" id="meal-days"></div>
 
@@ -42,6 +37,8 @@
       </div>
     </main>
 
+    <div id="meal-modal-root"></div>
+
     <nav class="bottom-nav" id="bottom-nav"></nav>
   </div>
 
@@ -55,7 +52,6 @@
   <script src="../js/navigation.js"></script>
   <script src="../js/help-tooltips.js"></script>
   <script src="../js/modules/briefing.js"></script>
-  <script src="../js/help-tooltips.js"></script>
   <script src="../js/pages/meal-plan.js"></script>
 </body>
 </html>

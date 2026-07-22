@@ -59,7 +59,9 @@ function getShoppingContext() {
   const shopping = getShoppingList();
   const pending = shopping.filter(i => !i.bought);
   const mealPlan = getMealPlan();
-  const plannedMeals = Object.values(mealPlan).filter(m => m && m.trim()).length;
+  const plannedMeals = typeof countFilledMealDays === 'function'
+    ? countFilledMealDays(mealPlan)
+    : Object.values(mealPlan).filter(m => m && typeof m === 'string' && m.trim()).length;
 
   return {
     pendingCount: pending.length,
@@ -207,8 +209,14 @@ function getSuggestedQuestions(module = 'savetnik') {
     const shopping = ctx.shopping?.pendingCount || 0;
     if (shopping > 0) dynamic.push('Šta je na listi za kupovinu?');
     const todayMeal = ctx.shopping?.mealPlan;
-    const dayKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()];
-    if (todayMeal?.[dayKey]?.trim()) dynamic.push('Šta da kuvam danas?');
+    const dayKey = typeof getTodayMealKey === 'function'
+      ? getTodayMealKey()
+      : ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()];
+    const day = todayMeal?.[dayKey];
+    const hasToday = typeof day === 'string'
+      ? !!day.trim()
+      : !!(day && typeof MEAL_SLOTS !== 'undefined' && MEAL_SLOTS.some(s => typeof isMealSlotFilled === 'function' && isMealSlotFilled(day[s.id])));
+    if (hasToday) dynamic.push('Šta da kuvam danas?');
     const base = MODULE_SUGGESTED_QUESTIONS.savetnik;
     const merged = [...new Set([...dynamic, ...base])];
     return merged.slice(0, 8);

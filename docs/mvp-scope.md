@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.3.0)
+# Domaćinko — MVP obim (v7.4.0)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 
@@ -8,7 +8,7 @@ Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odlo
 |-------|----------|--------|
 | **Početna + brifing** | `home.html` | ✅ Realni podaci — bez demo sadržaja |
 | **Troškovi** | `finances.html`, `add-expense.html` | ✅ Dodavanje, lista, mesečni pregled |
-| **Plan obroka** | `meal-plan.html` | ✅ Nedeljni plan, 24 srpska jela, prevlačenje |
+| **Plan obroka** | `meal-plan.html` | ✅ 3 obroka/dan (doručak, ručak, večera), gotovo jelo ili namirnice, 70+ srpskih jela |
 | **Lista kupovine** | `shopping.html` | ✅ Dodavanje, označavanje kupljenog |
 | **10KEY Savetnik** | `ai.html` | ✅ Lokalni, besplatan — budžet, obroci, kupovina |
 | **Nalog** | `auth.html` | ✅ Prijava, odjava, sinhronizacija |
@@ -72,5 +72,6 @@ Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odlo
 
 ## Verzionisanje
 
+- **v7.4.0** — Plan obroka: 3 obroka/dan, gotovo jelo ili namirnice, proširen katalog
 - **v7.3.0** — MVP focus: dokumentacija, beta enforcement, polish core tokova
 - v2 moduli se uvode postepeno u v7.4+, v8.0+ prema [roadmap.md](roadmap.md)
