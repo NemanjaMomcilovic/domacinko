@@ -1,5 +1,21 @@
 # Domaćinko — Changelog
 
+## [7.6.3] — 2026-07-23
+
+### Obroci ↔ lista kupovine
+- **Po obroku** — dugme „Dodaj sastojke na listu kupovine“ u modalu (gotovo jelo i namirnice); bez duplikata (case-insensitive)
+- **Po danu / nedelji** — 🛒 na danu, „Dodaj sastojke za danas“ i „Dodaj sve sastojke za nedelju na listu“
+- **Izvor na listi** — sekcija „Predloženo iz obroka“ + hint „iz: Pasulj“; link nazad na Plan obroka
+- **10KEY Savetnik** — „Šta da kupim?“ koristi sastojke predstojećih obroka + postojeću listu; akcija „Dodaj sastojke iz plana“
+
+### Komunalije OCR (jači lokalni parser)
+- **Iznos (RSD)** — bolje prepoznavanje „Ukupno za uplatu“, „Za plaćanje“, „Iznos“, evropski `.` / `,` formati
+- **Izdavaoci** — EPS, Elektroprivreda, Infostan, Beograd vode, JKP, SBB, Yettel, A1, Telekom, Grejanje, Toplane
+- **Period / rok** — obračunski period, ime meseca, MM/YYYY (bez mešanja sa datumom dospeća)
+- **Tesseract.js** — opcioni lazy load sa CDN; ako OCR padne, polja ostaju prazna + jasna poruka za ručnu potvrdu
+- **UI** — bolji pregled fotografije na potvrdi; srpski tekst pouzdanosti / „potrebna provera“; ScanResult ugovor nepromenjen
+- Service Worker v7.6.3
+
 ## [7.6.2] — 2026-07-23
 
 ### Meni naloga na početnoj

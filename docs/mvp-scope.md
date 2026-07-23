@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.6.2)
+# Domaćinko — MVP obim (v7.7.0)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 
@@ -11,7 +11,7 @@ Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odlo
 | **Komunalije** | `utility-bills.html` | ✅ Tipovi računa, mesečni unos, foto + potvrda, plaćeno |
 | **Plan obroka** | `meal-plan.html` | ✅ 3 obroka/dan (doručak, ručak, večera), gotovo jelo ili namirnice, 70+ srpskih jela |
 | **Lista kupovine** | `shopping.html` | ✅ Dodavanje, označavanje kupljenog |
-| **10KEY Savetnik** | `ai.html` | ✅ Lokalni, besplatan — budžet, obroci, kupovina |
+| **10KEY Savetnik** | `ai.html` | ✅ Lokalni (default) + opcioni Ollama / OpenAI |
 | **Nalog** | `auth.html` | ✅ Prijava, odjava, sinhronizacija |
 | **Profil** | `profile.html` | ✅ Ime, budžet, domaćinstvo |
 | **Porodica** | `household-share.html` | ✅ Pozivni kod (ako je Supabase podešen) |
@@ -38,11 +38,11 @@ Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odlo
 |-----------|---------|
 | Tipovi: struja, voda, grejanje, internet, stanarina, drugo | Više tipova / brojila |
 | Recurrence: pitaj / auto / off | Pametniji rokovi |
-| Foto + ručni iznos + potvrda pre čuvanja | Bolji lokalni OCR / cloud Vision |
+| Foto + lokalni OCR (heuristike / Tesseract) + potvrda | Cloud Vision / napredni OCR |
 | Brifing: „Da li si dobio račun…?" / neplaćeno | Push notifikacije |
 | Kompresovana foto u localStorage | Cloud arhiva računa |
 
-OCR pipeline je zamenljiv (`js/modules/bills/`) — UI uvek traži potvrdu. Store OCR (fiskalni računi) ostaje v2 (`scan-receipt.html`).
+OCR pipeline je zamenljiv (`js/modules/bills/`) — lokalni parser predlaže iznos/izdavaoca/period; UI uvek traži potvrdu. Store OCR (fiskalni računi) ostaje v2 (`scan-receipt.html`).
 
 ---
 
@@ -88,6 +88,8 @@ OCR pipeline je zamenljiv (`js/modules/bills/`) — UI uvek traži potvrdu. Stor
 ## Verzionisanje
 
 - **v7.6.1** — Svetla/tamna tema: sun/moon switch, tokeni, persistencija
+- **v7.7.0** — Ollama provider foundation; jači komunalije OCR
+- **v7.6.3** — Obroci ↔ lista kupovine: sastojci po obroku/danu/nedelji, izvor na listi, Savetnik „šta da kupim“
 - **v7.6.2** — Početna: avatar otvara meni naloga (profil, podešavanja, prijava/odjava)
 - **v7.6.0** — Vizuelni polish (dizajn tokeni, home, nav, kartice, auth)
 - **v7.5.1** — Profil iz auth (Google/Facebook/email) → onboarding i podešavanja

@@ -63,14 +63,36 @@
       margin-top: var(--space-sm);
       border-radius: var(--radius-md);
       overflow: hidden;
-      max-height: 200px;
-      background: var(--color-border);
+      max-height: 280px;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--color-border) 70%, transparent), var(--color-surface));
+      border: 1px solid var(--color-border);
     }
     .bills-photo-preview img {
       display: block;
       width: 100%;
-      max-height: 200px;
+      max-height: 280px;
       object-fit: contain;
+      background: #111;
+    }
+    .bills-scan-hint--warn {
+      color: var(--color-warning, #b7791f);
+    }
+    .bills-scan-hint--ok {
+      color: var(--color-primary);
+    }
+    .bills-scan-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: var(--space-xs);
+    }
+    .bills-scan-chip {
+      font-size: var(--font-size-xs);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm, 6px);
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      color: var(--color-text);
     }
     .bills-month-status { margin-bottom: var(--space-md); }
     .bills-actions {
@@ -157,6 +179,7 @@
           <input type="file" id="bill-camera" accept="image/*" capture="environment" class="hidden" aria-hidden="true">
           <input type="file" id="bill-gallery" accept="image/*" class="hidden" aria-hidden="true">
           <div class="bills-photo-preview hidden" id="bill-photo-preview"></div>
+          <div class="bills-scan-meta hidden" id="bill-scan-meta" aria-live="polite"></div>
           <p class="bills-scan-hint" id="bill-scan-hint">Uvek potvrdite iznos pre čuvanja — OCR ne čuva automatski.</p>
         </div>
 

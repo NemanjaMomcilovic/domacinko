@@ -12,6 +12,7 @@
     entryTemplateId: null,
     entryId: null,
     photoDataUrl: null,
+    previewDataUrl: null,
     scanMeta: null,
     pendingScan: null
   };
@@ -227,6 +228,7 @@
     state.entryTemplateId = templateId;
     state.entryId = entryId;
     state.photoDataUrl = null;
+    state.previewDataUrl = null;
     state.scanMeta = null;
     state.pendingScan = null;
 
@@ -244,21 +246,68 @@
     $('entry-amount').value = entry?.amount || template.lastAmount || '';
     $('entry-due').value = entry?.dueDate || '';
     state.photoDataUrl = entry?.photoDataUrl || null;
+    state.previewDataUrl = entry?.photoDataUrl || null;
     renderPhotoPreview();
-    $('bill-scan-hint').textContent = 'Uvek potvrdite iznos pre čuvanja — OCR ne čuva automatski.';
+    clearScanMeta();
+    setScanHint('Uvek potvrdite iznos pre čuvanja — OCR ne čuva automatski.');
 
     showView('entry');
   }
 
   function renderPhotoPreview() {
     const box = $('bill-photo-preview');
-    if (state.photoDataUrl) {
+    const src = state.previewDataUrl || state.photoDataUrl;
+    if (src) {
       box.classList.remove('hidden');
-      box.innerHTML = `<img src="${state.photoDataUrl}" alt="Fotografija računa">`;
+      box.innerHTML = `<img src="${src}" alt="Pregled fotografije računa">`;
     } else {
       box.classList.add('hidden');
       box.innerHTML = '';
     }
+  }
+
+  function setScanHint(text, tone) {
+    const el = $('bill-scan-hint');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove('bills-scan-hint--warn', 'bills-scan-hint--ok');
+    if (tone === 'warn') el.classList.add('bills-scan-hint--warn');
+    if (tone === 'ok') el.classList.add('bills-scan-hint--ok');
+  }
+
+  function clearScanMeta() {
+    const meta = $('bill-scan-meta');
+    if (!meta) return;
+    meta.classList.add('hidden');
+    meta.innerHTML = '';
+  }
+
+  function renderScanMeta(scan) {
+    const meta = $('bill-scan-meta');
+    if (!meta) return;
+    const chips = [];
+    if (scan.merchant) chips.push(`Izdavalac: ${escapeHtml(scan.merchant)}`);
+    if (scan.period && typeof formatBillPeriod === 'function') {
+      chips.push(`Period: ${escapeHtml(formatBillPeriod(scan.period))}`);
+    }
+    if (scan.needsReview !== false) chips.push('Potrebna provera');
+    if (!chips.length) {
+      clearScanMeta();
+      return;
+    }
+    meta.classList.remove('hidden');
+    meta.innerHTML = chips.map(c => `<span class="bills-scan-chip">${c}</span>`).join('');
+  }
+
+  function formatAmountSr(n) {
+    return Number(n).toLocaleString('sr-RS');
+  }
+
+  function confidenceLabelSr(confidence) {
+    const pct = Math.round((confidence || 0) * 100);
+    if (pct >= 65) return { pct, tone: 'ok', phrase: 'srednja pouzdanost' };
+    if (pct >= 35) return { pct, tone: 'warn', phrase: 'niska pouzdanost — proverite' };
+    return { pct, tone: 'warn', phrase: 'veoma niska pouzdanost — unesite ručno ako treba' };
   }
 
   async function handleImageFile(file) {
@@ -266,15 +315,18 @@
       showToast?.('Izaberite sliku računa.');
       return;
     }
-    $('bill-scan-hint').textContent = 'Obrada slike…';
+    setScanHint('Čitanje računa… (može potrajati nekoliko sekundi)', 'warn');
+    clearScanMeta();
     try {
-      const { scan, photoDataUrl, parserId } = await captureBillFromImage(file);
+      const { scan, photoDataUrl, previewDataUrl, parserId } = await captureBillFromImage(file);
       state.pendingScan = scan;
       state.photoDataUrl = photoDataUrl;
+      state.previewDataUrl = previewDataUrl || photoDataUrl;
       state.scanMeta = {
         confidence: scan.confidence,
         merchant: scan.merchant,
-        parser: parserId
+        parser: parserId,
+        needsReview: scan.needsReview !== false
       };
 
       if (scan.amount) $('entry-amount').value = scan.amount;
@@ -282,21 +334,35 @@
       if (scan.dueDate) $('entry-due').value = scan.dueDate;
 
       renderPhotoPreview();
+      renderScanMeta(scan);
 
-      const confPct = Math.round((scan.confidence || 0) * 100);
+      const conf = confidenceLabelSr(scan.confidence);
       if (scan.amount) {
-        $('bill-scan-hint').textContent = `Predloženo ${scan.amount} RSD (pouzdanost ${confPct}%). Proverite pre čuvanja.`;
+        const merchantBit = scan.merchant ? ` · ${scan.merchant}` : '';
+        setScanHint(
+          `Predloženo ${formatAmountSr(scan.amount)} RSD${merchantBit} (${conf.pct}% — ${conf.phrase}). Potvrdite pre čuvanja.`,
+          conf.tone
+        );
         showToast?.('Proverite predloženi iznos', 'info');
+      } else if (scan.merchant || scan.period) {
+        setScanHint(
+          `Delimično pročitano${scan.merchant ? ` (${scan.merchant})` : ''}. Unesite iznos i potvrdite — OCR nije siguran.`,
+          'warn'
+        );
+        showToast?.('Potrebna provera', 'info');
       } else {
-        $('bill-scan-hint').textContent = photoDataUrl
-          ? 'Fotografija sačuvana. Unesite iznos ručno i potvrdite.'
-          : 'Unesite iznos ručno i potvrdite (fotografija nije sačuvana zbog veličine).';
+        setScanHint(
+          photoDataUrl
+            ? 'Nismo pouzdano pročitali iznos. Unesite ga ručno i potvrdite — fotografija je spremna.'
+            : 'Unesite iznos ručno i potvrdite (fotografija nije sačuvana zbog veličine).',
+          'warn'
+        );
         showToast?.('Unesite iznos i potvrdite', 'info');
       }
     } catch (err) {
       console.error(err);
       showToast?.('Greška pri obradi slike', 'error');
-      $('bill-scan-hint').textContent = 'Unesite iznos ručno.';
+      setScanHint('Greška pri čitanju. Unesite iznos ručno.', 'warn');
     }
   }
 

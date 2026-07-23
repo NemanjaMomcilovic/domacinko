@@ -7,6 +7,8 @@
  *  2. Register it in PARSER_MAP below
  *  3. Set settings.billParser = 'cloud' (or UI toggle)
  *  UI + bill-scanner.js stay unchanged.
+ *
+ * Current default: local (heuristics + optional lazy Tesseract CDN).
  */
 
 const BillParserRegistry = (() => {
