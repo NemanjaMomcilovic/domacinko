@@ -174,6 +174,48 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('api-key').value = settings.apiKey || '';
   document.getElementById('contact-email').value = settings.contactEmail || '';
 
+  const aiProviderEl = document.getElementById('ai-provider');
+  const ollamaHostEl = document.getElementById('ollama-host');
+  const ollamaModelEl = document.getElementById('ollama-model');
+  const ollamaSettingsEl = document.getElementById('ollama-settings');
+  if (aiProviderEl) {
+    aiProviderEl.value = settings.aiProvider || 'local';
+  }
+  if (ollamaHostEl) ollamaHostEl.value = settings.ollamaHost || 'http://127.0.0.1:11434';
+  if (ollamaModelEl) ollamaModelEl.value = settings.ollamaModel || 'qwen2.5:7b';
+
+  function syncOllamaFieldsVisibility() {
+    const show = aiProviderEl?.value === 'ollama';
+    ollamaSettingsEl?.classList.toggle('hidden', !show);
+  }
+  syncOllamaFieldsVisibility();
+  aiProviderEl?.addEventListener('change', syncOllamaFieldsVisibility);
+
+  document.getElementById('test-ollama')?.addEventListener('click', async () => {
+    const btn = document.getElementById('test-ollama');
+    const resultEl = document.getElementById('ollama-test-result');
+    const host = ollamaHostEl?.value.trim() || 'http://127.0.0.1:11434';
+    if (!btn || typeof pingOllama !== 'function') {
+      showToast('Test Ollame nije dostupan.');
+      return;
+    }
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Testiram...';
+    if (resultEl) resultEl.textContent = '';
+    try {
+      const result = await pingOllama(host);
+      if (resultEl) {
+        resultEl.textContent = result.message;
+        resultEl.style.color = result.ok ? 'var(--color-success, #2d8f5c)' : 'var(--color-danger)';
+      }
+      showToast(result.message, result.ok ? 'success' : 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  });
+
   renderAccountSection();
   renderHouseholdSection();
   renderMoreToolsSection();
@@ -342,8 +384,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     const apiKeyEl = document.getElementById('api-key');
     const contactEmailEl = document.getElementById('contact-email');
+    const aiProviderSave = document.getElementById('ai-provider');
+    const ollamaHostSave = document.getElementById('ollama-host');
+    const ollamaModelSave = document.getElementById('ollama-model');
     if (apiKeyEl) payload.apiKey = apiKeyEl.value.trim();
     if (contactEmailEl) payload.contactEmail = contactEmailEl.value.trim();
+    if (aiProviderSave) payload.aiProvider = aiProviderSave.value || 'local';
+    if (ollamaHostSave) payload.ollamaHost = ollamaHostSave.value.trim() || 'http://127.0.0.1:11434';
+    if (ollamaModelSave) payload.ollamaModel = ollamaModelSave.value.trim() || 'qwen2.5:7b';
     saveSettings(payload);
     saveCategoryBudgetsFromForm();
     showToast('Podešavanja sačuvana!');

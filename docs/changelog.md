@@ -1,5 +1,21 @@
 # Domaćinko — Changelog
 
+## [7.7.0] — 2026-07-23
+
+### Android APK (Capacitor)
+- **`www/` staging** — `scripts/prepare-www.js` kopira PWA fajlove; `webDir: www` (ne ceo repo)
+- **npm skripte** — `prepare:www`, `cap:add`, `cap:sync`, `cap:copy`, `cap:open`, `build:android`
+- **Branding** — App ID `com.tenkey.domacinko`, ime Domacinko, boja `#2d8f5c`; ikone iz `assets/icons` / `assets/logos`
+- **Dokumentacija** — Windows koraci u `docs/android-build.md` (Node, JDK 17, Android Studio, sync, APK)
+- **Ograničenja** — Ollama `localhost` ne radi na telefonu bez companion-a; Supabase OAuth može zahtevati intent-filter / HTTPS redirect
+
+### 10KEY Savetnik — Ollama (Opcija 3 foundation)
+- **Provider arhitektura** — `js/modules/ai-providers/` (`local-rules` | `ollama` | `openai` + `registry` + `prompt`)
+- **Podešavanja** — Više → 10KEY Savetnik: 10KEY lokalni (default) | Ollama | OpenAI; host, model, test `/api/tags`
+- **Chat** — status bedž 🧠 / 🦙 / ✨; Ollama NDJSON stream; isti kućni kontekst; fallback na lokalni engine
+- **Docs** — `docs/ollama-setup.md`, ažuriran `docs/10key-savetnik-roadmap.md`
+- Service Worker v7.7.0
+
 ## [7.6.3] — 2026-07-23
 
 ### Obroci ↔ lista kupovine

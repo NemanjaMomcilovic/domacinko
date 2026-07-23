@@ -1,12 +1,15 @@
 {
   "name": "domacinko",
-  "version": "7.6.3",
+  "version": "7.7.0",
   "description": "Domaćinko — AI pomoćnik za domaćinstvo (PWA + Android)",
   "private": true,
   "scripts": {
-    "cap:sync": "npx cap sync android",
+    "prepare:www": "node scripts/prepare-www.js",
+    "cap:sync": "npm run prepare:www && npx cap sync android",
+    "cap:copy": "npm run prepare:www && npx cap copy android",
     "cap:open": "npx cap open android",
-    "cap:copy": "npx cap copy android"
+    "cap:add": "npm run prepare:www && npx cap add android",
+    "build:android": "npm run cap:sync && node -e \"console.log('\\nSledeći korak: npm run cap:open  →  Build → Build APK(s) u Android Studio\\nAPK: android/app/build/outputs/apk/debug/app-debug.apk')\""
   },
   "dependencies": {
     "@capacitor/android": "^6.2.0",

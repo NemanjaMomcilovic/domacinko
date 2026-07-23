@@ -38,9 +38,11 @@ Dokumentacija poznatih ograničenja i problema u v7.0.0. Ažurirano: jul 2026.
 
 | Problem | Opis | Zaobilazno rešenje |
 |---------|------|-------------------|
-| **APK build** | Zahteva Android Studio na vašem računaru | Pratite `docs/android-build.md` |
-| **`android/` folder** | Generiše se lokalno (`npx cap add android`) | Nije u git repou — svaki developer generiše svoj |
-| **npm SSL greška** | `UNABLE_TO_VERIFY_LEAF_SIGNATURE` na nekim mrežama | `npm config set strict-ssl false` (samo dev) ili koristite `--use-system-ca` |
+| **APK build** | Zahteva Android Studio + JDK 17 + SDK | Pratite `docs/android-build.md`; `npm run cap:sync` radi i bez SDK |
+| **`android/` / `www/`** | Generišu se lokalno | Nisu u gitu — `npm run cap:add` / `cap:sync` |
+| **Ollama na telefonu** | `localhost:11434` je PC, ne telefon | Companion / LAN IP / VPN — vidi `docs/ollama-setup.md` |
+| **Supabase OAuth redirect** | Native scheme `https://localhost` | Dodajte u Supabase Redirect URLs; produkcija: HTTPS + intent-filter |
+| **npm SSL greška** | `UNABLE_TO_VERIFY_LEAF_SIGNATURE` na nekim mrežama | `$env:NODE_OPTIONS='--use-system-ca'` pre `npm install` |
 
 ---
 

@@ -1,9 +1,9 @@
-# Domaćinko v7.6.3
+# Domaćinko v7.7.0
 
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-7.6.3-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-7.7.0-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
 [![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84)](docs/android-build.md)
 
@@ -51,13 +51,13 @@ Za sinhronizaciju naloga i **porodičnog deljenja**, pogledajte [docs/supabase-s
 
 ### Android APK
 
-Za native Android aplikaciju:
+Za native Android aplikaciju (zahteva Android Studio + JDK 17):
 
 ```powershell
 npm install
-npx cap add android    # prvi put
-npx cap sync android
-npx cap open android   # Build APK u Android Studio
+npm run cap:add        # prvi put (kreira android/)
+npm run build:android  # www staging + cap sync
+npm run cap:open       # Build → Build APK(s) u Android Studio
 ```
 
 Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
@@ -65,7 +65,7 @@ Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v7.6.3)
+- Offline keširanje (Service Worker v7.7.0)
 - Prečice: Dodaj trošak, Lista za kupovinu, AI Savetnik
 - Push podsetnici za račune, budžet i održavanje
 
@@ -81,7 +81,8 @@ domacinko/
 │   ├── modules/            # Briefing, registry, AI kontekst
 │   └── pages/              # Page-specific logika
 ├── css/            # Dizajn sistem v2 (tamna tema, pristupačnost)
-├── capacitor.config.ts     # Android wrapper
+├── capacitor.config.ts     # Android wrapper (webDir: www)
+├── scripts/prepare-www.js  # Staging PWA → www/ za Capacitor
 └── docs/           # Vizija, changelog, roadmap, android-build
 ```
 

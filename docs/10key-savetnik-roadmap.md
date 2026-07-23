@@ -2,57 +2,76 @@
 
 Kratki plan za AI u Domaćinku / 10KEY ekosistemu.
 
-## Opcija 1 — 10KEY Savetnik (trenutno, v7.1.1+)
+## Opcija 1 — 10KEY Savetnik (default, uvek dostupan)
 
-**Šta je:** Rule + context engine u PWA/APK — besplatno, radi odmah, offline (v7.2.1+).
+**Šta je:** Rule + context engine (`js/modules/ai-providers/local-rules.js`) — besplatno, radi odmah, offline.
 
 - Prepoznaje 25+ namera (budžet, današnji troškovi, kuvanje, kupovina, održavanje, štednja, računi…)
 - Odgovori iz **stvarnih** podataka korisnika (localStorage / sinhronizacija)
 - Proaktivni welcome, brzi chipovi, akcije (dodaj na listu, otvori modul)
 - **Shipuje se** u svakom buildu — GitHub Pages, PWA, Capacitor APK
+- **Fallback** ako Ollama/OpenAI nisu dostupni
 
 Ovo je **primarni proizvod** za beta i sve korisnike.
 
 ## Opcija 2 — OpenAI (opciono)
 
-Korisnik unese svoj API ključ u Više → Napredno → Napredni režim.
+Korisnik izabere provider **OpenAI** i unese API ključ u Više → Napredno → Napredni režim.
 
 - Plaća OpenAI direktno
-- GPT-4o streaming kada je ključ aktivan
-- Fallback na 10KEY Savetnik ako mreža/ključ ne rade
+- GPT-4o streaming kada je ključ aktivan (`js/modules/ai-providers/openai.js`)
+- Fallback na 10KEY lokalni ako mreža/ključ ne rade
 
 Nije obavezno za korišćenje aplikacije.
 
-## Opcija 3 — Lokalni open-source model (budućnost)
+## Opcija 3 — Lokalni open-source (Ollama) — v7.7.0+
 
-**Cilj:** Svi koji preuzmu APK/PWA mogu pametnije odgovore **bez** OpenAI pretplate.
+**Cilj:** Pametniji odgovori **bez** OpenAI pretplate, na mašini sa dovoljno VRAM/RAM.
 
-Mogući pristupi:
+**Šta radi sada (ovaj repo):**
+
+- Provider **Ollama** u Više → 10KEY Savetnik
+- Host (default `http://127.0.0.1:11434`) + model (default `qwen2.5:7b`)
+- Streaming NDJSON preko `/api/chat`
+- Isti kućni kontekst kao GPT putanja (`prompt.js`)
+- Test veze → `/api/tags`
+- Uputstvo: [ollama-setup.md](ollama-setup.md)
 
 | Pristup | PWA (GitHub Pages) | APK / desktop |
 |--------|-------------------|---------------|
-| Ollama na PC-u + lokalni proxy | ❌ browser ne može `localhost` | ✅ companion ili ugrađeni server |
-| Bundled mali model u desktop companion | ❌ | ✅ poseban 10KEY companion app |
-| On-device model u APK (llama.cpp, MLC) | ❌ | ✅ moguće, veći APK |
+| Ollama na **istom** PC-u | ✅ uz `OLLAMA_ORIGINS` | ✅ |
+| Ollama na tuđem telefonu / udaljeno | ❌ localhost | ❌ bez companion |
+| Bundled model u companion | — | 🔜 poseban projekat |
+| On-device u APK (llama.cpp, MLC) | ❌ | 🔜 veći APK |
 
-**Ograničenje:** GitHub Pages hostovana verzija **ne može** zvati `localhost:11434` (Ollama) na korisnikovom računaru — CORS i bezbednost browsera.
+**Ograničenje:** Telefoni i prijatelji **ne mogu** koristiti Ollamu na vašem PC-u preko GitHub Pages. Za sve korisnike koji preuzmu app — i dalje Opcija 1; Opcija 3 je opt-in za developere / PC sa Ollamom.
 
-**Plan:**
+**Sledeći koraci:**
 
-1. Zadržati Opciju 1 kao default u svim kanalima
-2. Poseban projekat/prozor za Opciju 3 (npr. `10key-savetnik-local` ili desktop companion)
-3. APK: embedded mali model **ili** tunel ka companion app na LAN-u
-4. Dokumentovati hardverske preporuke (npr. 16GB+ VRAM za veće modele)
+1. Zadržati Opciju 1 kao default u svim kanalima ✅
+2. Companion / poseban prozor (`10key-savetnik-local`) za lakši setup
+3. APK: LAN tunel ka companion **ili** mali ugrađeni model
+4. Hardver: 16GB+ VRAM pogodan za 7B–14B (npr. RTX 5070 Ti)
 
-Referentna mašina developera: RTX 5070 Ti 16GB, 32GB RAM — dovoljno za lokalne modele u companion scenariju, ne utiče na Opciju 1 u produkciji.
+Referentna mašina: RTX 5070 Ti 16GB, 32GB RAM — Qwen2.5 7B/14B.
+
+## Provider arhitektura (v7.7.0)
+
+```
+settings.aiProvider → registry.js
+  ├─ local   → local-rules.js
+  ├─ ollama  → ollama.js  (+ fallback local)
+  └─ openai  → openai.js  (+ fallback local)
+```
 
 ## Verzije
 
 | Verzija | Fokus |
 |---------|--------|
+| v7.7.0 | Opcija 3 foundation — Ollama provider, settings, docs |
 | v7.2.1 | Rebrand na 10KEY Savetnik, jači lokalni engine |
 | v7.1.x | Više namera, bolji kontekst, beta feedback |
-| v8+ | Opcija 3 pilot (companion / Ollama) — odvojeni repo ili modul |
+| v8+ | Companion / on-device model za telefone |
 
 ---
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'domacinko-v7.6.3';
+const CACHE_NAME = 'domacinko-v7.7.0';
 
 const ASSETS = [
   './',
@@ -25,6 +25,11 @@ const ASSETS = [
   './js/voice.js',
   './js/modules/registry.js',
   './js/modules/ai-context.js',
+  './js/modules/ai-providers/prompt.js',
+  './js/modules/ai-providers/local-rules.js',
+  './js/modules/ai-providers/openai.js',
+  './js/modules/ai-providers/ollama.js',
+  './js/modules/ai-providers/registry.js',
   './js/modules/briefing.js',
   './js/modules/bills/bill-types.js',
   './js/modules/bills/parsers/local-ocr.js',

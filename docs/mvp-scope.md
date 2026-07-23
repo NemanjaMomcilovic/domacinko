@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.6.3)
+# Domaćinko — MVP obim (v7.7.0)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 
@@ -87,10 +87,10 @@ OCR pipeline je zamenljiv (`js/modules/bills/`) — lokalni parser predlaže izn
 
 ## Verzionisanje
 
-- **v7.6.1** — Svetla/tamna tema: sun/moon switch, tokeni, persistencija
-- **v7.7.0** — Ollama provider foundation; jači komunalije OCR
+- **v7.7.0** — Android APK (Capacitor www staging); Ollama provider foundation; jači komunalije OCR
 - **v7.6.3** — Obroci ↔ lista kupovine: sastojci po obroku/danu/nedelji, izvor na listi, Savetnik „šta da kupim“
 - **v7.6.2** — Početna: avatar otvara meni naloga (profil, podešavanja, prijava/odjava)
+- **v7.6.1** — Svetla/tamna tema: sun/moon switch, tokeni, persistencija
 - **v7.6.0** — Vizuelni polish (dizajn tokeni, home, nav, kartice, auth)
 - **v7.5.1** — Profil iz auth (Google/Facebook/email) → onboarding i podešavanja
 - **v7.5.0** — Komunalije (core): tipovi, recurrence, foto potvrda, brifing
