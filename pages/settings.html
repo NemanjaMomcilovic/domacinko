@@ -165,7 +165,36 @@
             <p class="settings-section-card__subtitle text-muted">
               Besplatan kućni asistent — radi odmah, offline, na osnovu vaših podataka (budžet, kupovina, obroci).
             </p>
-            <a href="ai.html" class="btn btn--primary btn--block">Otvori 10KEY Savetnik</a>
+            <div class="form-group">
+              <label class="form-label" for="ai-provider">Provider odgovora</label>
+              <select class="form-select" id="ai-provider" aria-describedby="ai-provider-hint">
+                <option value="local">🧠 10KEY lokalni (podrazumevano)</option>
+                <option value="ollama">🦙 Ollama (lokalni model)</option>
+                <option value="openai">✨ OpenAI (opciono)</option>
+              </select>
+              <p class="text-muted mt-xs" id="ai-provider-hint" style="font-size:var(--font-size-xs)">
+                Lokalni radi svuda. Ollama zahteva pokrenut server na uređaju. OpenAI zahteva vaš API ključ.
+              </p>
+            </div>
+
+            <div id="ollama-settings" class="hidden" style="margin-top:var(--space-md)">
+              <div class="form-group">
+                <label class="form-label" for="ollama-host">Ollama host</label>
+                <input type="url" class="form-input" id="ollama-host" placeholder="http://127.0.0.1:11434" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ollama-model">Model</label>
+                <input type="text" class="form-input" id="ollama-model" placeholder="qwen2.5:7b" autocomplete="off">
+              </div>
+              <button type="button" class="btn btn--secondary btn--block" id="test-ollama">Testiraj vezu</button>
+              <p class="text-muted mt-sm" id="ollama-test-result" style="font-size:var(--font-size-xs)" role="status"></p>
+              <p class="text-muted mt-xs" style="font-size:var(--font-size-xs)">
+                Ollama mora biti pokrenuta na ovom uređaju. Za telefone: kasnije companion/APK.
+                Uputstvo: docs/ollama-setup.md
+              </p>
+            </div>
+
+            <a href="ai.html" class="btn btn--primary btn--block mt-md">Otvori 10KEY Savetnik</a>
           </div>
         </div>
 
