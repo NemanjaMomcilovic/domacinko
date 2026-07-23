@@ -358,6 +358,9 @@ const DEFAULT_DATA = {
     highContrast: false,
     apiKey: '',
     apiUrl: 'https://api.openai.com/v1/chat/completions',
+    aiProvider: 'local',
+    ollamaHost: 'http://127.0.0.1:11434',
+    ollamaModel: 'qwen2.5:7b',
     notificationsEnabled: false,
     contactEmail: '',
     avatarUrl: '',
@@ -457,6 +460,14 @@ function getData() {
     if (!Array.isArray(merged.utilityBills.templates)) merged.utilityBills.templates = [];
     if (!Array.isArray(merged.utilityBills.entries)) merged.utilityBills.entries = [];
     if (!merged.settings.billParser) merged.settings.billParser = 'local';
+    // Legacy: ako raw storage nema aiProvider, a postoji OpenAI ključ → openai
+    if (!(parsed.settings || {}).aiProvider) {
+      merged.settings.aiProvider = (merged.settings.apiKey && String(merged.settings.apiKey).trim())
+        ? 'openai'
+        : 'local';
+    }
+    if (!merged.settings.ollamaHost) merged.settings.ollamaHost = DEFAULT_DATA.settings.ollamaHost;
+    if (!merged.settings.ollamaModel) merged.settings.ollamaModel = DEFAULT_DATA.settings.ollamaModel;
     return merged;
   } catch {
     return structuredClone(DEFAULT_DATA);
@@ -815,9 +826,11 @@ function getShoppingList() {
   return getData().shoppingList;
 }
 
-function addShoppingItem(name, category = 'other') {
+function addShoppingItem(name, category = 'other', meta = null) {
   const data = getData();
   const item = { id: generateId(), name, bought: false, category };
+  if (meta?.source) item.source = meta.source;
+  if (meta?.sourceLabel) item.sourceLabel = meta.sourceLabel;
   data.shoppingList.push(item);
   saveData(data);
   return item;
@@ -923,7 +936,7 @@ function setSplashSeen() {
 
 function exportAllData() {
   return JSON.stringify({
-    version: '7.6.2',
+    version: '7.6.3',
     app: 'Domaćinko',
     exportedAt: new Date().toISOString(),
     profileId: getActiveProfileId(),
@@ -1038,41 +1051,114 @@ function collectSlotIngredients(slot) {
   return name.split(/[,+\-/&]| i /).map(p => p.trim()).filter(p => p.length > 2);
 }
 
-function extractIngredientsFromMeals() {
-  const plan = getMealPlan();
-  const ingredients = new Set();
-  MEAL_DAYS.forEach(day => {
-    const d = plan[day.id];
-    if (!d) return;
-    MEAL_SLOTS.forEach(slot => {
-      collectSlotIngredients(d[slot.id]).forEach(i => ingredients.add(i));
-    });
-  });
-  return [...ingredients];
+function normalizeIngredientEntry(entry) {
+  if (entry == null) return null;
+  if (typeof entry === 'string') {
+    const name = entry.trim();
+    return name ? { name } : null;
+  }
+  const name = String(entry.name || '').trim();
+  if (!name) return null;
+  return {
+    name,
+    source: entry.source || undefined,
+    sourceLabel: entry.sourceLabel || undefined
+  };
 }
 
-function addIngredientsToShoppingList(ingredients) {
-  const list = (ingredients || []).map(i => String(i).trim()).filter(Boolean);
+function collectIngredientsWithSources(dayIds) {
+  const plan = getMealPlan();
+  const map = new Map();
+  const days = dayIds
+    ? dayIds.map(id => MEAL_DAYS.find(d => d.id === id)).filter(Boolean)
+    : MEAL_DAYS;
+
+  days.forEach(day => {
+    const d = plan[day.id];
+    if (!d) return;
+    MEAL_SLOTS.forEach(slotDef => {
+      const slot = d[slotDef.id];
+      const ings = collectSlotIngredients(slot);
+      if (!ings.length) return;
+      const mealName = formatMealSlotLabel(slot) || slot.name || slotDef.label;
+      ings.forEach(ing => {
+        const key = String(ing).trim().toLowerCase();
+        if (!key || map.has(key)) return;
+        map.set(key, {
+          name: String(ing).trim(),
+          source: 'meal',
+          sourceLabel: mealName
+        });
+      });
+    });
+  });
+  return [...map.values()];
+}
+
+function extractIngredientsFromMeals() {
+  return collectIngredientsWithSources().map(i => i.name);
+}
+
+function extractIngredientsFromDay(dayId) {
+  return collectIngredientsWithSources([dayId]).map(i => i.name);
+}
+
+/** Danas do kraja nedelje (pon–ned), uključujući danas */
+function getRemainingMealDayIds() {
+  const todayKey = getTodayMealKey();
+  const ids = MEAL_DAYS.map(d => d.id);
+  const idx = ids.indexOf(todayKey);
+  if (idx < 0) return ids;
+  return ids.slice(idx);
+}
+
+function getMissingMealIngredients(dayIds) {
+  const entries = collectIngredientsWithSources(dayIds || getRemainingMealDayIds());
+  const existing = new Set(getShoppingList().map(i => i.name.toLowerCase()));
+  return entries.filter(e => !existing.has(e.name.toLowerCase()));
+}
+
+function addIngredientsToShoppingList(ingredients, options = {}) {
+  const category = options.category || 'food';
+  const defaultSource = options.source || null;
+  const defaultSourceLabel = options.sourceLabel || null;
+  const list = (ingredients || [])
+    .map(normalizeIngredientEntry)
+    .filter(Boolean);
   const existing = getShoppingList().map(i => i.name.toLowerCase());
   let added = 0;
-  list.forEach(ing => {
-    if (!existing.includes(ing.toLowerCase())) {
-      addShoppingItem(ing.charAt(0).toUpperCase() + ing.slice(1));
-      existing.push(ing.toLowerCase());
-      added++;
-    }
+  list.forEach(entry => {
+    const key = entry.name.toLowerCase();
+    if (existing.includes(key)) return;
+    const display = entry.name.charAt(0).toUpperCase() + entry.name.slice(1);
+    const meta = {};
+    const source = entry.source || defaultSource;
+    const sourceLabel = entry.sourceLabel || defaultSourceLabel;
+    if (source) meta.source = source;
+    if (sourceLabel) meta.sourceLabel = sourceLabel;
+    addShoppingItem(display, category, Object.keys(meta).length ? meta : null);
+    existing.push(key);
+    added++;
   });
   return { added, total: list.length };
 }
 
 function generateShoppingFromMealPlan() {
-  const ingredients = extractIngredientsFromMeals();
-  return addIngredientsToShoppingList(ingredients);
+  return addIngredientsToShoppingList(collectIngredientsWithSources());
+}
+
+function generateShoppingFromMealDay(dayId) {
+  return addIngredientsToShoppingList(collectIngredientsWithSources([dayId]));
 }
 
 function addMealSlotIngredientsToShopping(dayId, slotId) {
   const slot = getMealSlot(dayId, slotId);
-  return addIngredientsToShoppingList(collectSlotIngredients(slot));
+  const ings = collectSlotIngredients(slot);
+  const mealName = formatMealSlotLabel(slot) || slot?.name || '';
+  return addIngredientsToShoppingList(ings, {
+    source: 'meal',
+    sourceLabel: mealName || undefined
+  });
 }
 
 function getPantryItems() {

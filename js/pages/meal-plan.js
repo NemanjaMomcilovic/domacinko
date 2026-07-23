@@ -23,6 +23,11 @@ function slotSubtitle(slot) {
   return n ? `Gotovo jelo · ${n} sastojaka` : 'Gotovo jelo';
 }
 
+function dayHasIngredients(day) {
+  if (!day) return false;
+  return MEAL_SLOTS.some(s => collectSlotIngredients(day[s.id]).length > 0);
+}
+
 function renderMealDays() {
   const plan = getMealPlan();
   const container = document.getElementById('meal-days');
@@ -34,12 +39,20 @@ function renderMealDays() {
     <div class="meal-plan-grid" id="meal-plan-grid">
       ${MEAL_DAYS.map(day => {
         const dayData = plan[day.id] || emptyMealDay();
+        const canShopDay = dayHasIngredients(dayData);
         return `
         <div class="meal-day meal-day--draggable" data-day="${day.id}" draggable="true">
           <div class="meal-day__header">
             <span class="meal-day__label">${day.full || day.label}</span>
-            <button type="button" class="meal-day__clear btn btn--ghost btn--sm" data-clear-day="${day.id}"
-              aria-label="Obriši sve obroke za ${day.label}" title="Obriši dan">✕</button>
+            <div class="meal-day__actions">
+              ${canShopDay ? `
+              <button type="button" class="btn btn--ghost btn--sm meal-day__shop"
+                data-shop-day="${day.id}"
+                aria-label="Dodaj sastojke za ${day.label} na listu kupovine"
+                title="Dodaj sastojke za dan">🛒</button>` : ''}
+              <button type="button" class="meal-day__clear btn btn--ghost btn--sm" data-clear-day="${day.id}"
+                aria-label="Obriši sve obroke za ${day.label}" title="Obriši dan">✕</button>
+            </div>
           </div>
           <div class="meal-day__slots">
             ${MEAL_SLOTS.map(slot => {
@@ -63,6 +76,7 @@ function renderMealDays() {
   bindMealDragDrop();
   bindMealSlots();
   bindMealClear();
+  bindMealDayShop();
   renderMealPlanEmptyHint();
 }
 
@@ -86,6 +100,25 @@ function bindMealClear() {
   });
 }
 
+function toastShoppingResult({ added, total }) {
+  if (added > 0) showToast(`Dodato ${added} stavki na listu kupovine!`, 'success');
+  else if (total > 0) showToast('Sve namirnice su već na listi.', 'info');
+  else showToast('Nema sastojaka za dodavanje.', 'warning');
+}
+
+function bindMealDayShop() {
+  document.querySelectorAll('[data-shop-day]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const dayId = btn.dataset.shopDay;
+      const result = typeof generateShoppingFromMealDay === 'function'
+        ? generateShoppingFromMealDay(dayId)
+        : addIngredientsToShoppingList(extractIngredientsFromDay(dayId));
+      toastShoppingResult(result);
+    });
+  });
+}
+
 function bindMealDragDrop() {
   const days = document.querySelectorAll('.meal-day--draggable');
 
@@ -93,7 +126,7 @@ function bindMealDragDrop() {
     const dayId = dayEl.dataset.day;
 
     dayEl.addEventListener('dragstart', e => {
-      if (e.target.closest('.meal-slot, .meal-day__clear')) {
+      if (e.target.closest('.meal-slot, .meal-day__clear, .meal-day__shop')) {
         e.preventDefault();
         return;
       }
@@ -139,7 +172,7 @@ function bindMealDragDrop() {
     let touchTimer = null;
 
     dayEl.addEventListener('touchstart', e => {
-      if (e.target.closest('.meal-slot, .meal-day__clear')) return;
+      if (e.target.closest('.meal-slot, .meal-day__clear, .meal-day__shop')) return;
       const plan = getMealPlan();
       if (!dayHasMeals(plan[dayId])) return;
       touchDragDay = dayId;
@@ -275,8 +308,10 @@ function renderMealPickerBody(draft, slotId) {
     : presets;
   const selected = draft.mealId || '';
   const selectedPreset = selected ? findMealPresetById(selected) : null;
-  const hasIngredients = (draft.ingredients || []).length > 0
-    || (selectedPreset?.ingredients || []).length > 0;
+  const ings = (draft.ingredients && draft.ingredients.length)
+    ? draft.ingredients
+    : (selectedPreset?.ingredients || []);
+  const hasIngredients = ings.length > 0;
 
   return `
     <label class="form-label" for="meal-search">Pretraga jela</label>
@@ -291,10 +326,10 @@ function renderMealPickerBody(draft, slotId) {
         </button>
       `).join('') : `<p class="text-muted" style="font-size:var(--font-size-sm)">Nema jela za „${escapeMealHtml(draft._search || '')}".</p>`}
     </div>
-    ${selected ? `
-      <button type="button" class="btn btn--secondary btn--block mt-md${hasIngredients ? '' : ' hidden'}"
+    ${selected && hasIngredients ? `
+      <button type="button" class="btn btn--secondary btn--block mt-md"
         id="meal-add-shopping">
-        🛒 Dodaj sastojke na listu kupovine
+        Dodaj sastojke na listu kupovine
       </button>
     ` : ''}
   `;
@@ -306,6 +341,7 @@ function renderIngredientsBody(draft) {
       ${escapeMealHtml(ing)} ✕
     </button>
   `).join('');
+  const hasIngredients = (draft.ingredients || []).length > 0;
 
   return `
     <label class="form-label" for="meal-nick">Naziv obroka (opciono)</label>
@@ -320,6 +356,12 @@ function renderIngredientsBody(draft) {
     <div class="fav-chips" id="meal-ing-chips">
       ${chips || `<p class="text-muted" style="font-size:var(--font-size-xs)">Još nema namirnica — unesite ih iznad.</p>`}
     </div>
+    ${hasIngredients ? `
+      <button type="button" class="btn btn--secondary btn--block mt-md"
+        id="meal-add-shopping">
+        Dodaj sastojke na listu kupovine
+      </button>
+    ` : ''}
   `;
 }
 
@@ -355,10 +397,12 @@ function bindMealPickerEvents() {
   if (shopBtn) {
     shopBtn.addEventListener('click', () => {
       const ings = modalState.draft.ingredients || [];
-      const { added, total } = addIngredientsToShoppingList(ings);
-      if (added > 0) showToast(`Dodato ${added} stavki na listu!`, 'success');
-      else if (total > 0) showToast('Sve namirnice su već na listi.', 'info');
-      else showToast('Nema sastojaka za ovo jelo.', 'warning');
+      const mealName = modalState.draft.name || '';
+      const { added, total } = addIngredientsToShoppingList(ings, {
+        source: 'meal',
+        sourceLabel: mealName || undefined
+      });
+      toastShoppingResult({ added, total });
     });
   }
 }
@@ -403,6 +447,21 @@ function bindIngredientsEvents() {
       renderMealModal();
     });
   });
+
+  const shopBtn = document.getElementById('meal-add-shopping');
+  if (shopBtn) {
+    shopBtn.addEventListener('click', () => {
+      const nick = document.getElementById('meal-nick');
+      if (nick) modalState.draft.name = nick.value.trim();
+      const ings = modalState.draft.ingredients || [];
+      const mealName = modalState.draft.name || 'Namirnice';
+      const { added, total } = addIngredientsToShoppingList(ings, {
+        source: 'meal',
+        sourceLabel: mealName
+      });
+      toastShoppingResult({ added, total });
+    });
+  }
 }
 
 function saveModalDraft() {
@@ -513,13 +572,16 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Prvo unesite obroke za nedelju.');
       return;
     }
-    const { added, total } = generateShoppingFromMealPlan();
-    if (added > 0) {
-      showToast(`Dodato ${added} stavki na listu za kupovinu!`);
-    } else if (total > 0) {
-      showToast('Sve namirnice su već na listi.');
-    } else {
-      showToast('Nismo pronašli namirnice. Dodajte sastojke uz obroke.');
+    toastShoppingResult(generateShoppingFromMealPlan());
+  });
+
+  document.getElementById('generate-shopping-today')?.addEventListener('click', () => {
+    const dayId = getTodayMealKey();
+    const day = getTodayMealDay();
+    if (!dayHasIngredients(day)) {
+      showToast('Danas nema obroka sa sastojcima.', 'warning');
+      return;
     }
+    toastShoppingResult(generateShoppingFromMealDay(dayId));
   });
 });

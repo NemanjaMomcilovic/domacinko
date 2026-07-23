@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.7.0)
+# Domaćinko — MVP obim (v7.6.3)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 

@@ -59,15 +59,23 @@ function getShoppingContext() {
   const shopping = getShoppingList();
   const pending = shopping.filter(i => !i.bought);
   const mealPlan = getMealPlan();
-  const plannedMeals = typeof countFilledMealDays === 'function'
-    ? countFilledMealDays(mealPlan)
-    : Object.values(mealPlan).filter(m => m && typeof m === 'string' && m.trim()).length;
+  const plannedMeals = typeof countFilledMealSlots === 'function'
+    ? countFilledMealSlots(mealPlan)
+    : (typeof countFilledMealDays === 'function' ? countFilledMealDays(mealPlan) : 0);
+  const mealIngredients = typeof collectIngredientsWithSources === 'function'
+    ? collectIngredientsWithSources(typeof getRemainingMealDayIds === 'function' ? getRemainingMealDayIds() : null)
+    : [];
+  const missingFromPlan = typeof getMissingMealIngredients === 'function'
+    ? getMissingMealIngredients()
+    : mealIngredients;
 
   return {
     pendingCount: pending.length,
     items: pending.map(i => i.name),
     mealPlan,
     plannedMeals,
+    mealIngredients: mealIngredients.map(i => i.name),
+    missingFromPlan: missingFromPlan.map(i => i.name),
     pantry: getPantryItems().map(p => p.name)
   };
 }
@@ -151,6 +159,8 @@ function getAdvisorContext() {
     ...finance,
     shopping: shopping.items,
     shoppingCount: shopping.pendingCount,
+    mealIngredients: shopping.mealIngredients || [],
+    missingFromPlan: shopping.missingFromPlan || [],
     members: household.members,
     maintenanceDue: maintenance.dueCount,
     maintenanceOverdue: maintenance.overdueCount,
@@ -168,8 +178,8 @@ const MODULE_SUGGESTED_QUESTIONS = {
     'Koliko sam potrošio danas?',
     'Koliko sam potrošio?',
     'Šta da kuvam danas?',
+    'Šta da kupim?',
     'Šta kasni u kući?',
-    'Gde najviše trošim?',
     'Koliko mi je ostalo?',
     'Šta je na listi za kupovinu?',
     'Pregled dana'
@@ -186,6 +196,7 @@ const MODULE_SUGGESTED_QUESTIONS = {
     'Koliko mogu da uštedim?'
   ],
   shopping: [
+    'Šta da kupim?',
     'Šta imam na listi?',
     'Šta mi nedostaje u ostavi?',
     'Šta često kupujem?'

@@ -136,6 +136,19 @@ function buildRichContextBlock() {
     comparison?.text ? `Poređenje: ${comparison.text}` : null,
     savings.goalName ? `Cilj štednje „${savings.goalName}": ${savings.pct}% (${formatCurrency(savings.saved)}/${formatCurrency(savings.goal)})` : null,
     `Danas za ručak/večeru: ${todayMeal || 'nije planirano'} | Plan obroka: ${plannedMeals}/7 dana`,
+    (() => {
+      const missing = typeof getMissingMealIngredients === 'function' ? getMissingMealIngredients() : [];
+      const mealIngs = typeof collectIngredientsWithSources === 'function'
+        ? collectIngredientsWithSources(typeof getRemainingMealDayIds === 'function' ? getRemainingMealDayIds() : null)
+        : [];
+      if (missing.length) {
+        return `Sastojci iz plana (nedostaju na listi): ${missing.slice(0, 12).map(i => i.name).join(', ')}`;
+      }
+      if (mealIngs.length) {
+        return `Sastojci iz plana: svi su već na listi (${mealIngs.length})`;
+      }
+      return null;
+    })(),
     shopping.length ? `Lista za kupovinu (${shopping.length}): ${shopping.slice(0, 8).map(i => i.name).join(', ')}` : 'Lista za kupovinu: prazna',
     dueMaint.length ? `Održavanje na redu (${overdueMaint.length} kasni): ${dueMaint.slice(0, 5).map(t => `${t.name}${t.overdue ? ' [KASNI]' : ''}`).join(', ')}` : 'Održavanje: sve na vreme',
     pantryLow.length ? `Ostava na isteku: ${pantryLow.map(p => p.name).join(', ')}` : null,
@@ -253,6 +266,10 @@ function extractSuggestedActions(message, response) {
   if (listMatch && !item) {
     actions.push({ type: 'shopping', label: `Dodaj „${listMatch[1].trim()}"`, payload: listMatch[1].trim() });
   }
+  if (/dodaj\s+sastojke\s+iz\s+plana|predstojeće\s+obroke\s+još\s+treba/i.test(response)
+    || /dodaj\s+sastojk.*iz\s+plana/i.test(message)) {
+    actions.push({ type: 'generate_shopping', label: 'Dodaj sastojke iz plana', payload: 'week' });
+  }
   if (/održavanje|odrzavanje|servis/i.test(response) && /kasni|na redu/i.test(response)) {
     actions.push({ type: 'link', label: 'Otvori Održavanje', href: 'maintenance.html' });
   }
@@ -277,7 +294,8 @@ function renderActionBar(actions) {
     if (a.type === 'link') {
       return `<a href="${a.href}" class="chat-action-btn">${a.label}</a>`;
     }
-    return `<button type="button" class="chat-action-btn" data-action="shopping" data-payload="${escapeChatHtml(a.payload)}">${a.label}</button>`;
+    const action = a.type === 'generate_shopping' ? 'generate_shopping' : 'shopping';
+    return `<button type="button" class="chat-action-btn" data-action="${action}" data-payload="${escapeChatHtml(a.payload || '')}">${a.label}</button>`;
   }).join('')}</div>`;
 }
 
@@ -291,6 +309,17 @@ function handleChatActions(container) {
         btn.disabled = true;
         btn.textContent = '✓ Dodato';
       }
+    });
+  });
+  container.querySelectorAll('[data-action="generate_shopping"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (typeof generateShoppingFromMealPlan !== 'function') return;
+      const { added, total } = generateShoppingFromMealPlan();
+      if (added > 0) showToast(`Dodato ${added} sastojaka na listu!`, 'success');
+      else if (total > 0) showToast('Sve je već na listi.', 'info');
+      else showToast('Nema sastojaka u planu.', 'warning');
+      btn.disabled = true;
+      btn.textContent = added > 0 ? '✓ Dodato' : '✓ Gotovo';
     });
   });
 }
@@ -344,6 +373,15 @@ function getSmartResponse(message) {
   const profile = ctx?.houseProfile || (typeof getHouseProfile === 'function' ? getHouseProfile() : {});
   const wrap = { advisor, profile, ctx };
   const lower = message.toLowerCase();
+
+  if (/dodaj\s+sastojk.*iz\s+plana|generi[sš]i\s+listu.*(obrok|plan)|dodaj\s+sve\s+sastojk/.test(lower)) {
+    if (typeof generateShoppingFromMealPlan === 'function') {
+      const { added, total } = generateShoppingFromMealPlan();
+      if (added > 0) return `Dodato **${added}** sastojaka sa plana obroka na listu kupovine. 🛒`;
+      if (total > 0) return 'Svi sastojci iz plana su već na listi.';
+      return 'Plan nema sastojaka — izaberite gotova jela u Planu obroka.';
+    }
+  }
 
   const addItem = parseShoppingAction(message);
   if (addItem) {
@@ -424,8 +462,22 @@ function getSmartResponse(message) {
     }
     case 'shopping_list': {
       const shopping = getShoppingList().filter(i => !i.bought);
-      if (!shopping.length) return 'Lista za kupovinu je prazna. Recite „dodaj mleko na listu" ili planirajte obroke.';
-      return `Na listi (${shopping.length}): ${shopping.slice(0, 10).map(i => i.name).join(', ')}. 🛒`;
+      const missing = typeof getMissingMealIngredients === 'function' ? getMissingMealIngredients() : [];
+      const parts = [];
+      if (shopping.length) {
+        parts.push(`Na listi (${shopping.length}): ${shopping.slice(0, 10).map(i => i.name).join(', ')}.`);
+      } else {
+        parts.push('Lista za kupovinu je trenutno prazna.');
+      }
+      if (missing.length) {
+        parts.push(`Za predstojeće obroke još treba: ${missing.slice(0, 12).map(i => i.name).join(', ')}.`);
+        parts.push('Recite „dodaj sastojke iz plana" ili otvorite Plan obroka.');
+      } else if (!shopping.length) {
+        parts.push('Planirajte obroke ili recite „dodaj mleko na listu".');
+      } else {
+        parts.push('Sastojci iz plana su već pokriveni listom. 🛒');
+      }
+      return parts.join(' ');
     }
     case 'maintenance_due': {
       const due = typeof getDueMaintenance === 'function' ? getDueMaintenance() : [];
