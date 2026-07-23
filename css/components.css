@@ -1156,6 +1156,168 @@
   flex-shrink: 0;
 }
 
+/* Account menu — bottom sheet (home avatar) */
+.account-menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(26, 46, 36, 0.45);
+  padding: 0;
+  animation: fadeIn 0.2s var(--ease-out);
+}
+
+.account-menu-overlay.hidden {
+  display: none !important;
+}
+
+.account-menu {
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--color-bg);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--space-sm) var(--space-lg) calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow-lg);
+  animation: accountSheetIn 0.28s var(--ease-out);
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+}
+
+.account-menu__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  margin: var(--space-xs) auto var(--space-md);
+}
+
+.account-menu__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0 0 var(--space-md);
+  letter-spacing: var(--letter-tight);
+}
+
+.account-menu__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.account-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-height: var(--touch-min);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: background var(--transition), transform var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.account-menu__item:hover {
+  background: var(--color-primary-light);
+}
+
+.account-menu__item:active {
+  transform: scale(0.98);
+}
+
+.account-menu__item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.account-menu__item--auth.account-menu__item--logout {
+  color: var(--color-danger);
+}
+
+.account-menu__item--auth.account-menu__item--logout:hover {
+  background: rgba(214, 69, 69, 0.1);
+}
+
+.account-menu__icon {
+  width: 1.75rem;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.account-menu__label {
+  flex: 1;
+}
+
+.account-menu__close {
+  width: 100%;
+  min-height: var(--touch-min);
+}
+
+@keyframes accountSheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 640px) {
+  .account-menu-overlay {
+    align-items: center;
+    padding: var(--space-lg);
+  }
+
+  .account-menu {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+    max-width: 360px;
+    animation-name: fadeIn;
+  }
+
+  .account-menu__handle {
+    display: none;
+  }
+}
+
+[data-theme="dark"] .account-menu-overlay {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .account-menu {
+  background: var(--color-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-menu-overlay,
+  .account-menu,
+  button.user-avatar,
+  .account-menu__item {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  button.user-avatar:active,
+  .account-menu__item:active {
+    transform: none;
+  }
+}
+
 /* Expense actions */
 .list-item__actions {
   display: flex;

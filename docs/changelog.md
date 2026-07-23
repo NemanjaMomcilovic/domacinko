@@ -1,5 +1,14 @@
 # Domaćinko — Changelog
 
+## [7.6.2] — 2026-07-23
+
+### Meni naloga na početnoj
+- **Avatar** — tappable dugme (`aria-label` „Moj nalog“) u headeru; theme sun/moon ostaje odvojeno
+- **Bottom sheet** — Moj profil → `profile.html`, Podešavanja → `settings.html` (Više)
+- **Auth** — prijavljen: Odjavi se (confirm + `signOut`); gost/odjavljen: Prijavi se → `auth.html`
+- **A11y** — zatvaranje na tap van sheet-a, Escape, dugme Zatvori; fokus vraćen na avatar
+- Service Worker v7.6.2
+
 ## [7.6.1] — 2026-07-22
 
 ### Svetla / Tamna tema — vidljiv prekidač

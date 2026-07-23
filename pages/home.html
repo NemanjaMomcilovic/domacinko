@@ -36,7 +36,32 @@
               <span class="theme-switch__thumb"></span>
             </span>
           </button>
-          <div class="user-avatar" id="user-avatar" aria-hidden="true">🏡</div>
+          <button type="button" class="user-avatar" id="user-avatar"
+            aria-label="Moj nalog" aria-haspopup="dialog" aria-expanded="false" aria-controls="account-menu">
+            🏡
+          </button>
+        </div>
+      </div>
+
+      <div class="account-menu-overlay hidden" id="account-menu-overlay" hidden>
+        <div class="account-menu" id="account-menu" role="dialog" aria-modal="true" aria-labelledby="account-menu-title">
+          <div class="account-menu__handle" aria-hidden="true"></div>
+          <h2 class="account-menu__title" id="account-menu-title">Moj nalog</h2>
+          <nav class="account-menu__nav" aria-label="Nalog">
+            <a href="profile.html" class="account-menu__item">
+              <span class="account-menu__icon" aria-hidden="true">👤</span>
+              <span class="account-menu__label">Moj profil</span>
+            </a>
+            <a href="settings.html" class="account-menu__item">
+              <span class="account-menu__icon" aria-hidden="true">⚙️</span>
+              <span class="account-menu__label">Podešavanja</span>
+            </a>
+            <button type="button" class="account-menu__item account-menu__item--auth" id="account-menu-auth">
+              <span class="account-menu__icon" aria-hidden="true" id="account-menu-auth-icon">🔐</span>
+              <span class="account-menu__label" id="account-menu-auth-label">Prijavi se</span>
+            </button>
+          </nav>
+          <button type="button" class="btn btn--ghost account-menu__close" id="account-menu-close">Zatvori</button>
         </div>
       </div>
 

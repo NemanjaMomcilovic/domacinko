@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.6.1)
+# Domaćinko — MVP obim (v7.6.2)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 
@@ -88,6 +88,7 @@ OCR pipeline je zamenljiv (`js/modules/bills/`) — UI uvek traži potvrdu. Stor
 ## Verzionisanje
 
 - **v7.6.1** — Svetla/tamna tema: sun/moon switch, tokeni, persistencija
+- **v7.6.2** — Početna: avatar otvara meni naloga (profil, podešavanja, prijava/odjava)
 - **v7.6.0** — Vizuelni polish (dizajn tokeni, home, nav, kartice, auth)
 - **v7.5.1** — Profil iz auth (Google/Facebook/email) → onboarding i podešavanja
 - **v7.5.0** — Komunalije (core): tipovi, recurrence, foto potvrda, brifing

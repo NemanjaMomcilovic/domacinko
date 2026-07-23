@@ -212,6 +212,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (avatarContent.length === 1) avatarEl.classList.add('user-avatar--initial');
   }
 
+  initAccountMenu();
+
   const household = getHousehold();
   const members = household.familyMembers?.length || 0;
   const statusText = members > 0
@@ -226,6 +228,92 @@ document.addEventListener('DOMContentLoaded', async () => {
     return Promise.resolve();
   });
 });
+
+function initAccountMenu() {
+  const trigger = document.getElementById('user-avatar');
+  const overlay = document.getElementById('account-menu-overlay');
+  const sheet = document.getElementById('account-menu');
+  const closeBtn = document.getElementById('account-menu-close');
+  const authBtn = document.getElementById('account-menu-auth');
+  const authIcon = document.getElementById('account-menu-auth-icon');
+  const authLabel = document.getElementById('account-menu-auth-label');
+  if (!trigger || !overlay || !sheet) return;
+
+  const loggedIn = typeof isLoggedIn === 'function' && isLoggedIn();
+  if (authBtn && authIcon && authLabel) {
+    if (loggedIn) {
+      authIcon.textContent = '🚪';
+      authLabel.textContent = 'Odjavi se';
+      authBtn.classList.add('account-menu__item--logout');
+      authBtn.setAttribute('aria-label', 'Odjavi se');
+    } else {
+      authIcon.textContent = '🔐';
+      authLabel.textContent = 'Prijavi se';
+      authBtn.classList.remove('account-menu__item--logout');
+      authBtn.setAttribute('aria-label', 'Prijavi se');
+    }
+  }
+
+  let previouslyFocused = null;
+
+  function openMenu() {
+    previouslyFocused = document.activeElement;
+    overlay.hidden = false;
+    overlay.classList.remove('hidden');
+    trigger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+    const firstItem = sheet.querySelector('.account-menu__item');
+    (firstItem || closeBtn || sheet).focus?.();
+  }
+
+  function closeMenu() {
+    if (overlay.hidden) return;
+    overlay.hidden = true;
+    overlay.classList.add('hidden');
+    trigger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+    if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+      previouslyFocused.focus();
+    } else {
+      trigger.focus();
+    }
+  }
+
+  trigger.addEventListener('click', () => {
+    if (overlay.hidden) openMenu();
+    else closeMenu();
+  });
+
+  closeBtn?.addEventListener('click', closeMenu);
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeMenu();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !overlay.hidden) {
+      e.preventDefault();
+      closeMenu();
+    }
+  });
+
+  authBtn?.addEventListener('click', async () => {
+    if (loggedIn) {
+      if (!confirm('Da li ste sigurni da želite da se odjavite?')) return;
+      authBtn.disabled = true;
+      try {
+        await signOut();
+        showToast?.('Uspešno ste se odjavili.');
+        window.location.href = 'auth.html';
+      } catch {
+        showToast?.('Odjava nije uspela. Pokušajte ponovo.', 'error');
+        authBtn.disabled = false;
+      }
+      return;
+    }
+    window.location.href = 'auth.html';
+  });
+}
 
 function initPwaInstallBanner() {
   const banner = document.getElementById('pwa-install-banner');
