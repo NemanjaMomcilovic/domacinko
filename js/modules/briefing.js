@@ -136,24 +136,16 @@ function generateMorningBriefing() {
     });
   }
 
-  // Komunalije — early-month ask / unpaid prompts
+  // Komunalije — short prompts live as cards on home; keep only top unpaid in briefing
   if (typeof getUtilityBillPrompts === 'function') {
-    const utilityPrompts = getUtilityBillPrompts();
-    utilityPrompts.slice(0, 3).forEach(p => {
+    const utilityPrompts = getUtilityBillPrompts().filter(p => p.type === 'unpaid').slice(0, 1);
+    utilityPrompts.forEach(p => {
       const label = p.label || p.billType || 'račun';
-      if (p.type === 'unpaid') {
-        bullets.push({
-          type: 'warn',
-          icon: '💡',
-          text: `Račun za ${label} nije plaćen`
-        });
-      } else {
-        bullets.push({
-          type: 'info',
-          icon: '📬',
-          text: `Da li si dobio račun za ${label}?`
-        });
-      }
+      bullets.push({
+        type: 'warn',
+        icon: '💡',
+        text: `Račun za ${label} nije plaćen`
+      });
     });
   }
 
@@ -268,7 +260,7 @@ function generateMorningBriefing() {
 
   return {
     greeting,
-    bullets: bullets.slice(0, 8),
+    bullets: bullets.slice(0, 3),
     isEmpty: bullets.length === 0,
     generatedAt: now.toISOString()
   };

@@ -156,6 +156,39 @@ button.user-avatar:focus-visible {
   line-height: var(--line-height-relaxed);
 }
 
+.greeting__tagline {
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--space-xs);
+  letter-spacing: var(--letter-tight);
+}
+
+.account-badge {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+.account-badge--guest {
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+}
+
+.account-badge--user {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.account-menu__status {
+  font-size: var(--font-size-xs);
+  margin: 0 var(--space-lg) var(--space-md);
+}
+
 /* Home — financial summary composition */
 .finance-summary {
   display: flex;
@@ -164,10 +197,27 @@ button.user-avatar:focus-visible {
   margin-bottom: var(--space-xl);
 }
 
+.finance-summary--compact {
+  gap: var(--space-sm);
+}
+
 .finance-summary__health {
   text-align: center;
   padding: var(--space-xl) var(--space-lg);
   margin-bottom: 0;
+}
+
+.finance-summary__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) 0;
+}
+
+.finance-summary__health-inline {
+  transform: scale(0.85);
+  transform-origin: center top;
 }
 
 .finance-summary .stats-grid {
@@ -515,15 +565,26 @@ button.user-avatar:focus-visible {
   margin-bottom: var(--space-lg);
 }
 
-.onboarding__features {
-  list-style: none;
-  padding: 0;
+.onboarding__mvp-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-wide);
+  margin-bottom: var(--space-sm);
 }
 
-.onboarding__features li {
-  padding: var(--space-sm) 0;
-  font-size: var(--font-size-base);
-  color: var(--color-text);
+.onboarding__tagline {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-dark);
+  text-align: center;
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+.onboarding__tagline--ready {
+  margin: var(--space-lg) 0 0;
 }
 
 .onboarding__mvp-box {
@@ -1490,6 +1551,18 @@ button.user-avatar:focus-visible {
   font-weight: 800;
   color: var(--color-text);
   line-height: 1.2;
+  margin-bottom: var(--space-sm);
+}
+
+.landing__hero-tagline {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-dark);
+  margin: 0 auto var(--space-md);
+  max-width: 420px;
+}
+
+.landing__hero-tagline--section {
   margin-bottom: var(--space-md);
 }
 

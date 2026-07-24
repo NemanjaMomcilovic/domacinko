@@ -1,4 +1,4 @@
-# Domaćinko — MVP obim (v7.7.0)
+# Domaćinko — MVP obim (v7.8.0)
 
 Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odloženo** za kasnije verzije (v2+). Kod v2 modula ostaje u repou — sakriven je u beta režimu (`settings.betaMode: true`, podrazumevano).
 
@@ -21,16 +21,18 @@ Ovaj dokument definiše šta aplikacija **radi sada** (Core v1) i šta je **odlo
 ### Šta korisnik vidi u v1 (beta režim)
 
 - **4 taba** u donjoj navigaciji: Početna · Troškovi · Obroci · Više
-- **Brze akcije** na početnoj: trošak, komunalije, plan obroka, Savetnik, kupovina
-- **Uvod (3 koraka)**: ime → budžet → prvi trošak — pominje samo osnovne funkcije
-- **Više → Alati za dom** (`modules.html`): core moduli označeni „Aktivno", v2 „Dolazi uskoro"
+- **Brze akcije** na početnoj: Dodaj trošak + Slikaj komunaliju (primarno), zatim obroci / Savetnik / kupovina
+- **Uvod (3 koraka)**: ime → budžet → prvi trošak — pominje fokus jednom rečenicom
+- **Više → Napredno → moduli**: core fokus; v2 sakriven u beta (kod ostaje)
 - **Napredno → Prikaži sve module**: isključuje beta režim za power korisnike
 
-### Tri rečenice — šta app radi
+### Jedna rečenica — šta app radi
+
+**Prati troškove, planira obroke, pita savetnika.**
 
 1. Prati troškove, budžet i komunalije
 2. Planira obroke i listu za kupovinu
-3. Savetuje preko 10KEY Savetnika (besplatno, offline)
+3. Pita 10KEY Savetnika (besplatno, offline)
 
 ### Komunalije — v1 vs kasnije
 
@@ -87,6 +89,7 @@ OCR pipeline je zamenljiv (`js/modules/bills/`) — lokalni parser predlaže izn
 
 ## Verzionisanje
 
+- **v7.8.0** — Product critique: fokus one-liner, home CTA hijerarhija, Danas obroci, beta Savetnik chat, vizuelno, brži auth
 - **v7.7.0** — Android APK (Capacitor www staging); Ollama provider foundation; jači komunalije OCR
 - **v7.6.3** — Obroci ↔ lista kupovine: sastojci po obroku/danu/nedelji, izvor na listi, Savetnik „šta da kupim“
 - **v7.6.2** — Početna: avatar otvara meni naloga (profil, podešavanja, prijava/odjava)

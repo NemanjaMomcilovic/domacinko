@@ -463,22 +463,32 @@ function renderSuggestedChips(containerId, module = 'savetnik') {
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation('ai', { title: '10KEY Savetnik' });
 
-  const hash = window.location.hash.replace('#', '');
-  const initialTab = ['savetnik', 'majstor', 'ucitelj'].includes(hash) ? hash : 'savetnik';
-  switchAITab(initialTab);
+  const beta = typeof isBetaMode === 'function' && isBetaMode();
+  const tabsEl = document.getElementById('ai-tabs');
 
-  window.addEventListener('hashchange', () => {
-    const h = window.location.hash.replace('#', '');
-    if (['savetnik', 'majstor', 'ucitelj'].includes(h)) switchAITab(h);
-  });
+  if (beta && tabsEl) {
+    // Beta: samo chat Savetnik — Majstor/Učitelj ostaju u kodu, sakriveni
+    tabsEl.classList.add('hidden');
+    tabsEl.setAttribute('aria-hidden', 'true');
+    switchAITab('savetnik');
+  } else {
+    const hash = window.location.hash.replace('#', '');
+    const initialTab = ['savetnik', 'majstor', 'ucitelj'].includes(hash) ? hash : 'savetnik';
+    switchAITab(initialTab);
 
-  document.querySelectorAll('#ai-tabs .tab').forEach(tab => {
-    tab.addEventListener('click', () => switchAITab(tab.dataset.tab));
-  });
+    window.addEventListener('hashchange', () => {
+      const h = window.location.hash.replace('#', '');
+      if (['savetnik', 'majstor', 'ucitelj'].includes(h)) switchAITab(h);
+    });
+
+    document.querySelectorAll('#ai-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => switchAITab(tab.dataset.tab));
+    });
+  }
 
   renderAIStatus();
   renderChat();
-  renderTeacherTopics();
+  if (!beta) renderTeacherTopics();
   renderSuggestedChips('quick-chips', 'savetnik');
   initChatVoice();
 

@@ -583,18 +583,32 @@ async function offerGuestDataImport() {
   }
 }
 
+function hasOnboardingEssentials() {
+  const settings = typeof getSettings === 'function' ? getSettings() : {};
+  const name = String(settings.firstName || settings.userName || '').trim();
+  const budget = Number(settings.monthlyBudget) || 0;
+  const size = Number(settings.householdSize) || 0;
+  const members = typeof getHousehold === 'function'
+    ? (getHousehold().familyMembers || []).length
+    : 0;
+  const hasHousehold = size > 0 || members > 0;
+  return !!name && budget > 0 && hasHousehold;
+}
+
 function needsOnboarding() {
   if (isGuestMode()) {
     return !isOnboardingComplete();
   }
-  if (isLoggedIn() && _currentProfile) {
-    return !_currentProfile.onboarding_complete;
-  }
+
+  if (isLoggedIn() && _currentProfile?.onboarding_complete) return false;
   if (isLoggedIn()) {
     const cached = getCachedProfile();
-    if (cached) return !cached.onboarding_complete;
+    if (cached?.onboarding_complete) return false;
   }
-  return !isOnboardingComplete();
+  if (isOnboardingComplete()) return false;
+
+  // Posle Google/login: idi kući ako ime, budžet i domaćinstvo postoje
+  return !hasOnboardingEssentials();
 }
 
 function getAuthDisplayName() {

@@ -1,13 +1,13 @@
-# Domaćinko v7.7.0
+# Domaćinko v7.8.0
 
 **AI pomoćnik za domaćinstvo** — prvi proizvod platforme [10KEY](https://github.com/NemanjaMomcilovic/domacinko).
 
 [![PWA](https://img.shields.io/badge/PWA-ready-2d8f5c)](manifest.json)
-[![Version](https://img.shields.io/badge/version-7.7.0-blue)](docs/changelog.md)
+[![Version](https://img.shields.io/badge/version-7.8.0-blue)](docs/changelog.md)
 [![Language](https://img.shields.io/badge/jezik-srpski-red)](pages/home.html)
 [![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84)](docs/android-build.md)
 
-**Sada:** Domaćinko prati troškove, budžet i komunalije, planira obroke i listu za kupovinu, i savetuje preko besplatnog 10KEY Savetnika — sve na jednom mestu, offline i bez registracije.
+**Sada:** Prati troškove, planira obroke, pita savetnika — budžet, komunalije i lista za kupovinu uz besplatnog 10KEY Savetnika, offline i bez registracije.
 
 ## ✨ MVP funkcije (v7.5)
 
@@ -65,7 +65,7 @@ Detaljno uputstvo: [docs/android-build.md](docs/android-build.md)
 ## 📱 PWA
 
 - Instalirajte na početni ekran (Android/iOS)
-- Offline keširanje (Service Worker v7.7.0)
+- Offline keširanje (Service Worker v7.8.0)
 - Prečice: Dodaj trošak, Lista za kupovinu, AI Savetnik
 - Push podsetnici za račune, budžet i održavanje
 

@@ -209,4 +209,4 @@ npm run build:android # sync + podsetnik za Studio build
 
 ---
 
-**Domaćinko v7.7.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)
+**Domaćinko v7.8.0** — Powered by [10KEY](https://github.com/NemanjaMomcilovic/domacinko)

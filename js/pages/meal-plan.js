@@ -31,6 +31,9 @@ function dayHasIngredients(day) {
 function renderMealDays() {
   const plan = getMealPlan();
   const container = document.getElementById('meal-days');
+  const todayKey = typeof getTodayMealKey === 'function' ? getTodayMealKey() : null;
+
+  renderTodayMeals();
 
   container.innerHTML = `
     <p class="text-muted mb-sm meal-plan-hint" style="font-size:var(--font-size-xs)">
@@ -40,10 +43,11 @@ function renderMealDays() {
       ${MEAL_DAYS.map(day => {
         const dayData = plan[day.id] || emptyMealDay();
         const canShopDay = dayHasIngredients(dayData);
+        const isToday = day.id === todayKey;
         return `
-        <div class="meal-day meal-day--draggable" data-day="${day.id}" draggable="true">
+        <div class="meal-day meal-day--draggable${isToday ? ' meal-day--today' : ''}" data-day="${day.id}" draggable="true">
           <div class="meal-day__header">
-            <span class="meal-day__label">${day.full || day.label}</span>
+            <span class="meal-day__label">${day.full || day.label}${isToday ? ' · danas' : ''}</span>
             <div class="meal-day__actions">
               ${canShopDay ? `
               <button type="button" class="btn btn--ghost btn--sm meal-day__shop"
@@ -78,6 +82,59 @@ function renderMealDays() {
   bindMealClear();
   bindMealDayShop();
   renderMealPlanEmptyHint();
+}
+
+function renderTodayMeals() {
+  const container = document.getElementById('meal-today');
+  if (!container) return;
+
+  const todayKey = typeof getTodayMealKey === 'function' ? getTodayMealKey() : null;
+  const dayMeta = MEAL_DAYS.find(d => d.id === todayKey) || { label: 'Danas', full: 'Danas' };
+  const dayData = (getMealPlan()[todayKey] || emptyMealDay());
+  const canShop = dayHasIngredients(dayData);
+
+  const shopBtn = document.getElementById('generate-shopping-today');
+  if (shopBtn) {
+    shopBtn.classList.toggle('hidden', !canShop);
+  }
+
+  container.innerHTML = `
+    <div class="meal-today">
+      <p class="meal-today__day text-muted">${dayMeta.full || dayMeta.label}</p>
+      <div class="meal-today__slots">
+        ${MEAL_SLOTS.map(slot => {
+          const s = dayData[slot.id] || emptyMealSlot();
+          const filled = isMealSlotFilled(s);
+          const label = formatMealSlotLabel(s);
+          return `
+            <button type="button" class="meal-slot meal-slot--today${filled ? '' : ' meal-slot--empty'}"
+              data-day="${todayKey}" data-slot="${slot.id}">
+              <span class="meal-slot__kind">${slot.label}</span>
+              <span class="meal-slot__name">${escapeMealHtml(label || 'Dodaj obrok')}</span>
+              <span class="meal-slot__meta">${escapeMealHtml(slotSubtitle(s))}</span>
+            </button>`;
+        }).join('')}
+      </div>
+      ${canShop ? `
+        <button type="button" class="btn btn--secondary btn--block mt-md meal-today__shop" data-shop-day="${todayKey}">
+          🛒 Dodaj današnje sastojke na kupovinu
+        </button>` : ''}
+    </div>
+  `;
+
+  container.querySelectorAll('.meal-slot').forEach(btn => {
+    btn.addEventListener('click', () => openMealModal(btn.dataset.day, btn.dataset.slot));
+  });
+  container.querySelectorAll('[data-shop-day]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const dayId = btn.dataset.shopDay;
+      const result = typeof generateShoppingFromMealDay === 'function'
+        ? generateShoppingFromMealDay(dayId)
+        : addIngredientsToShoppingList(extractIngredientsFromDay(dayId));
+      toastShoppingResult(result);
+    });
+  });
 }
 
 function bindMealSlots() {

@@ -1,5 +1,37 @@
 # Domaćinko — Changelog
 
+## [7.8.0] — 2026-07-24
+
+### Fokus proizvoda (product critique)
+- **Jedna rečenica** — „Prati troškove, planira obroke, pita savetnika.“ na početnoj, auth, onboarding, landing, settings
+- **Beta** — v2 / „Alati za dom" dublje (Napredno); hub prikazuje samo core module
+
+### Početna
+- **Primarni CTA** — „Dodaj trošak" #1, „Slikaj komunaliju" jak sekundarni
+- **Brifing** — max 3 stavke; komunalije „pitaj me" kao kratke kartice
+- **Pregled meseca** — jedan spent/budget broj + preostalo; manje kartica/gradijenata
+- **Nalog** — jasniji gost vs prijavljen bedž
+
+### Troškovi
+- Primarne akcije: slikaj komunaliju + brzi unos; ručni unos kao sekundarni link
+- Mesečni sažetak: jedan spent/budget hero, pa lista
+
+### Obroci
+- Sekcija **Danas** na vrhu (doručak/ručak/večera) + nedelja ispod
+- „Dodaj na kupovinu" istaknuto uz Danas
+
+### 10KEY Savetnik (beta)
+- U betaMode: samo chat — Majstor/Učitelj tabovi sakriveni (kod ostaje)
+- Ollama/OpenAI i dalje samo u Podešavanjima; status bedž OK
+
+### Vizuelno
+- Mekši zeleni, više bele/neutralne pozadine; manje gradijenata
+- Konzistentniji razmaci; light + dark i 10KEY green+gold zadržani
+
+### Auth
+- Posle Google/login: brzo na početnu; onboarding samo ako nedostaju ime/budžet/domaćinstvo
+- Service Worker v7.8.0
+
 ## [7.7.0] — 2026-07-23
 
 ### Android APK (Capacitor)

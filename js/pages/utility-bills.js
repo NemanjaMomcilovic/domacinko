@@ -429,12 +429,29 @@
     const templateId = params.get('template');
     const entryId = params.get('entry');
     const action = params.get('action');
+    const hash = (location.hash || '').replace('#', '');
+
     if (action === 'add') {
       openTemplateForm();
       return;
     }
     if (templateId) {
       openEntry(templateId, entryId);
+      return;
+    }
+    if (hash === 'scan') {
+      const templates = typeof getAllUtilityTemplates === 'function' ? getAllUtilityTemplates() : [];
+      const enabled = templates.filter(t => t.enabled !== false);
+      if (enabled.length > 0) {
+        openEntry(enabled[0].id);
+        setTimeout(() => {
+          $('btn-camera')?.focus?.();
+          $('btn-camera')?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
+        }, 120);
+      } else {
+        openTemplateForm();
+        showToast?.('Prvo dodajte tip komunalije, pa slikajte račun.', 'info', 3500);
+      }
     }
   }
 

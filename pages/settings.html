@@ -22,10 +22,11 @@
       <div class="settings-group" id="mvp-summary">
         <h3 class="settings-group__title">Šta app radi</h3>
         <div class="card card--flat settings-mvp-card">
+          <p class="settings-mvp-tagline">Prati troškove, planira obroke, pita savetnika.</p>
           <ul class="settings-mvp-list">
-            <li>💰 Prati troškove i mesečni budžet</li>
-            <li>🍽️ Planira obroke i listu za kupovinu</li>
-            <li>💬 Savetuje preko 10KEY Savetnika (besplatno)</li>
+            <li>💰 Troškovi, budžet i komunalije</li>
+            <li>🍽️ Plan obroka i lista za kupovinu</li>
+            <li>💬 10KEY Savetnik — besplatno, offline</li>
           </ul>
         </div>
       </div>
@@ -147,17 +148,6 @@
           </div>
         </div>
 
-        <!-- Alati za dom -->
-        <div class="settings-group" id="more-tools-group">
-          <h3 class="settings-group__title">Više alata</h3>
-          <div class="card card--flat settings-section-card">
-            <p class="settings-section-card__subtitle text-muted" id="more-tools-subtitle">
-              Osnovni moduli su aktivni. Napredni alati (održavanje, bašta, inventar…) dolaze uskoro.
-            </p>
-            <a href="modules.html" class="btn btn--secondary btn--block">Pregled svih modula</a>
-          </div>
-        </div>
-
         <!-- 6. 10KEY Savetnik -->
         <div class="settings-group" id="savetnik-settings">
           <h3 class="settings-group__title">10KEY Savetnik</h3>
@@ -198,10 +188,20 @@
           </div>
         </div>
 
-        <!-- Napredno (sklopljeno) -->
+        <!-- Napredno (sklopljeno) — v2 moduli dublje u beta -->
         <details class="settings-advanced" id="advanced-settings">
           <summary class="settings-advanced__summary">Napredno podešavanje</summary>
           <div class="settings-advanced__content">
+            <div class="settings-group settings-group--nested" id="more-tools-group">
+              <h4 class="settings-group__subtitle">Više alata</h4>
+              <div class="card card--flat settings-section-card">
+                <p class="settings-section-card__subtitle text-muted" id="more-tools-subtitle">
+                  Fokus beta: troškovi, obroci, savetnik. Ostali moduli su opciono.
+                </p>
+                <a href="modules.html" class="btn btn--ghost btn--block">Pregled osnovnih modula</a>
+              </div>
+            </div>
+
             <div class="settings-group settings-group--nested">
               <h4 class="settings-group__subtitle">Beta režim</h4>
               <div class="card card--flat" style="padding:0;overflow:hidden">
@@ -355,7 +355,7 @@
           <p class="settings-about__text">
             <strong>Domaćinko</strong> · Powered by <span class="brand-10key">10KEY</span>
           </p>
-          <p class="text-muted settings-about__version">Verzija 7.7.0 · MVP focus</p>
+          <p class="text-muted settings-about__version">Verzija 7.8.0 · MVP focus</p>
           <a href="privacy.html" class="btn btn--ghost btn--block mt-sm" style="font-size:var(--font-size-sm)">Politika privatnosti</a>
         </div>
       </div>

@@ -83,4 +83,4 @@ Podešavanja: `settings.aiProvider` = `local` | `ollama` | `openai`.
 
 ---
 
-*10KEY · Domaćinko v7.7.0*
+*10KEY · Domaćinko v7.8.0*

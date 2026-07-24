@@ -2,6 +2,7 @@ function refreshHomeDashboard() {
   if (typeof renderMorningBriefing === 'function') {
     renderMorningBriefing('morning-briefing');
   }
+  renderUtilityPromptCards();
 
   const beta = typeof isBetaMode === 'function' && isBetaMode();
   const settings = getSettings();
@@ -29,19 +30,25 @@ function refreshHomeDashboard() {
 
   const tipsEl = document.getElementById('personalized-tips');
   if (tipsEl && typeof getPersonalizedTips === 'function') {
-    const tips = getPersonalizedTips();
-    tipsEl.innerHTML = `
-      <div class="card card--flat">
-        <p class="card__title">💡 Saveti za tebe</p>
-        ${tips.map(t => `<p class="advice-banner__text" style="margin-bottom:var(--space-sm)">${t.icon} ${t.text}</p>`).join('')}
-      </div>
-    `;
+    const tips = getPersonalizedTips().slice(0, 2);
+    if (tips.length === 0) {
+      tipsEl.innerHTML = '';
+    } else {
+      tipsEl.innerHTML = `
+        <div class="card card--soft">
+          <p class="card__title">💡 Saveti za tebe</p>
+          ${tips.map(t => `<p class="advice-banner__text" style="margin-bottom:var(--space-sm)">${t.icon} ${t.text}</p>`).join('')}
+        </div>
+      `;
+    }
   }
 
   const comparison = getMonthComparison();
   const compEl = document.getElementById('month-comparison');
   if (comparison && compEl) {
-    compEl.innerHTML = `<div class="comparison-banner ${comparison.less ? 'comparison-banner--good' : 'comparison-banner--warn'}">${comparison.text} 💚</div>`;
+    compEl.innerHTML = `<div class="comparison-banner ${comparison.less ? 'comparison-banner--good' : 'comparison-banner--warn'}">${comparison.text}</div>`;
+  } else if (compEl) {
+    compEl.innerHTML = '';
   }
 
   renderHealthScore(score, 'health-score');
@@ -51,8 +58,8 @@ function refreshHomeDashboard() {
   document.getElementById('monthly-budget').textContent = formatCurrency(budget);
   document.getElementById('remaining').textContent = formatCurrency(remaining);
   document.getElementById('remaining').className = remaining >= 0
-    ? 'stat-card__value stat-card__value--positive'
-    : 'stat-card__value stat-card__value--negative';
+    ? 'month-summary-hero__remain month-summary-hero__remain--positive'
+    : 'month-summary-hero__remain month-summary-hero__remain--negative';
 
   renderSavingsGoalCard('savings-card');
   document.getElementById('daily-advice').textContent = getDomacinkoAdvice();
@@ -157,12 +164,44 @@ function refreshHomeDashboard() {
   }
 }
 
+function renderUtilityPromptCards() {
+  const container = document.getElementById('utility-prompts');
+  if (!container || typeof getUtilityBillPrompts !== 'function') return;
+
+  const prompts = getUtilityBillPrompts().slice(0, 3);
+  if (prompts.length === 0) {
+    container.innerHTML = '';
+    container.classList.add('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  container.innerHTML = `
+    <h2 class="section__title mb-sm">Komunalije — pitaj me</h2>
+    <div class="utility-prompt-grid">
+      ${prompts.map(p => {
+        const label = p.label || p.billType || 'račun';
+        const isUnpaid = p.type === 'unpaid';
+        const title = isUnpaid ? `Nije plaćen: ${label}` : `Račun za ${label}?`;
+        const hint = isUnpaid ? 'Označi plaćeno ili slikaj' : 'Unesi ili slikaj račun';
+        return `
+          <a href="utility-bills.html" class="utility-prompt-card${isUnpaid ? ' utility-prompt-card--warn' : ''}">
+            <span class="utility-prompt-card__icon" aria-hidden="true">${isUnpaid ? '💡' : '📬'}</span>
+            <span class="utility-prompt-card__title">${title}</span>
+            <span class="utility-prompt-card__hint">${hint}</span>
+          </a>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/** Sekundarne akcije — primarne su Dodaj trošak / Slikaj komunaliju iznad */
 const QUICK_ACTIONS_BETA = [
-  { href: 'add-expense.html', icon: '💸', label: 'Dodaj trošak' },
-  { href: 'utility-bills.html', icon: '💡', label: 'Komunalije' },
   { href: 'meal-plan.html', icon: '🍽️', label: 'Plan obroka' },
   { href: 'ai.html', icon: '💬', label: '10KEY Savetnik' },
-  { href: 'shopping.html', icon: '🛒', label: 'Lista kupovine' }
+  { href: 'shopping.html', icon: '🛒', label: 'Lista kupovine' },
+  { href: 'utility-bills.html', icon: '💡', label: 'Komunalije' }
 ];
 
 const QUICK_ACTIONS_FULL = [
@@ -185,6 +224,35 @@ function renderQuickActions() {
     </a>
   `).join('');
 }
+
+function updateAccountBadge() {
+  const badge = document.getElementById('account-badge');
+  const menuStatus = document.getElementById('account-menu-status');
+  const loggedIn = typeof isLoggedIn === 'function' && isLoggedIn();
+  const guest = typeof isGuestMode === 'function' && isGuestMode();
+
+  let label = 'Gost — podaci samo na uređaju';
+  let cls = 'account-badge account-badge--guest';
+  if (loggedIn) {
+    const name = typeof getAuthDisplayName === 'function' ? getAuthDisplayName() : '';
+    label = name && name !== 'Korisnik' ? `Prijavljen · ${name}` : 'Prijavljen nalog';
+    cls = 'account-badge account-badge--user';
+  } else if (guest) {
+    label = 'Gost — podaci samo na uređaju';
+  }
+
+  if (badge) {
+    badge.textContent = label;
+    badge.className = cls;
+    badge.classList.remove('hidden');
+  }
+  if (menuStatus) {
+    menuStatus.textContent = loggedIn
+      ? 'Nalog je sinhronizovan (gde je podešeno).'
+      : 'Gost režim — prijavite se da sačuvate podatke u oblaku.';
+  }
+}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   await waitForAuth?.();
@@ -213,6 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   initAccountMenu();
+  updateAccountBadge();
 
   const household = getHousehold();
   const members = household.familyMembers?.length || 0;

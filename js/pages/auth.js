@@ -21,11 +21,23 @@ function setOAuthLoading(loading) {
 }
 
 function redirectAfterAuth() {
+  if (typeof applyAuthProfileToSettings === 'function' && typeof getCurrentUser === 'function' && getCurrentUser()) {
+    applyAuthProfileToSettings(getCurrentUser());
+  }
+
   if (needsOnboarding()) {
     window.location.href = 'onboarding.html';
-  } else {
-    window.location.href = 'home.html';
+    return;
   }
+
+  // Brz put kući — označi setup ako je već kompletan (npr. Google ime + budžet)
+  if (!isOnboardingComplete() && typeof setOnboardingComplete === 'function') {
+    setOnboardingComplete();
+    if (typeof isLoggedIn === 'function' && isLoggedIn() && typeof saveProfile === 'function') {
+      saveProfile({ onboarding_complete: true }).catch(() => {});
+    }
+  }
+  window.location.href = 'home.html';
 }
 
 function switchTab(tab) {

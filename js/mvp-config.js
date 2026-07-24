@@ -3,10 +3,13 @@
  * betaMode=true (default) shows only core modules in nav/home/onboarding.
  */
 
+/** Jedna rečenica — fokus proizvoda (koristiti svuda gde ima smisla) */
+const MVP_TAGLINE = 'Prati troškove, planira obroke, pita savetnika.';
+
 const MVP_WHAT_APP_DOES = [
   'Prati troškove, budžet i komunalije',
   'Planira obroke i listu za kupovinu',
-  'Savetuje preko 10KEY Savetnika (besplatno, offline)'
+  'Pita 10KEY Savetnika — besplatno, offline'
 ];
 
 const MVP_MODULE_SECTIONS = [
@@ -75,6 +78,10 @@ function renderMvpBullets(className = 'mvp-bullets') {
   return `<ul class="${className}">${MVP_WHAT_APP_DOES.map(t => `<li>${t}</li>`).join('')}</ul>`;
 }
 
+function renderMvpTagline(className = 'mvp-tagline') {
+  return `<p class="${className}">${MVP_TAGLINE}</p>`;
+}
+
 function renderModuleCard(mod, beta) {
   const comingSoon = beta && !isModuleAvailableInBeta(mod);
   const badge = comingSoon
@@ -111,10 +118,10 @@ function renderModulesHub(containerId) {
   const hero = beta
     ? `
       <div class="modules-hero modules-hero--beta">
-        <span class="modules-hero__icon" aria-hidden="true">🧰</span>
         <div>
-          <h2 class="modules-hero__title">Osnovni alati — aktivno</h2>
-          <p class="modules-hero__text">Napredni moduli (održavanje, bašta, inventar…) označeni su „Dolazi uskoro". Uključite „Prikaži sve module" u Podešavanjima za raniji pristup.</p>
+          <h2 class="modules-hero__title">Osnovni fokus</h2>
+          <p class="modules-hero__tagline">${MVP_TAGLINE}</p>
+          <p class="modules-hero__text">Napredni moduli su u beta načinu u pozadini. Uključite „Prikaži sve module" u Podešavanjima samo ako želite raniji pristup.</p>
         </div>
       </div>
     `
@@ -123,26 +130,34 @@ function renderModulesHub(containerId) {
         <span class="modules-hero__icon" aria-hidden="true">🏠</span>
         <div>
           <h2 class="modules-hero__title">Svi moduli Domaćinka</h2>
+          <p class="modules-hero__tagline">${MVP_TAGLINE}</p>
           <p class="modules-hero__text">Organizovano po kategorijama — finansije, kuća, kupovina i 10KEY Savetnik.</p>
         </div>
       </div>
     `;
 
+  const sections = beta
+    ? MVP_MODULE_SECTIONS.map(section => ({
+        ...section,
+        modules: section.modules.filter(isModuleAvailableInBeta)
+      })).filter(section => section.modules.length > 0)
+    : MVP_MODULE_SECTIONS;
+
   container.innerHTML = `
     ${hero}
-    ${MVP_MODULE_SECTIONS.map(section => {
-      const modules = beta
-        ? [...section.modules].sort((a, b) => (a.tier === b.tier ? 0 : a.tier === 'core' ? -1 : 1))
-        : section.modules;
-      return `
-        <section class="modules-section">
-          <h2 class="modules-section__title">${section.title}</h2>
-          <div class="module-hub">
-            ${modules.map(mod => renderModuleCard(mod, beta)).join('')}
-          </div>
-        </section>
-      `;
-    }).join('')}
+    ${sections.map(section => `
+      <section class="modules-section">
+        <h2 class="modules-section__title">${section.title}</h2>
+        <div class="module-hub">
+          ${section.modules.map(mod => renderModuleCard(mod, beta)).join('')}
+        </div>
+      </section>
+    `).join('')}
+    ${beta ? `
+      <p class="text-muted text-center modules-beta-note" style="font-size:var(--font-size-xs);margin-top:var(--space-xl)">
+        Više alata (održavanje, inventar, bašta…) dolazi uskoro — ili ih uključite u Podešavanjima → Napredno.
+      </p>
+    ` : ''}
   `;
 
   if (beta) {

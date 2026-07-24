@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2d8f5c">
+  <meta name="theme-color" content="#2f8a5c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Domaćinko">
@@ -19,25 +19,41 @@
     <header class="page-header" id="page-header"></header>
 
     <main class="main-content">
+      <div class="fin-primary-actions">
+        <a href="utility-bills.html#scan" class="home-cta home-cta--secondary">
+          <span class="home-cta__icon" aria-hidden="true">📸</span>
+          <span class="home-cta__body">
+            <span class="home-cta__label">Slikaj komunaliju</span>
+            <span class="home-cta__hint">Račun za struju, vodu…</span>
+          </span>
+        </a>
+        <a href="add-expense.html" class="home-cta home-cta--primary">
+          <span class="home-cta__icon" aria-hidden="true">💸</span>
+          <span class="home-cta__body">
+            <span class="home-cta__label">Brzi unos</span>
+            <span class="home-cta__hint">Dodaj trošak odmah</span>
+          </span>
+        </a>
+      </div>
+      <p class="text-center mb-lg">
+        <a href="add-expense.html" class="fin-manual-link">Ručni unos sa detaljima →</a>
+      </p>
+
       <div id="fin-comparison"></div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-card__label">Budžet</div>
-          <div class="stat-card__value" id="fin-budget">0 RSD</div>
+      <div class="month-summary-hero month-summary-hero--page">
+        <div class="month-summary-hero__main">
+          <span class="month-summary-hero__label">Potrošeno / budžet</span>
+          <span class="month-summary-hero__spent" id="fin-spent">0 RSD</span>
+          <span class="month-summary-hero__budget">od <span id="fin-budget">0 RSD</span></span>
         </div>
-        <div class="stat-card">
-          <div class="stat-card__label">Potrošeno</div>
-          <div class="stat-card__value" id="fin-spent">0 RSD</div>
+        <div class="month-summary-hero__side">
+          <span class="month-summary-hero__remain-label">Preostalo</span>
+          <span class="month-summary-hero__remain" id="fin-remaining">0 RSD</span>
         </div>
       </div>
 
-      <div class="card text-center">
-        <p class="card__title">Preostali budžet</p>
-        <p class="card__value text-success" id="fin-remaining">0 RSD</p>
-      </div>
-
-      <div class="card card--gradient-gold">
+      <div class="card card--soft mb-md">
         <p class="card__title">Cilj štednje</p>
         <div id="fin-savings-progress"></div>
         <p class="savings-goal__line hidden" id="fin-savings-remaining"></p>
@@ -49,7 +65,7 @@
         <p class="text-muted mt-sm" style="font-size:var(--font-size-xs)">Podesite limite u Podešavanjima → Budžet po kategorijama.</p>
       </div>
 
-      <div class="card card--gradient-yellow advice-card">
+      <div class="card card--soft advice-card">
         <div class="advice-banner__label">💪 Finansijski trener</div>
         <div id="financial-trainer"></div>
       </div>
@@ -70,7 +86,7 @@
         </div>
       </div>
 
-      <div class="card card--gradient-green text-center">
+      <div class="card card--soft text-center">
         <p class="card__title">Finansijsko zdravlje</p>
         <div id="fin-health-score"></div>
         <p class="card__subtitle mt-sm" id="score-label"></p>
@@ -94,7 +110,7 @@
         </a>
       </div>
 
-      <div class="section">
+      <div class="section" id="fin-forecast-section">
         <div class="section__header">
           <h2 class="section__title">Prognoza</h2>
           <a href="forecast.html" class="section__link">Kalendar →</a>
@@ -133,8 +149,7 @@
         <div class="card card--flat" id="expenses-list"></div>
       </div>
 
-      <a href="add-expense.html" class="btn btn--primary btn--block">Dodaj trošak</a>
-      <button type="button" class="btn btn--primary btn--block mt-sm" id="export-pdf-btn" aria-label="Štampaj mesečni finansijski izveštaj">🖨️ Štampaj izveštaj</button>
+      <button type="button" class="btn btn--secondary btn--block mt-sm" id="export-pdf-btn" aria-label="Štampaj mesečni finansijski izveštaj">🖨️ Štampaj izveštaj</button>
     </main>
 
     <a href="add-expense.html" class="fab" aria-label="Dodaj trošak"><span class="fab__icon">+</span></a>

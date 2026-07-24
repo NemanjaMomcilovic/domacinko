@@ -3,34 +3,29 @@
   --color-gold: #c9a227;
   --color-gold-light: #e8d48b;
   --color-gold-dark: #9a7b1a;
-  --color-gold-wash: rgba(201, 162, 39, 0.12);
+  --color-gold-wash: rgba(201, 162, 39, 0.1);
 
-  /* Domaćinko primary — soft sage green, not neon */
-  --color-primary: #2f8a5c;
-  --color-primary-dark: #246b47;
-  --color-primary-light: #eaf6ef;
-  --color-primary-soft: #c5e4d2;
-  --color-primary-muted: #4a9d70;
+  /* Domaćinko primary — softer sage, more white/neutral */
+  --color-primary: #3a9a68;
+  --color-primary-dark: #2d7a52;
+  --color-primary-light: #f0f7f3;
+  --color-primary-soft: #d4eade;
+  --color-primary-muted: #5aad7c;
 
-  /* Neutrals — soft green-tinted wash, not flat white */
-  --color-bg: #fafcfb;
-  --color-bg-secondary: #f0f5f2;
-  --color-surface: #f4f8f5;
-  --color-border: #d5e3db;
+  /* Neutrals — cleaner white with subtle green tint */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f5f8f6;
+  --color-surface: #fafbfa;
+  --color-border: #e2ebe6;
   --color-text: #1a2e24;
   --color-text-secondary: #4a6358;
   --color-text-muted: #6f857b;
-  --color-bg-muted: #e8f0eb;
-  --color-bg-wash: linear-gradient(
-    165deg,
-    #f6faf8 0%,
-    #eef5f1 42%,
-    #f3f7f5 100%
-  );
+  --color-bg-muted: #eef4f0;
+  --color-bg-wash: #f7faf8;
   --color-app-wash: linear-gradient(
     180deg,
-    rgba(234, 246, 239, 0.5) 0%,
-    var(--color-bg) 28%,
+    rgba(240, 247, 243, 0.65) 0%,
+    var(--color-bg) 18%,
     var(--color-bg) 100%
   );
 
@@ -135,17 +130,12 @@
   --color-primary-light: #1a2e24;
   --color-primary-soft: #243830;
   --color-bg-muted: #1e2e26;
-  --color-gold-wash: rgba(201, 162, 39, 0.14);
-  --color-bg-wash: linear-gradient(
-    165deg,
-    #101a14 0%,
-    #152019 45%,
-    #101a14 100%
-  );
+  --color-gold-wash: rgba(201, 162, 39, 0.12);
+  --color-bg-wash: #101a14;
   --color-app-wash: linear-gradient(
     180deg,
-    rgba(61, 143, 102, 0.08) 0%,
-    var(--color-bg) 32%,
+    rgba(61, 143, 102, 0.06) 0%,
+    var(--color-bg) 22%,
     var(--color-bg) 100%
   );
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 1px 4px rgba(0, 0, 0, 0.18);

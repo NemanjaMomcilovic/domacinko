@@ -394,7 +394,10 @@ function refreshFinances() {
 
   document.getElementById('fin-spent').textContent = formatCurrency(spent);
   document.getElementById('fin-remaining').textContent = formatCurrency(remaining);
-  document.getElementById('fin-remaining').className = remaining >= 0 ? 'card__value text-success' : 'card__value text-danger';
+  const remainEl = document.getElementById('fin-remaining');
+  remainEl.className = remaining >= 0
+    ? 'month-summary-hero__remain month-summary-hero__remain--positive'
+    : 'month-summary-hero__remain month-summary-hero__remain--negative';
 
   renderComparison();
   renderSavings();
@@ -424,7 +427,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('fin-budget').textContent = formatCurrency(budget);
   document.getElementById('fin-spent').textContent = formatCurrency(spent);
   document.getElementById('fin-remaining').textContent = formatCurrency(remaining);
-  document.getElementById('fin-remaining').className = remaining >= 0 ? 'card__value text-success' : 'card__value text-danger';
+  document.getElementById('fin-remaining').className = remaining >= 0
+    ? 'month-summary-hero__remain month-summary-hero__remain--positive'
+    : 'month-summary-hero__remain month-summary-hero__remain--negative';
 
   renderHealthScore(score, 'fin-health-score');
   renderHealthFeedback('fin-health-feedback');
@@ -433,6 +438,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (score >= 71) scoreLabel.textContent = 'Odlično! Finansije su pod kontrolom.';
   else if (score >= 41) scoreLabel.textContent = 'Dobro, ali pazite na troškove.';
   else scoreLabel.textContent = 'Potrebna je pažnja na budžet.';
+
+  const forecastSection = document.getElementById('fin-forecast-section');
+  if (forecastSection && typeof isBetaMode === 'function' && isBetaMode()) {
+    forecastSection.classList.add('hidden');
+  }
 
   populateCategorySelect('filter-category', true);
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
